@@ -25,14 +25,14 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
-import cc.calliope.mini_v2.databinding.LayoutPatternDialogBinding;
+import cc.calliope.mini_v2.databinding.DialogPatternBinding;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 public class PatternDialogFragment extends DialogFragment {
 
-    private LayoutPatternDialogBinding binding;
+    private DialogPatternBinding binding;
     private final List<String> patternList = Arrays.asList("X", "X", "X", "X", "X");
 
     private ScannerViewModel scannerViewModel;
@@ -57,7 +57,7 @@ public class PatternDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = LayoutPatternDialogBinding.inflate(inflater, container, false);
+        binding = DialogPatternBinding.inflate(inflater, container, false);
         // Create view model containing utility methods for scanning
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::startScan);
@@ -115,7 +115,7 @@ public class PatternDialogFragment extends DialogFragment {
 
     private void onPatternChange(int index, float newPatten) {
         patternList.set(index, Pattern.forCode(newPatten).toString());
-        checkAvailability();
+        setButtonBackground();
     }
 
     enum Pattern {
@@ -183,7 +183,7 @@ public class PatternDialogFragment extends DialogFragment {
                 scannerViewModel.startScan();
                 devices = new LinkedHashSet<>(state.getDevices());
 
-                checkAvailability();
+                setButtonBackground();
 
                 for (ExtendedBluetoothDevice device : state.getDevices()) {
                     Log.e("DIALOG: ", "Device: " + device.getName() + " " + device.getRssi() + " " + device.getAddress());
@@ -215,7 +215,7 @@ public class PatternDialogFragment extends DialogFragment {
             Log.e("DIALOG", "Devices:" + devices);
     }
 
-    private void checkAvailability() {
+    private void setButtonBackground() {
         if (getDeviceByPattern(patternList) != null) {
             binding.buttonAction.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_connect_green, null));
         } else {

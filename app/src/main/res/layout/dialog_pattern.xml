@@ -5,15 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.AppCompat.Button"
         android:id="@+id/buttonAction"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginEnd="40dp"
         android:layout_marginStart="40dp"
         android:background="@drawable/btn_connect_aqua"
-        android:textColor="@color/white"
-        android:textSize="14sp"
+        app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="@id/layoutDialog"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
