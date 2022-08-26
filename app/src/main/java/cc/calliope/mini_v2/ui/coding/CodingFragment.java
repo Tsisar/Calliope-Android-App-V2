@@ -11,20 +11,20 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.databinding.FragmentDashboardBinding;
 
-public class DashboardFragment extends Fragment {
+public class CodingFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        DashboardViewModel dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+        CodingViewModel codingViewModel =
+                new ViewModelProvider(this).get(CodingViewModel.class);
 
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        codingViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
