@@ -1,8 +1,11 @@
 package cc.calliope.mini_v2.ui.dialog;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
-import cc.calliope.mini_v2.DeviceViewModel;
+import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.DialogPatternBinding;
@@ -29,7 +32,7 @@ import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 public class PatternDialogFragment extends DialogFragment {
 
     private DialogPatternBinding binding;
-    private final List<String> patternList = Arrays.asList("XX", "XX", "XX", "XX", "XX");
+    private final List<Float> patternList = Arrays.asList(0f, 0f, 0f, 0f, 0f);
 
     private ScannerViewModel scannerViewModel;
     private HashSet<ExtendedBluetoothDevice> devices;
@@ -53,6 +56,7 @@ public class PatternDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        loadPattern();
         binding = DialogPatternBinding.inflate(inflater, container, false);
         // Create view model containing utility methods for scanning
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
@@ -74,11 +78,11 @@ public class PatternDialogFragment extends DialogFragment {
             Log.e("Pattern", bundle.getString("pattern", "00000"));
         }
         //TODO we need save & restore it
-//        binding.patternA.setPattern(2);
-//        binding.patternB.setPattern(5);
-//        binding.patternC.setPattern(3);
-//        binding.patternD.setPattern(1);
-//        binding.patternE.setPattern(2);
+        binding.patternMatrix.patternA.setPattern(patternList.get(0));
+        binding.patternMatrix.patternB.setPattern(patternList.get(1));
+        binding.patternMatrix.patternC.setPattern(patternList.get(2));
+        binding.patternMatrix.patternD.setPattern(patternList.get(3));
+        binding.patternMatrix.patternE.setPattern(patternList.get(4));
 
         binding.patternMatrix.patternA.setOnRatingBarChangeListener((ratingBar, v, b) -> onPatternChange(0, v));
         binding.patternMatrix.patternB.setOnRatingBarChangeListener((ratingBar, v, b) -> onPatternChange(1, v));
@@ -91,7 +95,7 @@ public class PatternDialogFragment extends DialogFragment {
 
 
     private void onPatternChange(int index, float newPatten) {
-        patternList.set(index, Pattern.forCode(newPatten).toString());
+        patternList.set(index, newPatten);
         setButtonBackground();
     }
 
@@ -118,13 +122,14 @@ public class PatternDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    private ExtendedBluetoothDevice getDeviceByPattern(List<String> pattern) {
+    private ExtendedBluetoothDevice getDeviceByPattern(List<Float> pattern) {
         if (devices != null) {
             for (ExtendedBluetoothDevice device : devices) {
                 int coincide = 0;
                 for (int i = 0; i < 5; i++) {
                     char character = device.getPattern().charAt(i);
-                    if (pattern.get(i) != null && pattern.get(i).contains(String.valueOf(character))) {
+                    String iPattern = Pattern.forCode(pattern.get(i)).toString();
+                    if (iPattern.contains(String.valueOf(character))) {
                         coincide++;
                     }
                 }
@@ -183,5 +188,21 @@ public class PatternDialogFragment extends DialogFragment {
     public void onStop() {
         super.onStop();
         scannerViewModel.stopScan();
+        savePattern();
+    }
+
+    public void savePattern() {
+        SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+        for (int i = 0; i < 5; i++) {
+            edit.putFloat("PATTERN_" + i, patternList.get(i));
+        }
+        edit.apply();
+    }
+
+    public void loadPattern() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        for (int i = 0; i < 5; i++) {
+            patternList.set(i, preferences.getFloat("PATTERN_" + i, 0f));
+        }
     }
 }

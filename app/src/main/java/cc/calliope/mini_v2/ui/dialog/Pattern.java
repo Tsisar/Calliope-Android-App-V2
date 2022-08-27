@@ -28,4 +28,5 @@ public enum Pattern {
         public static Pattern forCode(float code) {
             return BY_CODE_MAP.get(code);
         }
+
     }

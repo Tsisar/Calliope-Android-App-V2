@@ -14,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
+import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
 
 public class MainActivity extends AppCompatActivity {
 

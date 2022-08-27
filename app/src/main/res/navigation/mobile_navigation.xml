@@ -15,7 +15,7 @@
         android:id="@+id/navigation_coding"
         android:name="cc.calliope.mini_v2.ui.coding.CodingFragment"
         android:label="@string/title_coding"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_coding" />
 
     <fragment
         android:id="@+id/navigation_help"
