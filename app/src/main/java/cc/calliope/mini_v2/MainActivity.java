@@ -3,6 +3,8 @@ package cc.calliope.mini_v2;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.ScaleAnimation;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         binding.fab.setOnClickListener(view -> {
+            view.startAnimation(new AlphaAnimation(1F, 0.3F));
             showPatternDialog();
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         });

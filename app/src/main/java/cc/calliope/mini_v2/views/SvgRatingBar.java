@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

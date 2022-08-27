@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="aqua_200">#FF00C8C6</color>
-    <color name="aqua_300">#FF00B8B6</color>
     <color name="aqua_500">#FF009896</color>
     <color name="aqua_700">#FF057876</color>
     <color name="teal_200">#FF03DAC5</color>
