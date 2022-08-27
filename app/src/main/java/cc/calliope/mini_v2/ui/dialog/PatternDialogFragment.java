@@ -17,7 +17,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.utils.Utils;
@@ -42,14 +41,8 @@ public class PatternDialogFragment extends DialogFragment {
         // Use `newInstance` instead as shown below
     }
 
-    public static PatternDialogFragment newInstance(String pattern) {
-        PatternDialogFragment patternDialogFragment = new PatternDialogFragment();
-
-        Bundle args = new Bundle();
-        args.putString("pattern", pattern);
-        patternDialogFragment.setArguments(args);
-
-        return patternDialogFragment;
+    public static PatternDialogFragment newInstance() {
+        return new PatternDialogFragment();
     }
 
     @Override
@@ -72,11 +65,6 @@ public class PatternDialogFragment extends DialogFragment {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            Log.e("Pattern", bundle.getString("pattern", "00000"));
-        }
-        //TODO we need save & restore it
         binding.patternMatrix.patternA.setPattern(patternList.get(0));
         binding.patternMatrix.patternB.setPattern(patternList.get(1));
         binding.patternMatrix.patternC.setPattern(patternList.get(2));
@@ -100,9 +88,9 @@ public class PatternDialogFragment extends DialogFragment {
 
     private void setButtonBackground() {
         if (getDeviceByPattern(patternList) != null) {
-            binding.buttonAction.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_connect_green, null));
+            binding.buttonAction.setBackgroundResource(R.drawable.btn_connect_green);
         } else {
-            binding.buttonAction.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_connect_aqua, null));
+            binding.buttonAction.setBackgroundResource(R.drawable.btn_connect_aqua);
         }
     }
 
@@ -110,14 +98,9 @@ public class PatternDialogFragment extends DialogFragment {
     public void sendResult() {
         ExtendedBluetoothDevice device = getDeviceByPattern(patternList);
         if (device != null) {
-//            Bundle result = new Bundle();
-//            result.putParcelable("pattern_key", testDevice);
-//            getParentFragmentManager().setFragmentResult("pattern_request_key", result);
-
             DeviceViewModel viewModel = new ViewModelProvider(requireActivity()).get(DeviceViewModel.class);
             viewModel.setDevice(device);
         }
-
         dismiss();
     }
 
