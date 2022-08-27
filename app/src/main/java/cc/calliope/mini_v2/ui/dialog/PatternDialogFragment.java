@@ -1,6 +1,5 @@
 package cc.calliope.mini_v2.ui.dialog;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -21,11 +20,11 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.DialogPatternBinding;
-import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
@@ -143,14 +142,10 @@ public class PatternDialogFragment extends DialogFragment {
 
     private void startScan(final ScannerLiveData state) {
         //TODO Винеси перевірки на дозволи в актівіті, залишити тільки перевірки активності BT, GPS
-        Log.v("Scan Permission: ", Utils.isBluetoothScanPermissionsGranted(getActivity()) + "");
-        Log.v("Location Permission: ", Utils.isLocationPermissionsGranted(getActivity()) + "");
-        Log.v("Version", Build.VERSION.SDK_INT + "");
 
         // First, check the Location permission. This is required on Marshmallow onwards in order to scan for Bluetooth LE devices.
-        if (Utils.isLocationPermissionsGranted(getActivity())
-                && (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || Utils.isBluetoothScanPermissionsGranted(getActivity()))
-        ) {
+        if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && Utils.isBluetoothScanPermissionsGranted(getActivity()))
+                || (Utils.isLocationPermissionsGranted(getActivity()) && Utils.isBluetoothAdminPermissionsGranted(getActivity()))){
             Log.v("DIALOG: ", "All ok, permission granted");
 
             // Bluetooth must be enabled

@@ -37,11 +37,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
-import android.os.ParcelUuid;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import cc.calliope.mini_v2.utils.Utils;
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
@@ -64,7 +65,8 @@ public class ScannerViewModel extends AndroidViewModel {
 	public ScannerViewModel(final Application application) {
 		super(application);
 
-		mScannerLiveData = new ScannerLiveData(Utils.isBleEnabled(), Utils.isLocationEnabled(application));
+		mScannerLiveData = new ScannerLiveData(Utils.isBluetoothEnabled(),
+                Utils.isLocationEnabled(application) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
 		registerBroadcastReceivers(application);
 	}
 
@@ -73,7 +75,7 @@ public class ScannerViewModel extends AndroidViewModel {
 		super.onCleared();
 		getApplication().unregisterReceiver(mBluetoothStateBroadcastReceiver);
 
-		if (Utils.isMarshmallowOrAbove()) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
 			getApplication().unregisterReceiver(mLocationProviderChangedReceiver);
 		}
 	}
@@ -123,10 +125,11 @@ public class ScannerViewModel extends AndroidViewModel {
 
 	private final ScanCallback scanCallback = new ScanCallback() {
 		@Override
-		public void onScanResult(final int callbackType, final ScanResult result) {
+		public void onScanResult(final int callbackType, @NonNull final ScanResult result) {
 			// If the packet has been obtained while Location was disabled, mark Location as not required
-			if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication()))
-				Utils.markLocationNotRequired(getApplication());
+			if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication())) {
+                Utils.markLocationNotRequired(getApplication());
+            }
 
 			mScannerLiveData.deviceDiscovered(result);
 		}
@@ -148,7 +151,7 @@ public class ScannerViewModel extends AndroidViewModel {
 	 */
 	private void registerBroadcastReceivers(final Application application) {
 		application.registerReceiver(mBluetoothStateBroadcastReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-		if (Utils.isMarshmallowOrAbove()) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
 			application.registerReceiver(mLocationProviderChangedReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
 		}
 	}

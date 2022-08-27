@@ -1,5 +1,6 @@
 package cc.calliope.mini_v2;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -14,6 +15,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
+import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,6 +23,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            Log.e("UTILS", "isBluetoothScanPermissionsGranted: " + Utils.isBluetoothScanPermissionsGranted(this));
+        }else{
+            Log.e("UTILS", "isLocationPermissionsGranted: " + Utils.isLocationPermissionsGranted(this));
+            Log.e("UTILS", "isBluetoothAdminPermissionsGranted: " + Utils.isBluetoothAdminPermissionsGranted(this));
+        }
+
+        Log.e("UTILS", "isBluetoothEnabled: " + Utils.isBluetoothEnabled());
+        Log.e("UTILS", "isLocationEnabled: " + Utils.isLocationEnabled(this));
+        Log.e("UTILS", "isNetworkConnected: " + Utils.isNetworkConnected(this));
+        Log.e("UTILS", "isInternetAvailable: " + Utils.isInternetAvailable());
+
 
         DeviceViewModel viewModel = new ViewModelProvider(this).get(DeviceViewModel.class);
         viewModel.getDevice().observe(this, device -> {
