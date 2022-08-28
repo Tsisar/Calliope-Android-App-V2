@@ -28,6 +28,8 @@ import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MAIN";
+
     private static final int REQUEST_LOCATION_ACCESS_CODE = 1022; // random number
     private static final int REQUEST_BLUETOOTH_ACCESS_CODE = 1023; // random number
 
@@ -75,21 +77,27 @@ public class MainActivity extends AppCompatActivity {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         });
 
-        binding.noLocationPermission.actionGrantLocationPermission.setOnClickListener(v -> requestLocationAccess());
-        binding.noLocationPermission.actionPermissionSettings.setOnClickListener(v -> openAppPermissionScreen());
+        binding.noLocationPermission.actionLocationPermissionGrant.setOnClickListener(v -> requestLocationAccess());
+        binding.noLocationPermission.actionLocationPermissionSettings.setOnClickListener(v -> openAppPermissionScreen());
+
+        binding.noBluetoothPermission.actionBluetoothPermissionGrant.setOnClickListener(v -> requestBluetoothAccess());
+        binding.noBluetoothPermission.actionBluetoothPermissionSettings.setOnClickListener(v -> openAppPermissionScreen());
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        Log.v("MAIN", "onResume");
+        Log.v(TAG, "onResume");
         checkPermission();
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
+                                           @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.v("MAIN", "onRequestPermissionsResult: requestCode: " + requestCode + ", " + "permissions: " +  Arrays.toString(permissions) + ", " + "grantResults: " +  Arrays.toString(grantResults));
+        Log.v(TAG, "onRequestPermissionsResult: requestCode: " + requestCode + ", "
+                + "permissions: " +  Arrays.toString(permissions) + ", "
+                + "grantResults: " +  Arrays.toString(grantResults));
     }
 
     private void showPatternDialog() {
@@ -99,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestLocationAccess() {
-        Utils.markLocationPermissionRequested(this);
+        Utils.markPermissionRequested(this);
         ActivityCompat.requestPermissions(this,
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? LOCATION_PERMISSIONS_Q : LOCATION_PERMISSIONS,
                 REQUEST_LOCATION_ACCESS_CODE);
@@ -113,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestBluetoothAccess() {
+        Utils.markPermissionRequested(this);
         ActivityCompat.requestPermissions(this,
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? BLUETOOTH_PERMISSIONS_S : BLUETOOTH_PERMISSIONS,
                 REQUEST_BLUETOOTH_ACCESS_CODE);
@@ -121,44 +130,59 @@ public class MainActivity extends AppCompatActivity {
     private void checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!Utils.isBluetoothScanPermissionsGranted(this)) {
-                requestBluetoothAccess();
-                Log.e("UTILS", "isBluetoothScanPermissionsGranted: " + Utils.isBluetoothScanPermissionsGranted(this));
+                noBluetoothPermission();
+                Log.e(TAG, "isBluetoothScanPermissionsGranted: " + Utils.isBluetoothScanPermissionsGranted(this));
             }else {
                 allPermissionsGranted();
             }
         } else {
             if (!Utils.isBluetoothAdminPermissionsGranted(this)) {
-//                requestLocationPermissions(BLUETOOTH_PERMISSIONS);
-                Log.e("UTILS", "isBluetoothAdminPermissionsGranted: " + Utils.isBluetoothAdminPermissionsGranted(this));
+                noBluetoothPermission();
+                Log.e(TAG, "isBluetoothAdminPermissionsGranted: " + Utils.isBluetoothAdminPermissionsGranted(this));
             }else if(!Utils.isLocationPermissionsGranted(this)) {
                 noLocationPermission();
-                Log.e("UTILS", "isLocationPermissionsGranted: " + Utils.isLocationPermissionsGranted(this));
+                Log.e(TAG, "isLocationPermissionsGranted: " + Utils.isLocationPermissionsGranted(this));
             }else {
                 allPermissionsGranted();
             }
 
         }
 
-        Log.e("UTILS", "isBluetoothEnabled: " + Utils.isBluetoothEnabled());
-        Log.e("UTILS", "isLocationEnabled: " + Utils.isLocationEnabled(this));
+        Log.e(TAG, "isBluetoothEnabled: " + Utils.isBluetoothEnabled());
+        Log.e(TAG, "isLocationEnabled: " + Utils.isLocationEnabled(this));
 
-        Log.e("UTILS", "isNetworkConnected: " + Utils.isNetworkConnected(this));
-        Log.e("UTILS", "isInternetAvailable: " + Utils.isInternetAvailable());
+        Log.e(TAG, "isNetworkConnected: " + Utils.isNetworkConnected(this));
+        Log.e(TAG, "isInternetAvailable: " + Utils.isInternetAvailable());
+    }
+
+    private void noBluetoothPermission() {
+        binding.container.setVisibility(View.GONE);
+        binding.noBluetoothPermission.getRoot().setVisibility(View.VISIBLE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            final boolean deniedForever = Utils.isBluetoothScanPermissionDeniedForever(this);
+            binding.noBluetoothPermission.actionBluetoothPermissionGrant
+                    .setVisibility(deniedForever ? View.GONE : View.VISIBLE);
+            binding.noBluetoothPermission.actionBluetoothPermissionSettings
+                    .setVisibility(deniedForever ? View.VISIBLE : View.GONE);
+        }
+
     }
 
     private void noLocationPermission() {
-        final boolean deniedForever = Utils.isLocationPermissionDeniedForever(this);
-
         binding.container.setVisibility(View.GONE);
         binding.noLocationPermission.getRoot().setVisibility(View.VISIBLE);
-        binding.noLocationPermission.actionGrantLocationPermission
+
+        final boolean deniedForever = Utils.isLocationPermissionDeniedForever(this);
+        binding.noLocationPermission.actionLocationPermissionGrant
                 .setVisibility(deniedForever ? View.GONE : View.VISIBLE);
-        binding.noLocationPermission.actionPermissionSettings
+        binding.noLocationPermission.actionLocationPermissionSettings
                 .setVisibility(deniedForever ? View.VISIBLE : View.GONE);
     }
 
     private void allPermissionsGranted(){
         binding.container.setVisibility(View.VISIBLE);
         binding.noLocationPermission.getRoot().setVisibility(View.GONE);
+        binding.noBluetoothPermission.getRoot().setVisibility(View.GONE);
     }
 }

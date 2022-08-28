@@ -1,5 +1,6 @@
 package cc.calliope.mini_v2.ui.dialog;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -100,6 +102,7 @@ public class PatternDialogFragment extends DialogFragment {
         if (device != null) {
             DeviceViewModel viewModel = new ViewModelProvider(requireActivity()).get(DeviceViewModel.class);
             viewModel.setDevice(device);
+
         }
         dismiss();
     }
@@ -181,6 +184,32 @@ public class PatternDialogFragment extends DialogFragment {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         for (int i = 0; i < 5; i++) {
             patternList.set(i, preferences.getFloat("PATTERN_" + i, 0f));
+        }
+    }
+
+    private void pairDevice(BluetoothDevice device) {
+        try {
+            Log.d("PAIRING", "Start Pairing...");
+
+            //waitingForBonding = true;
+
+            Method m = device.getClass()
+                    .getMethod("createBond", (Class[]) null);
+            m.invoke(device, (Object[]) null);
+
+            Log.d("PAIRING", "Pairing finished.");
+        } catch (Exception e) {
+            Log.e("PAIRING", e.getMessage());
+        }
+    }
+
+    private void unpairDevice(BluetoothDevice device) {
+        try {
+            Method m = device.getClass()
+                    .getMethod("removeBond", (Class[]) null);
+            m.invoke(device, (Object[]) null);
+        } catch (Exception e) {
+            Log.e("PAIRING", e.getMessage());
         }
     }
 }

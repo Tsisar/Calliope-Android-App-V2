@@ -124,6 +124,15 @@ public class Utils {
                 && !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_COARSE_LOCATION); // This method should return false
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    public static boolean isBluetoothScanPermissionDeniedForever(final Activity activity) {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+
+        return !isBluetoothScanPermissionsGranted(activity)
+                && preferences.getBoolean(PREFS_PERMISSION_REQUESTED, false)
+                && !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.BLUETOOTH_SCAN);
+    }
+
     /**
      * Location enabled is required on some phones running Android Marshmallow or newer (for example on Nexus and Pixel devices).
      *
@@ -153,7 +162,7 @@ public class Utils {
      * a flag needs to be saved.
      * @param context the context
      */
-    public static void markLocationPermissionRequested(final Context context) {
+    public static void markPermissionRequested(final Context context) {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.edit().putBoolean(PREFS_PERMISSION_REQUESTED, true).apply();
     }
