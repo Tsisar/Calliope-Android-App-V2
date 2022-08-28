@@ -41,6 +41,7 @@
     tools:ignore="ContentDescription">
 
     <ImageView
+        android:id="@+id/iv_no_permission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -48,6 +49,7 @@
         app:srcCompat="@drawable/ic_location_disabled"/>
 
     <TextView
+        android:id="@+id/tv_no_permission_title"
         android:textColor="?android:textColorSecondary"
         android:textStyle="bold"
         android:layout_width="match_parent"
@@ -57,6 +59,7 @@
         android:text="@string/location_permission_title"/>
 
     <TextView
+        android:id="@+id/tv_no_permission_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
@@ -65,7 +68,7 @@
         android:text="@string/location_permission_info"/>
 
     <Button
-        android:id="@+id/action_location_permission_grant"
+        android:id="@+id/btn_no_permission_action"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -75,7 +78,7 @@
         android:text="@string/btn_permission_action"/>
 
     <Button
-        android:id="@+id/action_location_permission_settings"
+        android:id="@+id/btn_no_permission_settings"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

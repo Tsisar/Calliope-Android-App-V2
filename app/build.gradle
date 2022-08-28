@@ -47,6 +47,8 @@ dependencies {
     // Log Bluetooth LE events in nRF Logger
     implementation 'no.nordicsemi.android:log:2.3.0'
 
+    implementation 'no.nordicsemi.android:dfu:2.1.0'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

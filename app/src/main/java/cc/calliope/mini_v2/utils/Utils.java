@@ -116,21 +116,12 @@ public class Utils {
      * @param activity the activity
      * @return true if permission has been denied and the popup will not come up any more, false otherwise
      */
-    public static boolean isLocationPermissionDeniedForever(final Activity activity) {
+    public static boolean isPermissionDeniedForever(final Activity activity, String permission) {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
 
         return !isLocationPermissionsGranted(activity) // Location permission must be denied
                 && preferences.getBoolean(PREFS_PERMISSION_REQUESTED, false) // Permission must have been requested before
-                && !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_COARSE_LOCATION); // This method should return false
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.S)
-    public static boolean isBluetoothScanPermissionDeniedForever(final Activity activity) {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
-
-        return !isBluetoothScanPermissionsGranted(activity)
-                && preferences.getBoolean(PREFS_PERMISSION_REQUESTED, false)
-                && !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.BLUETOOTH_SCAN);
+                && !ActivityCompat.shouldShowRequestPermissionRationale(activity, permission); // This method should return false
     }
 
     /**
