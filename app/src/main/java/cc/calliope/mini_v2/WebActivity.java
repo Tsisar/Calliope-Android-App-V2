@@ -116,10 +116,10 @@ public class WebActivity extends AppCompatActivity {
 
             if (downloadResult && device != null) {
                 Log.e("WEB", "start DFU Activity");
-//                    final Intent intent = new Intent(this, DFUActivity.class);
-//                    intent.putExtra("cc.calliope.mini.EXTRA_DEVICE", device);
-//                    intent.putExtra("EXTRA_FILE", file.getAbsolutePath());
-//                    startActivity(intent);
+                final Intent intent2 = new Intent(this, DFUActivity.class);
+                intent2.putExtra("cc.calliope.mini.EXTRA_DEVICE", device);
+                intent2.putExtra("EXTRA_FILE", file.getAbsolutePath());
+                startActivity(intent2);
             } else if (downloadResult) {
                 Toast.makeText(getApplicationContext(), "R.string.upload_no_mini_connected", Toast.LENGTH_LONG).show();
             } else {

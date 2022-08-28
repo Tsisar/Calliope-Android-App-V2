@@ -118,14 +118,14 @@ public class MainActivity extends AppCompatActivity {
         checkPermission();
     }
 
-    @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
-                                           @NonNull final int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d(TAG, "onRequestPermissionsResult: requestCode: " + requestCode + ", "
-                + "permissions: " + Arrays.toString(permissions) + ", "
-                + "grantResults: " + Arrays.toString(grantResults));
-    }
+//    @Override
+//    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
+//                                           @NonNull final int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        Log.d(TAG, "onRequestPermissionsResult: requestCode: " + requestCode + ", "
+//                + "permissions: " + Arrays.toString(permissions) + ", "
+//                + "grantResults: " + Arrays.toString(grantResults));
+//    }
 
     private void checkPermission() {
         isBluetoothAccessGranted = isAccessGranted(BLUETOOTH);

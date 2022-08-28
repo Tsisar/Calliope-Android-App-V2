@@ -187,15 +187,13 @@ public class PatternDialogFragment extends DialogFragment {
         }
     }
 
+    //TODO are we need it?
     private void pairDevice(BluetoothDevice device) {
         try {
             Log.d("PAIRING", "Start Pairing...");
 
-            //waitingForBonding = true;
-
-            Method m = device.getClass()
-                    .getMethod("createBond", (Class[]) null);
-            m.invoke(device, (Object[]) null);
+            Method method = device.getClass().getMethod("createBond", (Class[]) null);
+            method.invoke(device, (Object[]) null);
 
             Log.d("PAIRING", "Pairing finished.");
         } catch (Exception e) {
@@ -205,9 +203,8 @@ public class PatternDialogFragment extends DialogFragment {
 
     private void unpairDevice(BluetoothDevice device) {
         try {
-            Method m = device.getClass()
-                    .getMethod("removeBond", (Class[]) null);
-            m.invoke(device, (Object[]) null);
+            Method method = device.getClass().getMethod("removeBond", (Class[]) null);
+            method.invoke(device, (Object[]) null);
         } catch (Exception e) {
             Log.e("PAIRING", e.getMessage());
         }
