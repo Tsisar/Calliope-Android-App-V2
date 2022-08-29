@@ -27,6 +27,7 @@ public class HelpFragment extends Fragment {
         View root = binding.getRoot();
 
         binding.button.setOnClickListener(view -> startWebActivity());
+        binding.button2.setOnClickListener(view -> startTestActivity());
 
         final TextView textView = binding.textNotifications;
         helpViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
@@ -47,7 +48,12 @@ public class HelpFragment extends Fragment {
         });
         intent.putExtra("cc.calliope.mini.EXTRA_DEVICE", viewModel.getDevice().getValue());
         intent.putExtra("TARGET_NAME", "BIBLIOTHEK");
-        intent.putExtra("TARGET_URL", "https://calliope.cc/calliope-mini/25programme#25");
+        intent.putExtra("TARGET_URL", "https://calliope.cc/calliope-mini/25programme#17");
         startActivity(intent);
+    }
+
+    private void startTestActivity() {
+//        final Intent intent = new Intent(getActivity(), TestActivity.class);
+//        startActivity(intent);
     }
 }

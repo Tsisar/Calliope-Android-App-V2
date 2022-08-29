@@ -3,6 +3,7 @@ package cc.calliope.mini_v2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class DFUActivity extends AppCompatActivity {
 
     private TextView deviceInfo;
     private TextView timerText;
+    private ProgressBar progressBar;
 
     private static final String TAG = DFUActivity.class.getSimpleName();
 
@@ -78,6 +80,7 @@ public class DFUActivity extends AppCompatActivity {
         public void onProgressChanged(@NonNull final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
             deviceInfo.setText(percent + "%");
             timerText.setText("Uploading");
+            progressBar.setProgress(39+percent/3);
 
 //            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
 //            Log.e(TAG, method + " percent: " + percent);
@@ -99,6 +102,7 @@ public class DFUActivity extends AppCompatActivity {
 
         deviceInfo = findViewById(R.id.statusInfo);
         timerText = findViewById(R.id.timerText);
+        progressBar = findViewById(R.id.progressBar);
 
         timerText.setText("Device Connecting");
 
