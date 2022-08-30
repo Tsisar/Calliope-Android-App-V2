@@ -13,10 +13,8 @@ import android.view.animation.AlphaAnimation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -104,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(view -> {
             view.startAnimation(new AlphaAnimation(1F, 0.3F));
             showPatternDialog();
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         });
 
         binding.infoNoPermission.btnNoPermissionAction.setOnClickListener(v -> requestPermissions());

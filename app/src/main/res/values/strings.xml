@@ -11,4 +11,6 @@
     <string name="bluetooth_permission_info">To use Bluetooth features to communicate APP with your <b>mini</b> you must granted several permissions.</string>
     <string name="btn_permission_settings">Settings</string>
     <string name="btn_permission_action">Grant permission</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

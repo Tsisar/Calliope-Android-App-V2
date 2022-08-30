@@ -80,7 +80,7 @@ public class DFUActivity extends AppCompatActivity {
         public void onProgressChanged(@NonNull final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
             deviceInfo.setText(percent + "%");
             timerText.setText("Uploading");
-            progressBar.setProgress(39+percent/3);
+            progressBar.setProgress(39 + percent / 3);
 
 //            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
 //            Log.e(TAG, method + " percent: " + percent);

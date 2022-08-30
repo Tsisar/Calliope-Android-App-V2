@@ -74,9 +74,6 @@
         <activity
             android:name=".DFUActivity"
             android:exported="false" />
-        <activity
-            android:name=".WebActivity"
-            android:exported="false" />
 
         <service
             android:name=".DfuService"

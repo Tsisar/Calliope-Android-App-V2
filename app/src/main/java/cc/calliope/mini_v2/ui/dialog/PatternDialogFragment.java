@@ -102,7 +102,7 @@ public class PatternDialogFragment extends DialogFragment {
         if (device != null) {
             DeviceViewModel viewModel = new ViewModelProvider(requireActivity()).get(DeviceViewModel.class);
             viewModel.setDevice(device);
-            pairDevice(device.getDevice());
+//            pairDevice(device.getDevice());
         }
         dismiss();
     }
