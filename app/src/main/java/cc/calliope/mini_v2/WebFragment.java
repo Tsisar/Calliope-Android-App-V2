@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
@@ -64,7 +65,7 @@ public class WebFragment extends Fragment implements DownloadListener {
      * this fragment using the provided parameters.
      *
      * @param editorName Editor name.
-     * @param url Editor URL.
+     * @param url        Editor URL.
      * @return A new instance of fragment WebFragment.
      */
     public static WebFragment newInstance(String url, String editorName) {
@@ -101,6 +102,12 @@ public class WebFragment extends Fragment implements DownloadListener {
 
         webView = view.findViewById(R.id.webView);
 
+        if (savedInstanceState != null) {
+            webView.restoreState(savedInstanceState);
+        } else {
+            webView.loadUrl(url);
+        }
+
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
 
@@ -122,9 +129,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             }
         });
 
-        webView.loadUrl(url);
         webView.setDownloadListener(this);
-
         return view;
     }
 
@@ -243,4 +248,9 @@ public class WebFragment extends Fragment implements DownloadListener {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        webView.saveState(outState);
+    }
 }

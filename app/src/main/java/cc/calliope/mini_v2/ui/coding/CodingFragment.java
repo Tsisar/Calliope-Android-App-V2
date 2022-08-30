@@ -25,7 +25,7 @@ public class CodingFragment extends Fragment {
         View root = binding.getRoot();
 
         binding.button.setOnClickListener(view -> showWebFragment
-                ("https://makecode.calliope.cc", "MAKECODE"));
+                ("http://makecode.calliope.cc/beta", "MAKECODE"));
         binding.button2.setOnClickListener(view -> showWebFragment
                 ("https://lab.open-roberta.org/#loadSystem&&calliope2017", "NEPO"));
         binding.button3.setOnClickListener(view -> showWebFragment
@@ -41,17 +41,12 @@ public class CodingFragment extends Fragment {
     }
 
     private void showWebFragment(String url, String editorName) {
-        // Create new fragment and transaction
         Fragment webFragment = WebFragment.newInstance(url, editorName);
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
 
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack if needed
-        transaction.replace(R.id.nav_host_fragment_activity_main, webFragment);
-        transaction.setReorderingAllowed(true);
+        transaction.replace(R.id.frameLayout, webFragment);
+//        transaction.setReorderingAllowed(true);
         transaction.addToBackStack(null);
-
-        // Commit the transaction
         transaction.commit();
     }
 }
