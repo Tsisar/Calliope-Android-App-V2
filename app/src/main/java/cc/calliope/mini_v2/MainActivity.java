@@ -1,11 +1,18 @@
 package cc.calliope.mini_v2;
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -13,11 +20,13 @@ import android.view.animation.AlphaAnimation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -111,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
         checkPermission();
     }
 
@@ -134,6 +142,11 @@ public class MainActivity extends AppCompatActivity {
             showContainer();
         }
 
+        final int REQUEST_ENABLE_BT = 1;
+        if (!Utils.isBluetoothEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
         Log.e(TAG, "isBluetoothEnabled: " + Utils.isBluetoothEnabled());
         Log.e(TAG, "isLocationEnabled: " + Utils.isLocationEnabled(this));
 
@@ -142,9 +155,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPatternDialog() {
-        FragmentManager parentFragmentManager = getSupportFragmentManager();
-        PatternDialogFragment patternDialogFragment = PatternDialogFragment.newInstance();
-        patternDialogFragment.show(parentFragmentManager, "fragment_pattern");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        PatternDialogFragment dialogFragment = PatternDialogFragment.newInstance();
+        dialogFragment.show(fragmentManager, "fragment_pattern");
     }
 
     private void showInfoNoPermission() {

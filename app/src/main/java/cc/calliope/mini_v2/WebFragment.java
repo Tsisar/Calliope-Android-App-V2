@@ -1,13 +1,17 @@
 package cc.calliope.mini_v2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
+import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
 
 import android.os.StrictMode;
@@ -125,7 +129,7 @@ public class WebFragment extends Fragment implements DownloadListener {
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                Snackbar.make(view, "Oh no! " + error.getDescription(), Snackbar.LENGTH_SHORT).setAction("Action", null).show();
+                Utils.showErrorMessage(getResources(), webView, "Oh no! " + error.getDescription());
             }
         });
 
@@ -242,9 +246,9 @@ public class WebFragment extends Fragment implements DownloadListener {
             intent2.putExtra("EXTRA_FILE", file.getAbsolutePath());
             startActivity(intent2);
         } else if (res) {
-            Toast.makeText(getActivity(), "R.string.upload_no_mini_connected", Toast.LENGTH_LONG).show();
+            Utils.showErrorMessage(getResources(), webView, "No mini connected");
         } else {
-            Toast.makeText(getActivity(), "R.string.download_error", Toast.LENGTH_LONG).show();
+            Utils.showErrorMessage(getResources(), webView, "Download error");
         }
     }
 

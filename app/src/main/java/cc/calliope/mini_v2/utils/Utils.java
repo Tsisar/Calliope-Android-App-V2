@@ -7,16 +7,21 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.view.View;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import cc.calliope.mini_v2.R;
 
 public class Utils {
     private static final String PREFS_LOCATION_NOT_REQUIRED = "location_not_required";
@@ -161,5 +166,12 @@ public class Utils {
 
     private static boolean hasPermissions(Context context, String permission) {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void showErrorMessage(Resources resources, View view, String message){
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG)
+                .setBackgroundTint(resources.getColor(R.color.red, null))
+                .setTextColor(resources.getColor(R.color.white, null))
+                .show();
     }
 }
