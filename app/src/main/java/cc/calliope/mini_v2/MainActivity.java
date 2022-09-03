@@ -46,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private boolean isBluetoothAccessGranted = true;
-    private boolean isLocationAccessGranted = true;
-
     @IntDef({BLUETOOTH, LOCATION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface RequestType {
@@ -133,11 +130,11 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private void checkPermission() {
-        isBluetoothAccessGranted = isAccessGranted(BLUETOOTH);
-        isLocationAccessGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || isAccessGranted(LOCATION);
+        boolean isBluetoothAccessGranted = isAccessGranted(BLUETOOTH);
+        boolean isLocationAccessGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || isAccessGranted(LOCATION);
 
         if (!isBluetoothAccessGranted || !isLocationAccessGranted) {
-            showInfoNoPermission();
+            showInfoNoPermission(isBluetoothAccessGranted, isLocationAccessGranted);
         } else {
             showContainer();
         }
@@ -147,8 +144,6 @@ public class MainActivity extends AppCompatActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        Log.e(TAG, "isBluetoothEnabled: " + Utils.isBluetoothEnabled());
-        Log.e(TAG, "isLocationEnabled: " + Utils.isLocationEnabled(this));
 
         Log.e(TAG, "isNetworkConnected: " + Utils.isNetworkConnected(this));
         Log.e(TAG, "isInternetAvailable: " + Utils.isInternetAvailable());
@@ -160,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         dialogFragment.show(fragmentManager, "fragment_pattern");
     }
 
-    private void showInfoNoPermission() {
+    private void showInfoNoPermission(boolean isBluetoothAccessGranted, boolean isLocationAccessGranted) {
         boolean deniedForever = false;
 
         binding.container.setVisibility(View.GONE);
@@ -191,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestPermissions() {
         Utils.markPermissionRequested(this);
-        ActivityCompat.requestPermissions(this, getPermissionsArray(isBluetoothAccessGranted ? LOCATION : BLUETOOTH), REQUEST_CODE);
+        ActivityCompat.requestPermissions(this, getPermissionsArray(isAccessGranted(BLUETOOTH) ? LOCATION : BLUETOOTH), REQUEST_CODE);
     }
 
     private void requestAppSettings() {

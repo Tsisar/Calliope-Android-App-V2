@@ -44,6 +44,10 @@ public class SvgRatingBar extends AppCompatRatingBar {
         setProgressDrawable(drawable);
     }
 
+    public void setOnChangeListener(OnRatingBarChangeListener listener) {
+        super.setOnRatingBarChangeListener(listener);
+    }
+
     /**
      * Converts a drawable to a tiled version of itself. It will recursively
      * traverse layer and state list drawables.
@@ -120,7 +124,7 @@ public class SvgRatingBar extends AppCompatRatingBar {
         return new RoundRectShape(roundedCorners, null, null);
     }
 
-    public void setPattern(float pattern){
-        setRating(pattern);
+    public void setValue(float value){
+        setRating(value);
     }
 }

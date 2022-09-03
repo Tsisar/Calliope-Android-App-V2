@@ -168,10 +168,12 @@ public class Utils {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static void showErrorMessage(Resources resources, View view, String message){
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG)
-                .setBackgroundTint(resources.getColor(R.color.red, null))
-                .setTextColor(resources.getColor(R.color.white, null))
-                .show();
+    public static void showErrorMessage(Activity activity, String message){
+        if(activity != null) {
+            Snackbar.make(activity.getWindow().getDecorView().getRootView(), message, Snackbar.LENGTH_LONG)
+                    .setBackgroundTint(activity.getResources().getColor(R.color.red, null))
+                    .setTextColor(activity.getResources().getColor(R.color.white, null))
+                    .show();
+        }
     }
 }

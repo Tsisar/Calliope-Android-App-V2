@@ -3,7 +3,7 @@ package cc.calliope.mini_v2.ui.dialog;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public enum Pattern {
+public enum PatternEnum {
         XX(0f),
         ZU(1f),
         VO(2f),
@@ -13,19 +13,19 @@ public enum Pattern {
 
         private final float code;
 
-        Pattern(final float code) {
+        PatternEnum(final float code) {
             this.code = code;
         }
 
-        private static final Map<Float, Pattern> BY_CODE_MAP = new LinkedHashMap<>();
+        private static final Map<Float, PatternEnum> BY_CODE_MAP = new LinkedHashMap<>();
 
         static {
-            for (Pattern pattern : Pattern.values()) {
+            for (PatternEnum pattern : PatternEnum.values()) {
                 BY_CODE_MAP.put(pattern.code, pattern);
             }
         }
 
-        public static Pattern forCode(float code) {
+        public static PatternEnum forCode(float code) {
             return BY_CODE_MAP.get(code);
         }
 

@@ -30,7 +30,8 @@
 
 package cc.calliope.mini_v2.viewmodels;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,27 +40,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.ui.dialog.PatternEnum;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 /**
  * This class keeps the current list of discovered Bluetooth LE devices matching filter.
  * If a new device has been found it is added to the list and the LiveData i observers are
  * notified. If a packet from a device that's already in the list is found, the RSSI and name
- * are updated and observers are also notified. Observer may check {@link #getUpdatedDeviceIndex()}
- * to find out the index of the updated device.
+ * are updated and observers are also notified.
  */
-@SuppressWarnings("unused")
+
 public class ScannerLiveData extends LiveData<ScannerLiveData> {
-	private final List<ExtendedBluetoothDevice> mDevices = new ArrayList<>();
-	private Integer mUpdatedDeviceIndex;
-	private boolean mScanningStarted;
-	private boolean mBluetoothEnabled;
-	private boolean mLocationEnabled;
+	private final HashSet<ExtendedBluetoothDevice> devices = new HashSet<>();
+    private List<Float> currentPattern = Arrays.asList(0f, 0f, 0f, 0f, 0f);
+
+    private boolean scanningStarted;
+	private boolean bluetoothEnabled;
+	private boolean locationEnabled;
 
 	/* package */ ScannerLiveData(final boolean bluetoothEnabled, final boolean locationEnabled) {
-		mScanningStarted = false;
-		mBluetoothEnabled = bluetoothEnabled;
-		mLocationEnabled = locationEnabled;
+		scanningStarted = false;
+		this.bluetoothEnabled = bluetoothEnabled;
+		this.locationEnabled = locationEnabled;
 		postValue(this);
 	}
 
@@ -68,62 +70,85 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
 	}
 
 	/* package */ void scanningStarted() {
-		mScanningStarted = true;
+		scanningStarted = true;
 		postValue(this);
 	}
 
 	/* package */ void scanningStopped() {
-		mScanningStarted = false;
+		scanningStarted = false;
 		postValue(this);
 	}
 
 	/* package */ void bluetoothEnabled() {
-		mBluetoothEnabled = true;
+		bluetoothEnabled = true;
 		postValue(this);
 	}
 
 	/* package */ void bluetoothDisabled() {
-		mBluetoothEnabled = false;
-		mUpdatedDeviceIndex = null;
-		mDevices.clear();
+		bluetoothEnabled = false;
+		devices.clear();
 		postValue(this);
 	}
 
 	/* package */ void setLocationEnabled(final boolean enabled) {
-		mLocationEnabled = enabled;
+		locationEnabled = enabled;
 		postValue(this);
 	}
 
+    void setCurrentPattern(List<Float> pattern){
+        currentPattern = pattern;
+        postValue(this);
+    }
+
+    public ExtendedBluetoothDevice getCurrentDevice() {
+        for (ExtendedBluetoothDevice device : devices) {
+            int coincide = 0;
+            for (int i = 0; i < 5; i++) {
+                char character = device.getPattern().charAt(i);
+                String patternColumn = PatternEnum.forCode(currentPattern.get(i)).toString();
+                if (patternColumn.contains(String.valueOf(character))) {
+                    coincide++;
+                }
+            }
+            if (coincide == 5) {
+                return device;
+            }
+        }
+        return null;
+    }
+
+    void devicesDiscovered(final List<ScanResult> results) {
+        if(results != null){
+            devices.clear();
+            for(ScanResult result : results){
+                deviceDiscovered(result);
+            }
+            postValue(this);
+        }
+    }
+
 	/* package */ void deviceDiscovered(final ScanResult result) {
-		String deviceName = result.getScanRecord().getDeviceName();
-		if(deviceName != null){
-			System.out.println("Found Device: "+deviceName);
+        if (result.getScanRecord() != null) {
+            String deviceName = result.getScanRecord().getDeviceName();
 
-			Pattern p = Pattern.compile("[a-zA-Z :]+\\u005b(([A-Z]){5})\\u005d");
-			Matcher m = p.matcher(deviceName.toUpperCase());
+            if (deviceName != null) {
+//                System.out.println("Found Device: " + deviceName);
 
-			if(m.matches()) {
+                Pattern p = Pattern.compile("[a-zA-Z :]+\\u005b(([A-Z]){5})\\u005d");
+                Matcher m = p.matcher(deviceName.toUpperCase());
 
-				ExtendedBluetoothDevice device;
+                if (m.matches()) {
+                    ExtendedBluetoothDevice device = new ExtendedBluetoothDevice(result);
+                    // Update RSSI and name
+                    device.setRssi(result.getRssi());
+                    device.setName(result.getScanRecord().getDeviceName());
+                    device.setPattern(m.group(1));
 
-                //TODO Wot this? Use HashSet!
-				final int index = indexOf(result);
-				if (index == -1) {
-					device = new ExtendedBluetoothDevice(result);
-					mDevices.add(device);
-					mUpdatedDeviceIndex = null;
-				} else {
-					device = mDevices.get(index);
-					mUpdatedDeviceIndex = index;
-				}
-
-				// Update RSSI and name
-				device.setRssi(result.getRssi());
-				device.setName(result.getScanRecord().getDeviceName());
-				device.setPattern(m.group(1));
-				postValue(this);
-			}
-		}
+                    devices.remove(device);
+                    devices.add(device);
+                }
+            }
+        }
 	}
 
 	/**
@@ -131,46 +156,36 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
 	 * @return current list of devices discovered
 	 */
 	@NonNull
-	public List<ExtendedBluetoothDevice> getDevices() {
-		return mDevices;
-	}
-
-	/**
-	 * Returns null if a new device was added, or an index of the updated device.
-	 */
-	@Nullable
-	public Integer getUpdatedDeviceIndex() {
-		final Integer i = mUpdatedDeviceIndex;
-		mUpdatedDeviceIndex = null;
-		return i;
+	public HashSet<ExtendedBluetoothDevice> getDevices() {
+		return devices;
 	}
 
 	/**
 	 * Returns whether the list is empty.
 	 */
 	public boolean isEmpty() {
-		return mDevices.isEmpty();
+		return devices.isEmpty();
 	}
 
 	/**
 	 * Returns whether scanning is in progress.
 	 */
 	public boolean isScanning() {
-		return mScanningStarted;
+		return scanningStarted;
 	}
 
 	/**
 	 * Returns whether Bluetooth adapter is enabled.
 	 */
 	public boolean isBluetoothEnabled() {
-		return mBluetoothEnabled;
+		return bluetoothEnabled;
 	}
 
 	/**
 	 * Returns whether Location is enabled.
 	 */
 	public boolean isLocationEnabled() {
-		return mLocationEnabled;
+		return locationEnabled;
 	}
 
 	/**
@@ -181,7 +196,7 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
 	 */
 	private int indexOf(final ScanResult result) {
 		int i = 0;
-		for (final ExtendedBluetoothDevice device : mDevices) {
+		for (final ExtendedBluetoothDevice device : devices) {
 			if (device.matches(result))
 				return i;
 			i++;

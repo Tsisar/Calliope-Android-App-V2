@@ -95,8 +95,8 @@ public class ScannerViewModel extends AndroidViewModel {
 		// Scanning settings
 		final ScanSettings settings = new ScanSettings.Builder()
 				.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-				// Refresh the devices list every second
-				.setReportDelay(0)
+				// Refresh the devices list every 5000 ms (5 sec)
+				.setReportDelay(5000)
 				// Hardware filtering has some issues on selected devices
 				.setUseHardwareFilteringIfSupported(false)
 				// Samsung S6 and S6 Edge report equal value of RSSI for all devices. In this app we ignore the RSSI.
@@ -127,16 +127,20 @@ public class ScannerViewModel extends AndroidViewModel {
 		@Override
 		public void onScanResult(final int callbackType, @NonNull final ScanResult result) {
 			// If the packet has been obtained while Location was disabled, mark Location as not required
-			if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication())) {
-                Utils.markLocationNotRequired(getApplication());
-            }
-
-			mScannerLiveData.deviceDiscovered(result);
+//			if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication())) {
+//                Utils.markLocationNotRequired(getApplication());
+//            }
+//
+//			mScannerLiveData.deviceDiscovered(result);
 		}
 
 		@Override
-		public void onBatchScanResults(final List<ScanResult> results) {
-			// Batch scan is disabled (report delay = 0)
+		public void onBatchScanResults(@NonNull final List<ScanResult> results) {
+            if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication())) {
+                Utils.markLocationNotRequired(getApplication());
+            }
+
+            mScannerLiveData.devicesDiscovered(results);
 		}
 
 		@Override
@@ -145,6 +149,10 @@ public class ScannerViewModel extends AndroidViewModel {
 			mScannerLiveData.scanningStopped();
 		}
 	};
+
+    public void setCurrentPattern(List<Float> pattern){
+        mScannerLiveData.setCurrentPattern(pattern);
+    }
 
 	/**
 	 * Register for required broadcast receivers.
