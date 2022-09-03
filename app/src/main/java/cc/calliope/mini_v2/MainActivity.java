@@ -29,11 +29,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
-import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Utils;
-import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
@@ -95,12 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        DeviceViewModel viewModel = new ViewModelProvider(this).get(DeviceViewModel.class);
-        viewModel.getDevice().observe(this, device -> {
-            // Perform an action with the latest item data
-            Log.e("TEST_DEVICE", device.getPattern());
-        });
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupWithNavController(binding.navView, navController);

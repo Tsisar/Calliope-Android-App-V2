@@ -10,7 +10,9 @@ import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
@@ -143,6 +145,10 @@ public class DFUActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         final ExtendedBluetoothDevice device = intent.getParcelableExtra("cc.calliope.mini.EXTRA_DEVICE");
 
+        if(device == null) {
+            return;
+        }
+
         Bundle extras = intent.getExtras();
         final String file = extras.getString("EXTRA_FILE");
 
@@ -162,7 +168,7 @@ public class DFUActivity extends AppCompatActivity {
                 // Bud some time we have exception:
                 // android.app.ForegroundServiceDidNotStartInTimeException: Context.startForegroundService() did not then call Service.startForeground()
 //                .setForeground(false)
-                .setNumberOfRetries(3)
+//                .setNumberOfRetries(3)
                 .setRebootTime(1000)
                 .setKeepBond(false);
 

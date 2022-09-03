@@ -1,18 +1,15 @@
 package cc.calliope.mini_v2;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
-import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Utils;
-import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
+import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 import android.os.StrictMode;
 import android.util.Base64;
@@ -27,9 +24,6 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -98,10 +92,12 @@ public class WebFragment extends Fragment implements DownloadListener {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_web, container, false);
 
-        DeviceViewModel viewModel = new ViewModelProvider(requireActivity()).get(DeviceViewModel.class);
-        viewModel.getDevice().observe(getViewLifecycleOwner(), device -> {
-            Log.e("WEB", "Device: " + device.getPattern());
-            this.device = device;
+        ScannerViewModel scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
+        scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> {
+            if (result.getCurrentDevice() != null) {
+                Log.e("WEB", "Device: " + result.getCurrentDevice().getPattern());
+            }
+            this.device = result.getCurrentDevice();
         });
 
         webView = view.findViewById(R.id.webView);

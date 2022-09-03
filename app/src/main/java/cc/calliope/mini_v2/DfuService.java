@@ -95,14 +95,14 @@ public class DfuService extends DfuBaseService {
         BluetoothGattService flashService = gatt.getService(MINI_FLASH_SERVICE_UUID);
         if (flashService == null) {
             logw("Cannot find MINI_FLASH_SERVICE_UUID");
-            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
+//            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
             return false;
         }
 
         final BluetoothGattCharacteristic flashServiceCharacteristic = flashService.getCharacteristic(MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID);
         if (flashServiceCharacteristic == null) {
             logw("Cannot find MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID");
-            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
+//            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
             return false;
         }
 
@@ -117,7 +117,7 @@ public class DfuService extends DfuBaseService {
         } catch (Exception e) {
             e.printStackTrace();
             loge(e.toString());
-            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
+//            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
             return false;
         }
 

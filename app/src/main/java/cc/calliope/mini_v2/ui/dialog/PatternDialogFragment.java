@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.utils.Utils;
-import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.DialogPatternBinding;
@@ -102,12 +101,7 @@ public class PatternDialogFragment extends DialogFragment {
 
     // Call this method to send the data back to the parent fragment
     public void onConnectClick() {
-        ExtendedBluetoothDevice device = scannerViewModel.getScannerState().getCurrentDevice();
-        if (device != null) {
-            DeviceViewModel viewModel = new ViewModelProvider(requireActivity()).get(DeviceViewModel.class);
-            viewModel.setDevice(device);
-//            pairDevice(device.getDevice());
-        }
+//        pairDevice(scannerViewModel.getScannerState().getCurrentDevice().getDevice());
         dismiss();
     }
 
