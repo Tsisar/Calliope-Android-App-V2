@@ -88,7 +88,7 @@ public class DFUActivity extends AppCompatActivity {
 
         @Override
         public void onError(@NonNull final String deviceAddress, final int error, final int errorType, final String message) {
-            deviceInfo.setText("ERROR:");
+            deviceInfo.setText("ERROR");
             timerText.setText(message);
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
             Log.e(TAG, method + " error: " + message);

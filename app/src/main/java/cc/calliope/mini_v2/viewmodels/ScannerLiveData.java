@@ -95,6 +95,10 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
 		postValue(this);
 	}
 
+    public List<Float> getCurrentPattern(){
+        return currentPattern;
+    }
+
     void setCurrentPattern(List<Float> pattern){
         currentPattern = pattern;
         postValue(this);
@@ -186,21 +190,5 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
 	 */
 	public boolean isLocationEnabled() {
 		return locationEnabled;
-	}
-
-	/**
-	 * Finds the index of existing devices on the scan results list.
-	 *
-	 * @param result scan result
-	 * @return index of -1 if not found
-	 */
-	private int indexOf(final ScanResult result) {
-		int i = 0;
-		for (final ExtendedBluetoothDevice device : devices) {
-			if (device.matches(result))
-				return i;
-			i++;
-		}
-		return -1;
 	}
 }

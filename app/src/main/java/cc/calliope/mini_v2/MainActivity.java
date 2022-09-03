@@ -1,18 +1,14 @@
 package cc.calliope.mini_v2;
 
 import android.Manifest;
-import android.app.NotificationManager;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -20,23 +16,26 @@ import android.view.animation.AlphaAnimation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.DeviceViewModel;
+import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
+import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -45,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 1022; // random number
 
     private ActivityMainBinding binding;
+    private ScannerViewModel scannerViewModel;
 
     @IntDef({BLUETOOTH, LOCATION})
     @Retention(RetentionPolicy.SOURCE)
@@ -110,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
             showPatternDialog();
         });
 
+        scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
+        scannerViewModel.getScannerState().observe(this, this::scanResults);
+
         binding.infoNoPermission.btnNoPermissionAction.setOnClickListener(v -> requestPermissions());
         binding.infoNoPermission.btnNoPermissionSettings.setOnClickListener(v -> requestAppSettings());
     }
@@ -118,6 +121,12 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         checkPermission();
+    }
+    
+    @Override
+    public void onPause(){
+        super.onPause();
+        scannerViewModel.stopScan();
     }
 
 //    @Override
@@ -129,6 +138,19 @@ public class MainActivity extends AppCompatActivity {
 //                + "grantResults: " + Arrays.toString(grantResults));
 //    }
 
+    private void scanResults(final ScannerLiveData state) {
+        // Bluetooth must be enabled
+        if (state.isBluetoothEnabled()) {
+            scannerViewModel.startScan();
+
+            if (state.getCurrentDevice() != null) {
+                binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.green)));
+            } else {
+                binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.aqua_200)));
+            }
+        }
+    }
+
     private void checkPermission() {
         boolean isBluetoothAccessGranted = isAccessGranted(BLUETOOTH);
         boolean isLocationAccessGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || isAccessGranted(LOCATION);
@@ -139,15 +161,26 @@ public class MainActivity extends AppCompatActivity {
             showContainer();
         }
 
-        final int REQUEST_ENABLE_BT = 1;
         if (!Utils.isBluetoothEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            openBluetoothEnableActivity();
         }
 
         Log.e(TAG, "isNetworkConnected: " + Utils.isNetworkConnected(this));
         Log.e(TAG, "isInternetAvailable: " + Utils.isInternetAvailable());
     }
+
+    public void openBluetoothEnableActivity() {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        bluetoothEnableResultLauncher.launch(enableBtIntent);
+    }
+
+    ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Log.i(TAG, "BluetoothEnabled");
+                }
+            });
 
     private void showPatternDialog() {
         FragmentManager fragmentManager = getSupportFragmentManager();

@@ -29,7 +29,7 @@ import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 public class PatternDialogFragment extends DialogFragment {
 
     private DialogPatternBinding binding;
-    private final List<Float> currentPattern = Arrays.asList(0f, 0f, 0f, 0f, 0f);
+    private List<Float> currentPattern = Arrays.asList(0f, 0f, 0f, 0f, 0f);
 
     private ScannerViewModel scannerViewModel;
 //    private ExtendedBluetoothDevice currentDevice;
@@ -47,16 +47,11 @@ public class PatternDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        loadPattern();
         binding = DialogPatternBinding.inflate(inflater, container, false);
 
         // Create view model containing utility methods for scanning
         scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), this::scanResults);
-        scannerViewModel.setCurrentPattern(currentPattern);
-
-        //TODO check permissions
-//        scannerViewModel.startScan();
 
         return binding.getRoot();
     }
@@ -68,6 +63,8 @@ public class PatternDialogFragment extends DialogFragment {
         if (getDialog() != null) {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
+
+        currentPattern = scannerViewModel.getScannerState().getCurrentPattern();
 
         binding.patternMatrix.columnA.setValue(currentPattern.get(0));
         binding.patternMatrix.columnB.setValue(currentPattern.get(1));
@@ -88,7 +85,6 @@ public class PatternDialogFragment extends DialogFragment {
     public void onStop() {
         super.onStop();
         scannerViewModel.stopScan();
-        savePattern();
     }
 
     private void onPatternChange(int index, float newPatten) {
@@ -121,7 +117,7 @@ public class PatternDialogFragment extends DialogFragment {
             scannerViewModel.startScan();
 
             ExtendedBluetoothDevice currentDevice = state.getCurrentDevice();
-            Log.w("DIALOG: ", "currentDevice: " + currentDevice);
+            Log.i("DIALOG: ", "currentDevice: " + currentDevice);
             setButtonBackground(currentDevice);
         } else {
             Utils.showErrorMessage(getActivity(), "Bluetooth is disable");

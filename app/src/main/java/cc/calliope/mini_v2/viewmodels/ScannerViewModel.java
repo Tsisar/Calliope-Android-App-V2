@@ -36,10 +36,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -68,6 +71,8 @@ public class ScannerViewModel extends AndroidViewModel {
 		mScannerLiveData = new ScannerLiveData(Utils.isBluetoothEnabled(),
                 Utils.isLocationEnabled(application) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
 		registerBroadcastReceivers(application);
+
+        loadPattern();
 	}
 
 	@Override
@@ -121,12 +126,13 @@ public class ScannerViewModel extends AndroidViewModel {
 		final BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
 		scanner.stopScan(scanCallback);
 		mScannerLiveData.scanningStopped();
+        savePattern();
 	}
 
 	private final ScanCallback scanCallback = new ScanCallback() {
 		@Override
 		public void onScanResult(final int callbackType, @NonNull final ScanResult result) {
-			// If the packet has been obtained while Location was disabled, mark Location as not required
+
 //			if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication())) {
 //                Utils.markLocationNotRequired(getApplication());
 //            }
@@ -136,6 +142,7 @@ public class ScannerViewModel extends AndroidViewModel {
 
 		@Override
 		public void onBatchScanResults(@NonNull final List<ScanResult> results) {
+            // If the packet has been obtained while Location was disabled, mark Location as not required
             if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication())) {
                 Utils.markLocationNotRequired(getApplication());
             }
@@ -198,4 +205,24 @@ public class ScannerViewModel extends AndroidViewModel {
 			}
 		}
 	};
+
+    public void savePattern() {
+        List<Float> currentPattern = mScannerLiveData.getCurrentPattern();
+        if(currentPattern != null) {
+            SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getApplication()).edit();
+            for (int i = 0; i < 5; i++) {
+                edit.putFloat("PATTERN_" + i, currentPattern.get(i));
+            }
+            edit.apply();
+        }
+    }
+
+    public void loadPattern() {
+        List<Float> currentPattern = Arrays.asList(0f, 0f, 0f, 0f, 0f);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplication());
+        for (int i = 0; i < 5; i++) {
+            currentPattern.set(i, preferences.getFloat("PATTERN_" + i, 0f));
+        }
+        mScannerLiveData.setCurrentPattern(currentPattern);
+    }
 }
