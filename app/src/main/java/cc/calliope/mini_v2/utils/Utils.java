@@ -13,6 +13,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -170,10 +171,19 @@ public class Utils {
 
     public static void showErrorMessage(Activity activity, String message){
         if(activity != null) {
-            Snackbar.make(activity.getWindow().getDecorView().getRootView(), message, Snackbar.LENGTH_LONG)
+            Snackbar snackbar = Snackbar.make(activity.getWindow().getDecorView().getRootView(), message, Snackbar.LENGTH_LONG)
                     .setBackgroundTint(activity.getResources().getColor(R.color.red, null))
-                    .setTextColor(activity.getResources().getColor(R.color.white, null))
-                    .show();
+                    .setTextColor(activity.getResources().getColor(R.color.white, null));
+
+            View layout = snackbar.getView();
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 100, 0, 0);
+            layout.setLayoutParams(params);
+
+            snackbar.show();
         }
     }
 }

@@ -3,6 +3,7 @@ package cc.calliope.mini_v2;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -16,6 +17,7 @@ import android.view.animation.AlphaAnimation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -24,6 +26,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -36,10 +40,11 @@ import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
     private static final String TAG = "MAIN";
 
     private static final int REQUEST_CODE = 1022; // random number
+    private static boolean requestWasSent = false;
 
     private ActivityMainBinding binding;
     private ScannerViewModel scannerViewModel;
@@ -98,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         binding.fab.setOnClickListener(view -> {
-            view.startAnimation(new AlphaAnimation(1F, 0.3F));
+            view.startAnimation(new AlphaAnimation(1F, 0.75F));
             showPatternDialog();
         });
 
@@ -113,12 +118,19 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         checkPermission();
+        Log.e("ACTIVITY", "onResume");
     }
-    
+
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         scannerViewModel.stopScan();
+    }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        //Fragment dialog had been dismissed
+//        binding.fab.setVisibility(View.VISIBLE);
     }
 
 //    @Override
@@ -132,14 +144,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void scanResults(final ScannerLiveData state) {
         // Bluetooth must be enabled
-        if (state.isBluetoothEnabled()) {
-            scannerViewModel.startScan();
+        Log.e("SCANNER", "current device: " + state.getCurrentDevice());
 
-            if (state.getCurrentDevice() != null) {
-                binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.green)));
-            } else {
-                binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.aqua_200)));
-            }
+//        if(hasOpenedDialogs(this))
+//            return;
+
+        if (state.isBluetoothEnabled()) {
+            binding.fab.setBackgroundTintList(
+                    ColorStateList.valueOf(
+                            getColor(
+                                    state.getCurrentDevice() != null
+                                            ? R.color.green : R.color.aqua_200
+                            )
+                    )
+            );
+        } else {
+            Utils.showErrorMessage(this, "Bluetooth is disable");
+            openBluetoothEnableActivity();
         }
     }
 
@@ -151,19 +172,18 @@ public class MainActivity extends AppCompatActivity {
             showInfoNoPermission(isBluetoothAccessGranted, isLocationAccessGranted);
         } else {
             showContainer();
+            scannerViewModel.startScan();
         }
-
-        if (!Utils.isBluetoothEnabled()) {
-            openBluetoothEnableActivity();
-        }
-
-        Log.e(TAG, "isNetworkConnected: " + Utils.isNetworkConnected(this));
-        Log.e(TAG, "isInternetAvailable: " + Utils.isInternetAvailable());
+//        Log.e(TAG, "isNetworkConnected: " + Utils.isNetworkConnected(this));
+//        Log.e(TAG, "isInternetAvailable: " + Utils.isInternetAvailable());
     }
 
     public void openBluetoothEnableActivity() {
-        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        bluetoothEnableResultLauncher.launch(enableBtIntent);
+        if(!requestWasSent) {
+            requestWasSent = true;
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            bluetoothEnableResultLauncher.launch(enableBtIntent);
+        }
     }
 
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
@@ -171,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Log.i(TAG, "BluetoothEnabled");
+                    checkPermission();
                 }
             });
 
@@ -178,9 +199,13 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         PatternDialogFragment dialogFragment = PatternDialogFragment.newInstance();
         dialogFragment.show(fragmentManager, "fragment_pattern");
+
+//        binding.fab.setVisibility(View.GONE);
     }
 
+    //TODO for refactoring
     private void showInfoNoPermission(boolean isBluetoothAccessGranted, boolean isLocationAccessGranted) {
+        PermissionContent content = PermissionContent.BLUETOOTH;
         boolean deniedForever = false;
 
         binding.container.setVisibility(View.GONE);
@@ -188,17 +213,14 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isBluetoothAccessGranted) {
             deniedForever = Utils.isPermissionDeniedForever(this, getPermissionsArray(BLUETOOTH)[0]);
-
-            binding.infoNoPermission.ivNoPermission.setImageResource(R.drawable.ic_bluetooth_disabled);
-            binding.infoNoPermission.tvNoPermissionTitle.setText(R.string.bluetooth_permission_title);
-            binding.infoNoPermission.tvNoPermissionInfo.setText(R.string.bluetooth_permission_info);
         } else if (!isLocationAccessGranted) {
             deniedForever = Utils.isPermissionDeniedForever(this, getPermissionsArray(LOCATION)[0]);
-
-            binding.infoNoPermission.ivNoPermission.setImageResource(R.drawable.ic_location_disabled);
-            binding.infoNoPermission.tvNoPermissionTitle.setText(R.string.location_permission_title);
-            binding.infoNoPermission.tvNoPermissionInfo.setText(R.string.location_permission_info);
+            content = PermissionContent.LOCATION;
         }
+
+        binding.infoNoPermission.ivNoPermission.setImageResource(content.getIcResId());
+        binding.infoNoPermission.tvNoPermissionTitle.setText(content.getTitleResId());
+        binding.infoNoPermission.tvNoPermissionInfo.setText(content.getInfoResId());
 
         binding.infoNoPermission.btnNoPermissionAction.setVisibility(deniedForever ? View.GONE : View.VISIBLE);
         binding.infoNoPermission.btnNoPermissionSettings.setVisibility(deniedForever ? View.VISIBLE : View.GONE);
@@ -232,5 +254,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    private static boolean hasOpenedDialogs(AppCompatActivity activity) {
+        List<Fragment> fragments = activity.getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof DialogFragment) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,6 +1,8 @@
 package cc.calliope.mini_v2.ui.dialog;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+import cc.calliope.mini_v2.MainActivity;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
@@ -83,7 +86,19 @@ public class PatternDialogFragment extends DialogFragment {
     @Override
     public void onStop() {
         super.onStop();
-        scannerViewModel.stopScan();
+//        scannerViewModel.stopScan();
+    }
+
+    @Override
+    public void onDismiss(@NonNull final DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (scannerViewModel.getScannerState().getCurrentDevice() != null) {
+            pairDevice(scannerViewModel.getScannerState().getCurrentDevice().getDevice());
+        }
+        final Activity activity = getActivity();
+        if (activity instanceof DialogInterface.OnDismissListener) {
+            ((DialogInterface.OnDismissListener) activity).onDismiss(dialog);
+        }
     }
 
     private void onPatternChange(int index, float newPatten) {
@@ -92,6 +107,7 @@ public class PatternDialogFragment extends DialogFragment {
     }
 
     private void setButtonBackground(ExtendedBluetoothDevice device) {
+//        Log.i("DIALOG: ", "currentDevice: " + device);
         if (device != null) {
             binding.buttonAction.setBackgroundResource(R.drawable.btn_connect_green);
         } else {
@@ -101,22 +117,16 @@ public class PatternDialogFragment extends DialogFragment {
 
     // Call this method to send the data back to the parent fragment
     public void onConnectClick() {
-//        pairDevice(scannerViewModel.getScannerState().getCurrentDevice().getDevice());
         dismiss();
     }
 
     private void scanResults(final ScannerLiveData state) {
         // Bluetooth must be enabled
         if (state.isBluetoothEnabled()) {
-            scannerViewModel.startScan();
-
-            ExtendedBluetoothDevice currentDevice = state.getCurrentDevice();
-            Log.i("DIALOG: ", "currentDevice: " + currentDevice);
-            setButtonBackground(currentDevice);
+//            scannerViewModel.startScan();
+            setButtonBackground(state.getCurrentDevice());
         } else {
-            Utils.showErrorMessage(getActivity(), "Bluetooth is disable");
             setButtonBackground(null);
-            Log.e("DIALOG: ", "Bluetooth is disable");
         }
     }
 

@@ -40,6 +40,7 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,6 +94,7 @@ public class ScannerViewModel extends AndroidViewModel {
 	 * Start scanning for Bluetooth devices.
 	 */
 	public void startScan() {
+        Log.e("SCANNER", "start scan");
 		if (mScannerLiveData.isScanning()) {
 			return;
 		}
@@ -123,6 +125,7 @@ public class ScannerViewModel extends AndroidViewModel {
 	 * stop scanning for bluetooth devices.
 	 */
 	public void stopScan() {
+        Log.e("SCANNER", "stop scan");
 		final BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
 		scanner.stopScan(scanCallback);
 		mScannerLiveData.scanningStopped();
@@ -143,10 +146,6 @@ public class ScannerViewModel extends AndroidViewModel {
 		@Override
 		public void onBatchScanResults(@NonNull final List<ScanResult> results) {
             // If the packet has been obtained while Location was disabled, mark Location as not required
-            if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication())) {
-                Utils.markLocationNotRequired(getApplication());
-            }
-
             mScannerLiveData.devicesDiscovered(results);
 		}
 

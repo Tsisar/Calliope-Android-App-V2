@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         app:fontFamily="@font/roboto_mono"
-        android:text="@string/location_permission_title"/>
+        android:text="@string/title_location_permission"/>
 
     <TextView
         android:id="@+id/tv_no_permission_info"
@@ -65,7 +65,7 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         app:fontFamily="@font/roboto_mono"
-        android:text="@string/location_permission_info"/>
+        android:text="@string/info_location_permission"/>
 
     <Button
         android:id="@+id/btn_no_permission_action"
@@ -75,7 +75,7 @@
         android:layout_gravity="center_horizontal"
         app:fontFamily="@font/roboto_mono"
         android:background="@drawable/btn_aqua"
-        android:text="@string/btn_permission_action"/>
+        android:text="@string/action_btn_permission"/>
 
     <Button
         android:id="@+id/btn_no_permission_settings"
@@ -83,7 +83,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/btn_permission_settings"
+        android:text="@string/settings_btn_permission"
         app:fontFamily="@font/roboto_mono"
         android:background="@drawable/btn_aqua"
         android:visibility="gone"/>

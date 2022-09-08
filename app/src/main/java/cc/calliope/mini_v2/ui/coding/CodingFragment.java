@@ -8,11 +8,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+import cc.calliope.mini_v2.ClickableViewPager;
+import cc.calliope.mini_v2.CustomPagerAdapter;
+import cc.calliope.mini_v2.PagerItem;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.WebFragment;
 import cc.calliope.mini_v2.databinding.FragmentCodingBinding;
 
-public class CodingFragment extends Fragment {
+public class CodingFragment extends Fragment implements ClickableViewPager.OnItemClickListener {
 
     private FragmentCodingBinding binding;
 
@@ -22,12 +26,8 @@ public class CodingFragment extends Fragment {
         binding = FragmentCodingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.button.setOnClickListener(view -> showWebFragment
-                ("https://makecode.calliope.cc", "MAKECODE"));
-        binding.button2.setOnClickListener(view -> showWebFragment
-                ("https://lab.open-roberta.org/#loadSystem&&calliope2017", "NEPO"));
-        binding.button3.setOnClickListener(view -> showWebFragment
-                ("https://calliope.cc/calliope-mini/25programme#17", "BIBLIOTHEK"));
+        binding.viewpager.setAdapter(new CustomPagerAdapter(getActivity()));
+        binding.viewpager.setOnItemClickListener(this);
 
         return root;
     }
@@ -46,5 +46,11 @@ public class CodingFragment extends Fragment {
 //        transaction.setReorderingAllowed(true);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        PagerItem item = PagerItem.values()[position];
+        showWebFragment(item.getUrl(), getString(item.getTitleResId()));
     }
 }
