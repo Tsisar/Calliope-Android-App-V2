@@ -2,30 +2,35 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="32dp"
     android:orientation="vertical">
 
 
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="TITLE" />
+        android:layout_height="50dp"
+        android:gravity="center_horizontal|bottom"
+        android:textStyle="bold"
+        android:text="@string/title_make_code" />
 
     <ImageView
         android:id="@+id/icon_image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        app:srcCompat="@drawable/ic_editors_makecode"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/info_text_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="INFO" />
+        android:layout_height="150dp"
+        android:gravity="fill_horizontal|top"
+        android:text="@string/info_make_code" />
 
 </LinearLayout>

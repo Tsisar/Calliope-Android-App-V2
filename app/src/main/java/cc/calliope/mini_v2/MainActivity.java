@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
     //TODO for refactoring
     private void showInfoNoPermission(boolean isBluetoothAccessGranted, boolean isLocationAccessGranted) {
-        PermissionContent content = PermissionContent.BLUETOOTH;
+        ContentNoPermission content = ContentNoPermission.BLUETOOTH;
         boolean deniedForever = false;
 
         binding.container.setVisibility(View.GONE);
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             deniedForever = Utils.isPermissionDeniedForever(this, getPermissionsArray(BLUETOOTH)[0]);
         } else if (!isLocationAccessGranted) {
             deniedForever = Utils.isPermissionDeniedForever(this, getPermissionsArray(LOCATION)[0]);
-            content = PermissionContent.LOCATION;
+            content = ContentNoPermission.LOCATION;
         }
 
         binding.infoNoPermission.ivNoPermission.setImageResource(content.getIcResId());
