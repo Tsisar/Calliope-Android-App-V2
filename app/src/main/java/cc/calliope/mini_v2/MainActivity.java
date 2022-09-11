@@ -104,7 +104,12 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
         binding.fab.setOnClickListener(view -> {
             view.startAnimation(new AlphaAnimation(1F, 0.75F));
-            showPatternDialog();
+            showPatternDialog(new FobParams(
+                    view.getWidth(),
+                    view.getHeight(),
+                    view.getX(),
+                    view.getY()
+            ));
         });
 
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
@@ -118,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     public void onResume() {
         super.onResume();
         checkPermission();
-        Log.e("ACTIVITY", "onResume");
     }
 
     @Override
@@ -130,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     @Override
     public void onDismiss(final DialogInterface dialog) {
         //Fragment dialog had been dismissed
-//        binding.fab.setVisibility(View.VISIBLE);
+        binding.fab.setVisibility(View.VISIBLE);
     }
 
 //    @Override
@@ -144,10 +148,10 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
     private void scanResults(final ScannerLiveData state) {
         // Bluetooth must be enabled
-        Log.e("SCANNER", "current device: " + state.getCurrentDevice());
+//        Log.e("SCANNER", "current device: " + state.getCurrentDevice());
 
-//        if(hasOpenedDialogs(this))
-//            return;
+        if(hasOpenedDialogs(this))
+            return;
 
         if (state.isBluetoothEnabled()) {
             binding.fab.setBackgroundTintList(
@@ -179,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     public void openBluetoothEnableActivity() {
-        if(!requestWasSent) {
+        if (!requestWasSent) {
             requestWasSent = true;
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             bluetoothEnableResultLauncher.launch(enableBtIntent);
@@ -195,12 +199,13 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
                 }
             });
 
-    private void showPatternDialog() {
+    private void showPatternDialog(FobParams params) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        PatternDialogFragment dialogFragment = PatternDialogFragment.newInstance();
+        PatternDialogFragment dialogFragment = PatternDialogFragment.newInstance(params);
         dialogFragment.show(fragmentManager, "fragment_pattern");
 
 //        binding.fab.setVisibility(View.GONE);
+        binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.aqua_200)));
     }
 
     //TODO for refactoring

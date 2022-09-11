@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
+import cc.calliope.mini_v2.views.ContentCodingViewPager;
+import cc.calliope.mini_v2.R;
 
 public class EditorsPagerAdapter extends PagerAdapter {
 

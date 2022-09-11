@@ -8,21 +8,22 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import cc.calliope.mini_v2.ClickableViewPager;
-import cc.calliope.mini_v2.EditorsPagerAdapter;
-import cc.calliope.mini_v2.ContentCodingViewPager;
+import cc.calliope.mini_v2.views.ClickableViewPager;
+import cc.calliope.mini_v2.adapter.EditorsPagerAdapter;
+import cc.calliope.mini_v2.views.ContentCodingViewPager;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.WebFragment;
-import cc.calliope.mini_v2.databinding.FragmentCodingBinding;
+import cc.calliope.mini_v2.ui.web.WebFragment;
+import cc.calliope.mini_v2.databinding.FragmentEditorsBinding;
+import cc.calliope.mini_v2.utils.Utils;
 
-public class CodingFragment extends Fragment implements ClickableViewPager.OnItemClickListener {
+public class EditorsFragment extends Fragment implements ClickableViewPager.OnItemClickListener {
 
-    private FragmentCodingBinding binding;
+    private FragmentEditorsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentCodingBinding.inflate(inflater, container, false);
+        binding = FragmentEditorsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         binding.viewpager.setAdapter(new EditorsPagerAdapter(getActivity()));
@@ -51,7 +52,11 @@ public class CodingFragment extends Fragment implements ClickableViewPager.OnIte
 
     @Override
     public void onItemClick(int position) {
-        ContentCodingViewPager content = ContentCodingViewPager.values()[position];
-        showWebFragment(content.getUrl(), getString(content.getTitleResId()));
+        if (Utils.isInternetAvailable()) {
+            ContentCodingViewPager content = ContentCodingViewPager.values()[position];
+            showWebFragment(content.getUrl(), getString(content.getTitleResId()));
+        } else {
+            Utils.showErrorMessage(getActivity(), "No internet available");
+        }
     }
 }

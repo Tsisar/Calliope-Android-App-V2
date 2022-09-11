@@ -1,17 +1,19 @@
 package cc.calliope.mini_v2.utils;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -119,6 +121,7 @@ public class Utils {
     /**
      * Returns true if location permission has been requested at least twice and
      * user denied it, and checked 'Don't ask again'.
+     *
      * @param activity the activity
      * @return true if permission has been denied and the popup will not come up any more, false otherwise
      */
@@ -145,6 +148,7 @@ public class Utils {
      * When a Bluetooth LE packet is received while Location is disabled it means that Location
      * is not required on this device in order to scan for LE devices. This is a case of Samsung phones, for example.
      * Save this information for the future to keep the Location info hidden.
+     *
      * @param context the context
      */
     public static void markLocationNotRequired(final Context context) {
@@ -157,6 +161,7 @@ public class Utils {
      * {@link ActivityCompat#shouldShowRequestPermissionRationale(Activity, String)} returns false.
      * This situation is similar to a permission being denied forever, so to distinguish both cases
      * a flag needs to be saved.
+     *
      * @param context the context
      */
     public static void markPermissionRequested(final Context context) {
@@ -169,8 +174,16 @@ public class Utils {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static void showErrorMessage(Activity activity, String message){
-        if(activity != null) {
+    public static void showErrorMessage(Activity activity, String message) {
+        if (activity != null) {
+            int actionBarHeight = 60;
+
+            // Calculate ActionBar height
+            TypedValue typedValue = new TypedValue();
+            if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+                actionBarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, activity.getResources().getDisplayMetrics());
+            }
+
             Snackbar snackbar = Snackbar.make(activity.getWindow().getDecorView().getRootView(), message, Snackbar.LENGTH_LONG)
                     .setBackgroundTint(activity.getResources().getColor(R.color.red, null))
                     .setTextColor(activity.getResources().getColor(R.color.white, null));
@@ -180,10 +193,32 @@ public class Utils {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, 100, 0, 0);
+            params.setMargins(0, actionBarHeight, 0, 0);
             layout.setLayoutParams(params);
 
             snackbar.show();
         }
+    }
+
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    public static float convertDpToPixel(float dp, Context context){
+        return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    /**
+     * This method converts device specific pixels to density independent pixels.
+     *
+     * @param px A value in px (pixels) unit. Which we need to convert into db
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent dp equivalent to px value
+     */
+    public static float convertPixelsToDp(float px, Context context){
+        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }

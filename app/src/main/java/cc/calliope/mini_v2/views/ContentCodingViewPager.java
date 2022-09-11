@@ -1,4 +1,6 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.views;
+
+import cc.calliope.mini_v2.R;
 
 public enum ContentCodingViewPager {
 
