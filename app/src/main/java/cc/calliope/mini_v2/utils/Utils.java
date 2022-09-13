@@ -176,24 +176,15 @@ public class Utils {
 
     public static void showErrorMessage(Activity activity, String message) {
         if (activity != null) {
-            int actionBarHeight = 60;
-
-            // Calculate ActionBar height
-            TypedValue typedValue = new TypedValue();
-            if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
-                actionBarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, activity.getResources().getDisplayMetrics());
-            }
-
-            Snackbar snackbar = Snackbar.make(activity.getWindow().getDecorView().getRootView(), message, Snackbar.LENGTH_LONG)
-                    .setBackgroundTint(activity.getResources().getColor(R.color.red, null))
-                    .setTextColor(activity.getResources().getColor(R.color.white, null));
+            Snackbar snackbar = Snackbar.make(activity.getWindow().getDecorView().getRootView(), message, Snackbar.LENGTH_LONG);
 
             View layout = snackbar.getView();
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, actionBarHeight, 0, 0);
+
+            params.setMargins(0, Math.round(convertDpToPixel(38, activity)), 0, 0);
             layout.setLayoutParams(params);
 
             snackbar.show();

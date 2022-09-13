@@ -1,21 +1,22 @@
 <resources>
     <string name="app_name">Calliope mini</string>
     <string name="title_home">Home</string>
-    <string name="title_coding">Coding</string>
+    <string name="title_coding">Editors and Programs</string>
     <string name="title_help">Help</string>
 
     <string name="title_location_permission">LOCATION PERMISSION REQUIRED</string>
+    <string name="title_bluetooth_permission">BLUETOOTH PERMISSION REQUIRED</string>
     <string name="info_location_permission">From Android 6.0 Marshmallow onwards the application requires Location permission in order to scan for Bluetooth devices.
         \n\nThis is because Bluetooth may be used to determine the phone\'s and user\'s location. <b>mini</b> will not use this information in any way.</string>
-    <string name="title_bluetooth_permission">BLUETOOTH PERMISSION REQUIRED</string>
     <string name="info_bluetooth_permission">To use Bluetooth features to communicate APP with your <b>mini</b> you must granted several permissions.</string>
+
     <string name="settings_btn_permission">Settings</string>
     <string name="action_btn_permission">Grant permission</string>
 
     <string name="title_make_code">MakeCode</string>
     <string name="title_roberta">Open Roberta Lab</string>
-    <string name="title_library">Preinstalled programs</string>
+    <string name="title_library">Preinstalled Programs</string>
     <string name="info_make_code">Microsoft MakeCode is a free, open source platform for creating engaging computer science learning experiences that support a progression path into real-world programming.</string>
     <string name="info_roberta">The Open Roberta Lab is a cloud-based integrated programming environment that enables children and adolescents to program easily different robot/microcontroller systems.</string>
-    <string name="info_library">Here you find the original programs, to change or reload</string>
+    <string name="info_library">Here you find the original programs, to change or reload.</string>
 </resources>

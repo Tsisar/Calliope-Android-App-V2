@@ -95,12 +95,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         View view = inflater.inflate(R.layout.fragment_web, container, false);
 
         ScannerViewModel scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
-        scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> {
-            if (result.getCurrentDevice() != null) {
-                Log.e("WEB", "Device: " + result.getCurrentDevice().getPattern());
-            }
-            this.device = result.getCurrentDevice();
-        });
+        scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> this.device = result.getCurrentDevice());
 
         webView = view.findViewById(R.id.webView);
 
@@ -136,11 +131,11 @@ public class WebFragment extends Fragment implements DownloadListener {
     }
 
     @Override
-    public void onDownloadStart(String url1, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-        Uri uri = Uri.parse(url1);
+    public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+        Uri uri = Uri.parse(url);
         Boolean downloadResult = false;
 
-        Log.i("URL", url1);
+        Log.i("URL", url);
         Log.i("URI", "" + uri);
 
         //String filetype = url.substring(url.indexOf("/") + 1, url.indexOf(";"));
@@ -158,18 +153,18 @@ public class WebFragment extends Fragment implements DownloadListener {
             Log.w("CreateFile", "Error writing " + file);
         }
 
-        if (url1.startsWith("blob:")) {  // TODO: BLOB Download
+        if (url.startsWith("blob:")) {  // TODO: BLOB Download
             Log.i("MODUS", "BLOB");
             // Can not be parsed
-        } else if (url1.startsWith("data:text/hex")) {  // when url is base64 encoded data
+        } else if (url.startsWith("data:text/hex")) {  // when url is base64 encoded data
             Log.i("MODUS", "HEX");
-            downloadResult = createAndSaveFileFromHexUrl(url1, file);
-        } else if (url1.startsWith("data:") && url1.contains("base64")) {  // when url is base64 encoded data
+            downloadResult = createAndSaveFileFromHexUrl(url, file);
+        } else if (url.startsWith("data:") && url.contains("base64")) {  // when url is base64 encoded data
             Log.i("MODUS", "BASE64");
-            downloadResult = createAndSaveFileFromBase64Url(url1, file);
-        } else if (URLUtil.isValidUrl(url1)) { // real download
+            downloadResult = createAndSaveFileFromBase64Url(url, file);
+        } else if (URLUtil.isValidUrl(url)) { // real download
             Log.i("MODUS", "DOWNLOAD");
-            downloadResult = downloadFileFromURL(url1, file);
+            downloadResult = downloadFileFromURL(url, file);
         }
 
         startDFUActivity(file, downloadResult);
@@ -191,7 +186,7 @@ public class WebFragment extends Fragment implements DownloadListener {
     }
 
 
-    public Boolean createAndSaveFileFromHexUrl(String url, File file) { // TODO not working yet
+    public Boolean createAndSaveFileFromHexUrl(String url, File file) {
         try {
             String hexEncodedString = url.substring(url.indexOf(",") + 1);
             String decodedHex = URLDecoder.decode(hexEncodedString, "utf-8");
