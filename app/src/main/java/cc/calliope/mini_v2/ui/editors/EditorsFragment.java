@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.coding;
+package cc.calliope.mini_v2.ui.editors;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -56,7 +56,7 @@ public class EditorsFragment extends Fragment implements ClickableViewPager.OnIt
             ContentCodingViewPager content = ContentCodingViewPager.values()[position];
             showWebFragment(content.getUrl(), getString(content.getTitleResId()));
         } else {
-            Utils.showErrorMessage(getActivity(), "No internet available");
+            Utils.showErrorMessage(binding.getRoot(), "No internet available");
         }
     }
 }

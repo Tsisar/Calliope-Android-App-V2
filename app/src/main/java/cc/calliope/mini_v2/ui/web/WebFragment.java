@@ -122,7 +122,7 @@ public class WebFragment extends Fragment implements DownloadListener {
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                Utils.showErrorMessage(getActivity(), "Oh no! " + error.getDescription());
+                Utils.showErrorMessage(webView, "Oh no! " + error.getDescription());
             }
         });
 
@@ -239,9 +239,9 @@ public class WebFragment extends Fragment implements DownloadListener {
             intent2.putExtra("EXTRA_FILE", file.getAbsolutePath());
             startActivity(intent2);
         } else if (res) {
-            Utils.showErrorMessage(getActivity(), "No mini connected");
+            Utils.showErrorMessage(webView, "No mini connected");
         } else {
-            Utils.showErrorMessage(getActivity(), "Download error");
+            Utils.showErrorMessage(webView, "Download error");
         }
     }
 

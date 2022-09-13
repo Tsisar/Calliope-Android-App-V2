@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
                     )
             );
         } else {
-            Utils.showErrorMessage(this, "Bluetooth is disable");
+            Utils.showErrorMessage(binding.getRoot(), "Bluetooth is disable");
             openBluetoothEnableActivity();
         }
     }

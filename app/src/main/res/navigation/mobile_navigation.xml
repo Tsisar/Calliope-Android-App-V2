@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_coding"
-        android:name="cc.calliope.mini_v2.ui.coding.EditorsFragment"
+        android:name="cc.calliope.mini_v2.ui.editors.EditorsFragment"
         android:label="@string/title_coding"
         tools:layout="@layout/fragment_editors" />
 

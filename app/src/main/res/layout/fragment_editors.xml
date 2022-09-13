@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.coding.EditorsFragment">
+    tools:context=".ui.editors.EditorsFragment">
 
     <cc.calliope.mini_v2.views.ClickableViewPager
         android:id="@+id/viewpager"
