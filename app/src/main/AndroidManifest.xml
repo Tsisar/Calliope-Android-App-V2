@@ -60,6 +60,16 @@
         android:theme="@style/Theme.CalliopeMini"
         tools:targetApi="31">
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="cc.calliope.file_provider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

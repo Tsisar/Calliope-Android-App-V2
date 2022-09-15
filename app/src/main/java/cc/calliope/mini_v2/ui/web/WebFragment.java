@@ -95,7 +95,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         View view = inflater.inflate(R.layout.fragment_web, container, false);
 
         ScannerViewModel scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
-        scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> this.device = result.getCurrentDevice());
+        scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> device = result.getCurrentDevice());
 
         webView = view.findViewById(R.id.webView);
 

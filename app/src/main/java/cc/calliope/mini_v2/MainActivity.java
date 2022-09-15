@@ -132,6 +132,12 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
+    }
+
+    @Override
     public void onDismiss(final DialogInterface dialog) {
         //Fragment dialog had been dismissed
         binding.fab.setVisibility(View.VISIBLE);

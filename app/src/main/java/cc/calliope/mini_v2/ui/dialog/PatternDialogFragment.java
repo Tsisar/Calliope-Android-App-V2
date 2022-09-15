@@ -94,6 +94,12 @@ public class PatternDialogFragment extends DialogFragment {
         binding.buttonAction.setOnClickListener(view1 -> onConnectClick());
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void onCustomDialog(View view) {
         Dialog dialog = getDialog();
         if (dialog != null) {
