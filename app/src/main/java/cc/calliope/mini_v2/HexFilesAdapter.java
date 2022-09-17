@@ -29,18 +29,13 @@ public class HexFilesAdapter extends ArrayAdapter<HexFile> {
     Button btnUpload, btnShare;
     ExtendedBluetoothDevice device;
     Context ParentContext;
-    Locale locale;
+    Locale locale = Locale.getDefault();
 
     public HexFilesAdapter(Context context, ArrayList<HexFile> items, ExtendedBluetoothDevice SelectedDevice) {
 
         super(context, 0, items);
         device = SelectedDevice;
         ParentContext = context;
-        locale = getCurrentLocale(context);
-    }
-
-    Locale getCurrentLocale(Context context) {
-        return context.getResources().getConfiguration().getLocales().get(0);
     }
 
     @Override
