@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.views;
 
 import android.os.Parcel;
 import android.os.Parcelable;

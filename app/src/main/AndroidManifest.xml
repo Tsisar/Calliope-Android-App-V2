@@ -86,7 +86,7 @@
             android:exported="false" />
 
         <service
-            android:name=".DfuService"
+            android:name=".service.DfuService"
             android:enabled="true" />
 
     </application>

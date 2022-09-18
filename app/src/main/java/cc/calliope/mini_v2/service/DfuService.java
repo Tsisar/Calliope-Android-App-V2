@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.service;
 
 import android.Manifest;
 import android.app.Activity;
@@ -14,6 +14,8 @@ import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import cc.calliope.mini_v2.BuildConfig;
+import cc.calliope.mini_v2.NotificationActivity;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 

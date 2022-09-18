@@ -10,9 +10,8 @@ import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
-import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
+import cc.calliope.mini_v2.service.DfuService;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;

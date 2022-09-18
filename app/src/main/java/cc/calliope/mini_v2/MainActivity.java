@@ -38,6 +38,7 @@ import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
+import cc.calliope.mini_v2.views.FobParams;
 
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {

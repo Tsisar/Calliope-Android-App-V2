@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -26,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
-import cc.calliope.mini_v2.FobParams;
+import cc.calliope.mini_v2.views.FobParams;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.DialogPatternBinding;
@@ -225,8 +223,8 @@ public class PatternDialogFragment extends DialogFragment {
             int halfHeight = displayMetrics.heightPixels / 2;
             int fobX = fobParams.getCenterX();
             int fobY = fobParams.getCenterY();
-            int dialogWidth = Math.round(Utils.convertDpToPixel(220, getActivity()));
-            int dialogHeight = Math.round(Utils.convertDpToPixel(240, getActivity()));
+            int dialogWidth = Utils.convertDpToPixel(220, getActivity());
+            int dialogHeight = Utils.convertDpToPixel(240, getActivity());
 
             if (fobX <= halfWidth && fobY <= halfHeight) {
                 return new Position(fobX, fobY);

@@ -1,6 +1,5 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.adapter;
 
-import android.icu.text.SimpleDateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +8,10 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.Utils;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {

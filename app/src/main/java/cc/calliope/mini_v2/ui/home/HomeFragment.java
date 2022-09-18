@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -27,19 +29,23 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import cc.calliope.mini_v2.DFUActivity;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.RecyclerAdapter;
+import cc.calliope.mini_v2.adapter.RecyclerAdapter;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentHomeBinding;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
+
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 public class HomeFragment extends Fragment {
     private static final String FILE_EXTENSION = ".hex";
     private FragmentHomeBinding binding;
     private ExtendedBluetoothDevice device;
     private RecyclerAdapter recyclerAdapter;
+    private CheckBox checkBox;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -49,9 +55,38 @@ public class HomeFragment extends Fragment {
         ScannerViewModel scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> this.device = result.getCurrentDevice());
 
+        RecyclerView recyclerView = binding.myCodeRecyclerView;
+        checkBox = binding.checkBox;
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            Activity activity = getActivity();
+            if (activity == null)
+                return;
+
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int height = displayMetrics.heightPixels;
+            int width = displayMetrics.widthPixels;
+
+            int orientation = activity.getResources().getConfiguration().orientation;
+
+            ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+            params.height = orientation == ORIENTATION_LANDSCAPE ? 0 : isChecked ?
+                    height * 2 / 3:
+                    Utils.convertDpToPixel(120, activity);
+            recyclerView.setLayoutParams(params);
+        });
+
         showRecyclerView(inflater);
 
         return binding.getRoot();
+    }
+
+
+    @Override
+    public void onViewStateRestored(Bundle bundle) {
+        super.onViewStateRestored(bundle);
+
+        checkBox.setChecked(false);
     }
 
     @Override
@@ -134,7 +169,7 @@ public class HomeFragment extends Fragment {
                 if (file.exists()) {
                     if (!dest.exists() && file.renameTo(dest)) {
                         recyclerAdapter.change(file, dest);
-                    }else {
+                    } else {
                         Utils.showErrorMessage(view, "The file with this name exists");
                         return;
                     }
