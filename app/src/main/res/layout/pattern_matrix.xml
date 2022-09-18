@@ -1,5 +1,6 @@
 <!-- fragment_edit_name.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/edit_name"
     android:layout_width="200dp"
     android:layout_height="200dp"
@@ -12,7 +13,8 @@
         android:layout_height="40dp"
         android:numStars="5"
         android:progressDrawable="@drawable/ratingbar"
-        android:stepSize="1" />
+        android:stepSize="1"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <cc.calliope.mini_v2.views.SvgRatingBar
         android:id="@+id/column_b"
@@ -20,7 +22,8 @@
         android:layout_height="40dp"
         android:numStars="5"
         android:progressDrawable="@drawable/ratingbar"
-        android:stepSize="1" />
+        android:stepSize="1"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <cc.calliope.mini_v2.views.SvgRatingBar
         android:id="@+id/column_c"
@@ -28,7 +31,8 @@
         android:layout_height="40dp"
         android:numStars="5"
         android:progressDrawable="@drawable/ratingbar"
-        android:stepSize="1" />
+        android:stepSize="1"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <cc.calliope.mini_v2.views.SvgRatingBar
         android:id="@+id/column_d"
@@ -36,7 +40,8 @@
         android:layout_height="40dp"
         android:numStars="5"
         android:progressDrawable="@drawable/ratingbar"
-        android:stepSize="1" />
+        android:stepSize="1"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <cc.calliope.mini_v2.views.SvgRatingBar
         android:id="@+id/column_e"
@@ -44,6 +49,7 @@
         android:layout_height="40dp"
         android:numStars="5"
         android:progressDrawable="@drawable/ratingbar"
-        android:stepSize="1" />
+        android:stepSize="1"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </LinearLayout>

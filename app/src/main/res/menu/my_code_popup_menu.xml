@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/rename"
-        android:title="rename" />
+        android:title="Rename" />
     <item
         android:id="@+id/share"
-        android:title="share" />
+        android:title="Share" />
     <item
-        android:id="@+id/delete"
-        android:title="delete" />
+        android:id="@+id/remove"
+        android:title="Delete" />
 </menu>

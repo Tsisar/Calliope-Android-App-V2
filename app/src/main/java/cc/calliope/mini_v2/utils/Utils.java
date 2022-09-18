@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.icu.text.SimpleDateFormat;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import androidx.annotation.RequiresApi;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -209,5 +211,20 @@ public class Utils {
      */
     public static float convertPixelsToDp(float px, Context context) {
         return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    public static String dateFormat(long lastModified) {
+        final String OUTPUT_DATE_FORMAT = "EEEE dd.MM.yyyy HH:mm";
+
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat(OUTPUT_DATE_FORMAT, Locale.getDefault());
+        return outputDateFormat.format(lastModified);
+    }
+
+    public static String removeExtension(String filename) {
+        int extensionIndex = filename.lastIndexOf(".");
+        if (extensionIndex == -1)
+            return filename;
+
+        return filename.substring(0, extensionIndex);
     }
 }

@@ -9,14 +9,21 @@
     <color name="white">#FFFFFFFF</color>
 
     <!--personal-->
-    <color name="yellow">#FDC800</color>
-    <color name="pink">#E6006A</color>
-    <color name="green">#00D265</color>
-    <color name="green_dark">#00A235</color>
-    <color name="red">#B00020</color>
-    <color name="grey">#FFC1C1C1</color>
+    <color name="yellow">#FFFDC800</color>
+    <color name="pink">#FFE6006A</color>
+    <color name="green">#FF00D265</color>
+    <color name="green_dark">#FF00A235</color>
+    <color name="red">#FFB00020</color>
+    <color name="grey_transparent">#40C1C1C1</color>
+    <color name="grey_200">#FFC1C1C1</color>
+    <color name="grey_500">#FF818181</color>
+    <color name="grey_700">#FF585858</color>
+    <color name="grey_900">#FF414141</color>
+
+    <color name="yellow_200">#FFFDC800</color>
+    <color name="yellow_500">#FFDD9800</color>
 
     <color name="ic_fill_primary">#FF000000</color>
     <color name="ic_fill_secondary">#FFFFFFFF</color>
-    <color name="ic_fill_pattern">#FFDCDCDC</color>
+    <color name="ic_fill_pattern">#FFEEEEEE</color>
 </resources>

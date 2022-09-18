@@ -26,7 +26,7 @@ public class EditorsPagerAdapter extends PagerAdapter {
         ContentCodingViewPager content = ContentCodingViewPager.values()[position];
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.item_pager, collection, false);
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.item_editor_pager, collection, false);
 
         TextView title = layout.findViewById(R.id.title_text_view);
         ImageView icon = layout.findViewById(R.id.icon_image_view);
