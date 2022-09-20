@@ -12,24 +12,22 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.util.Locale;
 
 import androidx.annotation.RequiresApi;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import cc.calliope.mini_v2.R;
 
 public class Utils {
     private static final String PREFS_LOCATION_NOT_REQUIRED = "location_not_required";
@@ -220,11 +218,17 @@ public class Utils {
         return outputDateFormat.format(lastModified);
     }
 
-    public static String removeExtension(String filename) {
-        int extensionIndex = filename.lastIndexOf(".");
-        if (extensionIndex == -1)
-            return filename;
+    public static String getFileNameFromPrefix(String url) {
+        int start = url.indexOf("data:");
+        int end = url.indexOf(".hex;");
+        String substring = "";
 
-        return filename.substring(0, extensionIndex);
+        if (start != -1 && end != -1) {
+            substring = url.substring(start, end); //this will give abc
+            substring = StringUtils.remove(substring, "data:");
+            substring = StringUtils.remove(substring, "mini-");
+        }
+
+        return substring;
     }
 }

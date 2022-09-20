@@ -54,7 +54,7 @@ public class EditorsFragment extends Fragment implements ClickableViewPager.OnIt
     public void onItemClick(int position) {
         if (Utils.isInternetAvailable()) {
             ContentCodingViewPager content = ContentCodingViewPager.values()[position];
-            showWebFragment(content.getUrl(), getString(content.getTitleResId()));
+            showWebFragment(content.getUrl(), content.toString());
         } else {
             Utils.showErrorMessage(binding.getRoot(), "No internet available");
         }

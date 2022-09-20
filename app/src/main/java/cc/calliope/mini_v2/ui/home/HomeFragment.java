@@ -1,28 +1,32 @@
 package cc.calliope.mini_v2.ui.home;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Guideline;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -31,22 +35,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import cc.calliope.mini_v2.DFUActivity;
+import cc.calliope.mini_v2.FileWrapper;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.RecyclerAdapter;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentHomeBinding;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
-
-import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import cc.calliope.mini_v2.views.ContentCodingViewPager;
 
 public class HomeFragment extends Fragment {
     private static final String FILE_EXTENSION = ".hex";
     private FragmentHomeBinding binding;
     private ExtendedBluetoothDevice device;
     private RecyclerAdapter recyclerAdapter;
-    private CheckBox checkBox;
 
+    @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -55,25 +59,24 @@ public class HomeFragment extends Fragment {
         ScannerViewModel scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> this.device = result.getCurrentDevice());
 
-        RecyclerView recyclerView = binding.myCodeRecyclerView;
-        checkBox = binding.checkBox;
-        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            Activity activity = getActivity();
-            if (activity == null)
-                return;
-
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            int height = displayMetrics.heightPixels;
-            int width = displayMetrics.widthPixels;
-
-            int orientation = activity.getResources().getConfiguration().orientation;
-
-            ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
-            params.height = orientation == ORIENTATION_LANDSCAPE ? 0 : isChecked ?
-                    height * 2 / 3:
-                    Utils.convertDpToPixel(120, activity);
-            recyclerView.setLayoutParams(params);
+        binding.myCode.titleTextView.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_UP:
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    Guideline guideLine = binding.guideline;
+                    if(guideLine != null) {
+                        int height = binding.getRoot().getHeight();
+                        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) guideLine.getLayoutParams();
+                        params.guidePercent = (motionEvent.getRawY()) / height;
+                        guideLine.setLayoutParams(params);
+                    }
+                    break;
+                default:
+                    return false;
+            }
+            return true;
         });
 
         showRecyclerView(inflater);
@@ -81,12 +84,10 @@ public class HomeFragment extends Fragment {
         return binding.getRoot();
     }
 
-
     @Override
     public void onViewStateRestored(Bundle bundle) {
         super.onViewStateRestored(bundle);
 
-        checkBox.setChecked(false);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    private void openDFUActivity(File file) {
+    private void openDFUActivity(FileWrapper file) {
         if (device != null) {
             final Intent intent = new Intent(getActivity(), DFUActivity.class);
             intent.putExtra("cc.calliope.mini.EXTRA_DEVICE", device);
@@ -106,18 +107,35 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private ArrayList<FileWrapper> getFiles(Activity activity, ContentCodingViewPager content) {
+        File[] filesArray = new File(activity.getFilesDir().toString() + File.separator + content).listFiles();
+
+        ArrayList<FileWrapper> filesList = new ArrayList<>();
+
+        if (filesArray != null && filesArray.length > 0) {
+            for (File file : filesArray) {
+                String name = file.getName();
+                if (name.contains(FILE_EXTENSION)) {
+                    filesList.add(new FileWrapper(file, content));
+                }
+            }
+        }
+        return filesList;
+    }
+
     private void showRecyclerView(LayoutInflater inflater) {
         Activity activity = getActivity();
         if (activity == null)
             return;
 
-        File dir = new File(getActivity().getFilesDir().toString());
-        File[] filesArray = dir.listFiles();
-        if (filesArray != null) {
-            ArrayList<File> filesList = new ArrayList<>(Arrays.asList(filesArray));
-            filesList.removeIf(file -> !file.getName().contains(FILE_EXTENSION));
+        ArrayList<FileWrapper> filesList = new ArrayList<>();
 
-            RecyclerView recyclerView = binding.myCodeRecyclerView;
+        filesList.addAll(getFiles(activity, ContentCodingViewPager.MAKECODE));
+        filesList.addAll(getFiles(activity, ContentCodingViewPager.ROBERTA));
+        filesList.addAll(getFiles(activity, ContentCodingViewPager.LIBRARY));
+
+        if (!filesList.isEmpty()) {
+            RecyclerView recyclerView = binding.myCode.recyclerView;
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -131,7 +149,7 @@ public class HomeFragment extends Fragment {
                     if (id == R.id.rename) {
                         return renameFile(file);
                     } else if (id == R.id.share) {
-                        return shareFile(file);
+                        return shareFile(file.getFile());
                     } else if (id == R.id.remove) {
                         return removeFile(file);
                     } else {
@@ -145,7 +163,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private boolean renameFile(File file) {
+    private boolean renameFile(FileWrapper file) {
         Activity activity = getActivity();
         if (activity == null)
             return false;
@@ -156,18 +174,18 @@ public class HomeFragment extends Fragment {
 
         ((TextView) view.findViewById(R.id.textTitle)).setText("Rename file");
         EditText editText = view.findViewById(R.id.textName);
-        editText.setText(Utils.removeExtension(file.getName()));
+        editText.setText(FilenameUtils.removeExtension(file.getName()));
 //        editText.requestFocus();
 
         ((Button) view.findViewById(R.id.buttonYes)).setText("Rename");
         ((Button) view.findViewById(R.id.buttonNo)).setText("Cancel");
         final AlertDialog alertDialog = builder.create();
         view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
-            File dir = new File(activity.getFilesDir().toString());
+            File dir = new File(FilenameUtils.getFullPath(file.getAbsolutePath()));
             if (dir.exists()) {
-                File dest = new File(dir, editText.getText().toString() + FILE_EXTENSION);
+                FileWrapper dest = new FileWrapper(new File(dir, editText.getText().toString() + FILE_EXTENSION), file.getContent());
                 if (file.exists()) {
-                    if (!dest.exists() && file.renameTo(dest)) {
+                    if (!dest.exists() && file.renameTo(dest.getFile())) {
                         recyclerAdapter.change(file, dest);
                     } else {
                         Utils.showErrorMessage(view, "The file with this name exists");
@@ -205,23 +223,26 @@ public class HomeFragment extends Fragment {
         return true;
     }
 
-    private boolean removeFile(File file) {
+    private boolean removeFile(FileWrapper file) {
         Activity activity = getActivity();
         if (activity == null)
             return false;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        View view = LayoutInflater.from(activity).inflate(R.layout.dialog_warning, activity.findViewById(R.id.layoutDialogContainer));
+        View view = LayoutInflater.from(activity)
+                .inflate(R.layout.dialog_warning, activity.findViewById(R.id.layoutDialogContainer));
         builder.setView(view);
 
         ((TextView) view.findViewById(R.id.textTitle)).setText("Delete file");
-        ((TextView) view.findViewById(R.id.textMessage)).setText(String.format("You will permanently delete \"%s\".", Utils.removeExtension(file.getName())));
+        ((TextView) view.findViewById(R.id.textMessage)).setText(String.format(
+                "You will permanently delete \"%s\".", FilenameUtils.removeExtension(file.getName())));
         ((Button) view.findViewById(R.id.buttonYes)).setText("Continue");
         ((Button) view.findViewById(R.id.buttonNo)).setText("Cancel");
         final AlertDialog alertDialog = builder.create();
         view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
             if (file.delete()) {
                 recyclerAdapter.remove(file);
+                alertDialog.dismiss();
             }
         });
         view.findViewById(R.id.buttonNo).setOnClickListener(view12 -> alertDialog.dismiss());

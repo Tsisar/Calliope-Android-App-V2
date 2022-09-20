@@ -3,32 +3,35 @@ package cc.calliope.mini_v2.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
+import org.apache.commons.io.FilenameUtils;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import cc.calliope.mini_v2.FileWrapper;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.Utils;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
     private final LayoutInflater inflater;
-    private final ArrayList<File> files;
+    private final ArrayList<FileWrapper> files;
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(File file);
+        void onItemClick(FileWrapper file);
     }
 
     public interface OnItemLongClickListener {
-        void onItemLongClick(View view, File file);
+        void onItemLongClick(View view, FileWrapper file);
     }
 
-    public RecyclerAdapter(LayoutInflater inflater, ArrayList<File> files) {
+    public RecyclerAdapter(LayoutInflater inflater, ArrayList<FileWrapper> files) {
         this.files = files;
         this.inflater = inflater;
         sort();
@@ -54,7 +57,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         if (files == null)
             return;
 
-        File file = files.get(position);
+        FileWrapper file = files.get(position);
         holder.setItem(file);
         if (onItemClickListener != null) {
             holder.itemView.setOnClickListener(view -> onItemClickListener.onItemClick(file));
@@ -68,14 +71,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
     }
 
-    public void remove(File file) {
+    public void remove(FileWrapper file) {
         int index = files.indexOf(file);
         if(files.remove(file)) {
             notifyItemRemoved(index);
         }
     }
 
-    public void change(File oldFile, File newFile){
+    public void change(FileWrapper oldFile, FileWrapper newFile){
         int index = files.indexOf(oldFile);
         if(files.remove(oldFile)) {
             files.add(index, newFile);
@@ -88,9 +91,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         files.sort(new CustomComparator());
     }
 
-    static class CustomComparator implements Comparator<File> {
+    static class CustomComparator implements Comparator<FileWrapper> {
         @Override
-        public int compare(File file1, File file2) {
+        public int compare(FileWrapper file1, FileWrapper file2) {
             return Long.compare(file2.lastModified(), file1.lastModified());
         }
     }
@@ -107,17 +110,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     static class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView name;
         private final TextView date;
+        private final ImageView icon;
 
         private ViewHolder(View view) {
             super(view);
 
             name = view.findViewById(R.id.hex_file_name_text_view);
             date = view.findViewById(R.id.hex_file_date_text_view);
+            icon = view.findViewById(R.id.hex_file_icon);
         }
 
-        void setItem(File file) {
-            this.name.setText(Utils.removeExtension(file.getName()));
+        void setItem(FileWrapper file) {
+            this.name.setText(FilenameUtils.removeExtension(file.getName()));
             this.date.setText(Utils.dateFormat(file.lastModified()));
+            this.icon.setImageResource(file.getContent().getIconResId());
         }
     }
 }

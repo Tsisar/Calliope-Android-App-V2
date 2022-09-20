@@ -30,51 +30,51 @@ public class DFUActivity extends AppCompatActivity {
         @Override
         public void onDeviceConnecting(@NonNull final String deviceAddress) {
             timerText.setText("Device Connecting");
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method);
         }
 
         @Override
         public void onDfuProcessStarting(@NonNull final String deviceAddress) {
             timerText.setText("Process Starting");
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method);
         }
 
         @Override
         public void onEnablingDfuMode(@NonNull final String deviceAddress) {
             timerText.setText("Enabling Dfu Mode");
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method);
         }
 
         @Override
         public void onFirmwareValidating(@NonNull final String deviceAddress) {
             timerText.setText("Firmware Validating");
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method);
         }
 
         @Override
         public void onDeviceDisconnecting(@NonNull final String deviceAddress) {
             timerText.setText("Device Disconnecting");
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method);
         }
 
         @Override
         public void onDfuCompleted(@NonNull final String deviceAddress) {
             timerText.setText("Dfu Completed");
             finish();
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method);
         }
 
         @Override
         public void onDfuAborted(@NonNull final String deviceAddress) {
             timerText.setText("Dfu Aborted");
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method);
         }
 
         @Override
@@ -83,8 +83,8 @@ public class DFUActivity extends AppCompatActivity {
             timerText.setText("Uploading");
             progressBar.setProgress(39 + percent / 3);
 
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method + " percent: " + percent);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method + " percent: " + percent);
         }
 
         @Override
