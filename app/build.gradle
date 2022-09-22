@@ -46,7 +46,8 @@ dependencies {
     implementation 'no.nordicsemi.android:ble:2.5.1'
     // Log Bluetooth LE events in nRF Logger
     implementation 'no.nordicsemi.android:log:2.3.0'
-    implementation 'no.nordicsemi.android:dfu:2.1.0'
+//    implementation 'no.nordicsemi.android:dfu:2.1.0'
+    implementation project(':dfu-lib')
 
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.apache.commons:commons-text:1.9'

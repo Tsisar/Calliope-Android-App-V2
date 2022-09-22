@@ -6,22 +6,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/title_text_view"
+
+    <LinearLayout
+        android:id="@+id/linear_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn_aqua"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp"
+        android:layout_height="40dp"
         android:layout_marginTop="4dp"
-        android:text="My scripts"
-        android:textColor="@color/white"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        app:fontFamily="@font/roboto_mono"
+        android:background="@drawable/btn_aqua"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/move"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_move" />
+
+        <TextView
+            android:id="@+id/title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="My scripts"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:fontFamily="@font/roboto_mono" />
+    </LinearLayout>
 
     <View
         android:id="@+id/divider"
@@ -31,7 +48,7 @@
         android:background="@color/aqua_200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_text_view" />
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

@@ -15,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -59,7 +58,7 @@ public class HomeFragment extends Fragment {
         ScannerViewModel scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> this.device = result.getCurrentDevice());
 
-        binding.myCode.titleTextView.setOnTouchListener((v, motionEvent) -> {
+        binding.myCode.linearLayout.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                 case MotionEvent.ACTION_UP:
@@ -69,7 +68,11 @@ public class HomeFragment extends Fragment {
                     if(guideLine != null) {
                         int height = binding.getRoot().getHeight();
                         ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) guideLine.getLayoutParams();
-                        params.guidePercent = (motionEvent.getRawY()) / height;
+                        params.guidePercent = (
+                                motionEvent.getRawY()
+                                        - view.getHeight() // Height of text view
+                                        - Utils.convertDpToPixel(12, view.getContext()) // paddingVertical + marginTop
+                        ) / height;
                         guideLine.setLayoutParams(params);
                     }
                     break;
@@ -135,6 +138,7 @@ public class HomeFragment extends Fragment {
         filesList.addAll(getFiles(activity, ContentCodingViewPager.LIBRARY));
 
         if (!filesList.isEmpty()) {
+            setMyCodeVisibility(true);
             RecyclerView recyclerView = binding.myCode.recyclerView;
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -160,7 +164,13 @@ public class HomeFragment extends Fragment {
                 popup.show();
             });
             recyclerView.setAdapter(recyclerAdapter);
+        }else {
+            setMyCodeVisibility(false);
         }
+    }
+
+    private void setMyCodeVisibility(boolean visible){
+        binding.myCode.layoutMyCode.setVisibility(visible?View.VISIBLE:View.GONE);
     }
 
     private boolean renameFile(FileWrapper file) {
@@ -242,6 +252,7 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
             if (file.delete()) {
                 recyclerAdapter.remove(file);
+                setMyCodeVisibility(!recyclerAdapter.isEmpty());
                 alertDialog.dismiss();
             }
         });

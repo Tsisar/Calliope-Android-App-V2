@@ -166,16 +166,14 @@ public class WebFragment extends Fragment implements DownloadListener {
             webView.loadUrl(javaScript);
             Log.v(TAG, "JS: " + javaScript);
             return;
-        } else if (url.startsWith("data:text/hex") // when url is base64 encoded data
-                && mimetype.equals("text/hex")) {
+        } else if (url.startsWith("data:text/hex")){
             Log.w(TAG, "HEX");
 
             file = getFile("firmware");
             if(file != null) {
                 result = createAndSaveFileFromHexUrl(url, file);
             }
-        } else if (url.startsWith("data:") && url.contains("base64") // when url is base64 encoded data
-                && (mimetype.equals("text/plain") || mimetype.equals("application/x-microbit-hex"))) {
+        } else if (url.startsWith("data:") && url.contains("base64")){
             Log.w(TAG, "BASE64");
 
             String name = Utils.getFileNameFromPrefix(url);
@@ -184,8 +182,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             if(file != null) {
                 result = createAndSaveFileFromBase64Url(url, file);
             }
-        } else if (URLUtil.isValidUrl(url) && url.endsWith(".hex") // real download
-                && mimetype.equals("application/octet-stream")) {
+        } else if (URLUtil.isValidUrl(url) && url.endsWith(".hex")){
             Log.w(TAG, "DOWNLOAD");
 
             String name = FilenameUtils.getBaseName(url);

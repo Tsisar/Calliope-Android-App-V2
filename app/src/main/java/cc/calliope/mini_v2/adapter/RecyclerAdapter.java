@@ -71,6 +71,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
     }
 
+    public boolean isEmpty(){
+        return files.isEmpty();
+    }
+
     public void remove(FileWrapper file) {
         int index = files.indexOf(file);
         if(files.remove(file)) {

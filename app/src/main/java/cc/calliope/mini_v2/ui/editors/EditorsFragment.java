@@ -52,7 +52,7 @@ public class EditorsFragment extends Fragment implements ClickableViewPager.OnIt
 
     @Override
     public void onItemClick(int position) {
-        if (Utils.isInternetAvailable()) {
+        if (getActivity() != null && Utils.isNetworkConnected(getActivity())) {
             ContentCodingViewPager content = ContentCodingViewPager.values()[position];
             showWebFragment(content.getUrl(), content.toString());
         } else {
