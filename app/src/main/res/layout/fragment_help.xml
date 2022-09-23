@@ -35,9 +35,11 @@
                 android:id="@+id/app_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:textAlignment="textStart"
                 android:textIsSelectable="true"
-                android:textSize="20sp" />
+                android:textSize="16sp"
+                app:fontFamily="@font/roboto_mono"/>
 
         </LinearLayout>
 

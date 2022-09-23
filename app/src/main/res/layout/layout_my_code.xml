@@ -26,7 +26,7 @@
             android:layout_height="24dp"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_move" />
+            app:srcCompat="@drawable/ic_scroll" />
 
         <TextView
             android:id="@+id/title_text_view"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="My scripts"
-            android:textColor="@color/white"
+            android:textColor="@color/ic_fill_secondary"
             android:textSize="17sp"
             android:textStyle="bold"
             app:fontFamily="@font/roboto_mono" />

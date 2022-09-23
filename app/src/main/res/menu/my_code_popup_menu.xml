@@ -2,11 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/rename"
-        android:title="Rename" />
+        android:title="Rename"
+        android:icon="@android:drawable/ic_menu_edit"/>
     <item
         android:id="@+id/share"
-        android:title="Share" />
+        android:title="Share"
+        android:icon="@android:drawable/ic_menu_share"/>
     <item
         android:id="@+id/remove"
-        android:title="Delete" />
+        android:title="Delete"
+        android:icon="@android:drawable/ic_menu_delete"/>
 </menu>
