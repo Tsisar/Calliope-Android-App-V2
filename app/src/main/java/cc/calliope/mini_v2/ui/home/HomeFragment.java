@@ -41,7 +41,7 @@ import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentHomeBinding;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
-import cc.calliope.mini_v2.views.ContentCodingViewPager;
+import cc.calliope.mini_v2.views.ContentEditorsViewPager;
 
 public class HomeFragment extends Fragment {
     private static final String FILE_EXTENSION = ".hex";
@@ -110,7 +110,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private ArrayList<FileWrapper> getFiles(Activity activity, ContentCodingViewPager content) {
+    private ArrayList<FileWrapper> getFiles(Activity activity, ContentEditorsViewPager content) {
         File[] filesArray = new File(activity.getFilesDir().toString() + File.separator + content).listFiles();
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
@@ -133,9 +133,9 @@ public class HomeFragment extends Fragment {
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 
-        filesList.addAll(getFiles(activity, ContentCodingViewPager.MAKECODE));
-        filesList.addAll(getFiles(activity, ContentCodingViewPager.ROBERTA));
-        filesList.addAll(getFiles(activity, ContentCodingViewPager.LIBRARY));
+        filesList.addAll(getFiles(activity, ContentEditorsViewPager.MAKECODE));
+        filesList.addAll(getFiles(activity, ContentEditorsViewPager.ROBERTA));
+        filesList.addAll(getFiles(activity, ContentEditorsViewPager.LIBRARY));
 
         if (!filesList.isEmpty()) {
             setMyCodeVisibility(true);

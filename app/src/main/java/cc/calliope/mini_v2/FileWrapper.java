@@ -2,13 +2,13 @@ package cc.calliope.mini_v2;
 
 import java.io.File;
 
-import cc.calliope.mini_v2.views.ContentCodingViewPager;
+import cc.calliope.mini_v2.views.ContentEditorsViewPager;
 
 public class FileWrapper {
     private final File file;
-    private final ContentCodingViewPager content;
+    private final ContentEditorsViewPager content;
 
-    public FileWrapper(File file, ContentCodingViewPager content) {
+    public FileWrapper(File file, ContentEditorsViewPager content) {
         this.file = file;
         this.content = content;
     }
@@ -17,7 +17,7 @@ public class FileWrapper {
         return file;
     }
 
-    public ContentCodingViewPager getContent() {
+    public ContentEditorsViewPager getContent() {
         return content;
     }
 

@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import cc.calliope.mini_v2.views.ClickableViewPager;
 import cc.calliope.mini_v2.adapter.EditorsPagerAdapter;
-import cc.calliope.mini_v2.views.ContentCodingViewPager;
+import cc.calliope.mini_v2.views.ContentEditorsViewPager;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.ui.web.WebFragment;
 import cc.calliope.mini_v2.databinding.FragmentEditorsBinding;
@@ -53,7 +53,7 @@ public class EditorsFragment extends Fragment implements ClickableViewPager.OnIt
     @Override
     public void onItemClick(int position) {
         if (getActivity() != null && Utils.isNetworkConnected(getActivity())) {
-            ContentCodingViewPager content = ContentCodingViewPager.values()[position];
+            ContentEditorsViewPager content = ContentEditorsViewPager.values()[position];
             showWebFragment(content.getUrl(), content.toString());
         } else {
             Utils.showErrorMessage(binding.getRoot(), "No internet available");

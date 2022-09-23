@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
-import cc.calliope.mini_v2.views.ContentCodingViewPager;
+import cc.calliope.mini_v2.views.ContentEditorsViewPager;
 import cc.calliope.mini_v2.R;
 
 public class EditorsPagerAdapter extends PagerAdapter {
@@ -23,7 +23,7 @@ public class EditorsPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup collection, int position) {
-        ContentCodingViewPager content = ContentCodingViewPager.values()[position];
+        ContentEditorsViewPager content = ContentEditorsViewPager.values()[position];
 
         LayoutInflater inflater = LayoutInflater.from(context);
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.item_editor_pager, collection, false);
@@ -47,7 +47,7 @@ public class EditorsPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return ContentCodingViewPager.values().length;
+        return ContentEditorsViewPager.values().length;
     }
 
     @Override

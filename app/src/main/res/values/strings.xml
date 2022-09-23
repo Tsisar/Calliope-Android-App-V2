@@ -19,4 +19,19 @@
     <string name="info_make_code">Microsoft MakeCode is a free, open source platform for creating engaging computer science learning experiences that support a progression path into real-world programming.</string>
     <string name="info_roberta">The Open Roberta Lab is a cloud-based integrated programming environment that enables children and adolescents to program easily different robot/microcontroller systems.</string>
     <string name="info_library">Here you find the original programs, to change or reload.</string>
+
+    <string name="info_app"><![CDATA[
+    <b>Hello and welcome to the Calliope mini app!</b>
+    <br />By using this app you can connect, code and flash programs to your <b>Calliope mini</b> via Bluetooth.
+    <br />
+    <br />You can find inspiring and fun projects at the Calliope website at <a href="https://calliope.cc">https://calliope.cc</a>!
+    <br />
+    <br />Have fun!
+    <br />
+    <br />Calliope gGmbH
+    <br />Raumerstrasse 11
+    <br />10437 Berlin
+    <br />Germany
+    <br />Email <a href="mailto:info@calliope.cc">info@calliope.cc</a>
+    ]]></string>
 </resources>

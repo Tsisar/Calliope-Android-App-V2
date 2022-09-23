@@ -167,7 +167,7 @@ public class DFUActivity extends AppCompatActivity {
                 // Bud some time we have exception:
                 // android.app.ForegroundServiceDidNotStartInTimeException: Context.startForegroundService() did not then call Service.startForeground()
 //                .setForeground(false)
-//                .setNumberOfRetries(3)
+                .setNumberOfRetries(3)
                 .setRebootTime(1000)
                 .setKeepBond(false);
 

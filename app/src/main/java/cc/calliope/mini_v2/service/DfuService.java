@@ -64,7 +64,6 @@ public class DfuService extends DfuBaseService {
         super.onHandleIntent(intent);
     }
 
-    public static final int PROGRESS_SERVICE_NOT_FOUND = -10;
 
     private boolean flashingWithPairCode(Intent intent) {
         final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
@@ -76,21 +75,25 @@ public class DfuService extends DfuBaseService {
             return false;
         }
 
+        UUID PARTIAL_FLASHING_SERVICE = UUID.fromString("e97dd91d-251d-470a-a062-fa1922dfa9a8");
+        BluetoothGattService partialFlashingService = gatt.getService(PARTIAL_FLASHING_SERVICE);
+        loge("partialFlashingService " + (partialFlashingService != null?"on":"off"));
+
 //        //For Stats purpose only
 //        {
 //            BluetoothGattService deviceService = gatt.getService(DEVICE_INFORMATION_SERVICE_UUID);
 //            if (deviceService != null) {
 //                BluetoothGattCharacteristic firmwareCharacteristic = deviceService.getCharacteristic(FIRMWARE_REVISION_UUID);
 //                if (firmwareCharacteristic != null) {
-//                    String firmware = null;
-//                    firmware = readCharacteristicNoFailure(gatt, firmwareCharacteristic);
-//                    logi("Firmware version String = " + firmware);
-//                    sendStatsMiniFirmware(firmware);
+//                    String firmware = "";
+//                    gatt.readCharacteristic(firmwareCharacteristic);
+//                    firmwareCharacteristic.getStringValue(0);
+//                    loge("Firmware version String = " + firmware);
 //                } else {
-//                    logi("Error Cannot find FIRMWARE_REVISION_UUID");
+//                    loge("Error Cannot find FIRMWARE_REVISION_UUID");
 //                }
 //            } else {
-//                logi("Error Cannot find DEVICE_INFORMATION_SERVICE_UUID");
+//                loge("Error Cannot find DEVICE_INFORMATION_SERVICE_UUID");
 //            }
 //        }//For Stats purpose only Ends
 
@@ -133,7 +136,6 @@ public class DfuService extends DfuBaseService {
 
         return true;
     }
-
 
     @Override
     protected boolean isDebug() {
