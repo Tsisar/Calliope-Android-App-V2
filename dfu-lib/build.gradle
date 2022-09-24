@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 25
-        targetSdkVersion 32
+        targetSdkVersion 25
         versionCode 99
         versionName "2.1.0 M"
     }
@@ -27,7 +27,7 @@ android {
 dependencies {
     implementation 'androidx.core:core:1.9.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
-    implementation 'androidx.annotation:annotation:1.4.0'
+    implementation 'androidx.annotation:annotation:1.5.0'
 
     implementation 'com.google.code.gson:gson:2.9.0'
 }

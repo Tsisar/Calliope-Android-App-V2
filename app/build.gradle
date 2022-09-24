@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "cc.calliope.mini_v2"
         minSdk 25
-        targetSdk 32
+        targetSdk 25
         versionCode 1
         versionName "2.0.BETA"
 

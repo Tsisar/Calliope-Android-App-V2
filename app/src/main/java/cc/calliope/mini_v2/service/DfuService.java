@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.UUID;
@@ -69,15 +70,20 @@ public class DfuService extends DfuBaseService {
         final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
         final long delay = intent.getLongExtra(DfuBaseService.EXTRA_SCAN_DELAY, 0);
 
-        BluetoothGatt gatt = super.connect(deviceAddress);
+        final long before = SystemClock.elapsedRealtime();
+        final BluetoothGatt gatt = connect(deviceAddress);
+        final long after = SystemClock.elapsedRealtime();
+        //TODO Android 11 to long...
+        logw("Connection after: " + (after - before)/1000 + " seconds");
+
         if (gatt == null) {
             logw("Bluetooth adapter disabled");
             return false;
         }
 
-        UUID PARTIAL_FLASHING_SERVICE = UUID.fromString("e97dd91d-251d-470a-a062-fa1922dfa9a8");
-        BluetoothGattService partialFlashingService = gatt.getService(PARTIAL_FLASHING_SERVICE);
-        loge("partialFlashingService " + (partialFlashingService != null?"on":"off"));
+//        UUID PARTIAL_FLASHING_SERVICE = UUID.fromString("e97dd91d-251d-470a-a062-fa1922dfa9a8");
+//        BluetoothGattService partialFlashingService = gatt.getService(PARTIAL_FLASHING_SERVICE);
+//        loge("partialFlashingService " + (partialFlashingService != null?"on":"off"));
 
 //        //For Stats purpose only
 //        {
@@ -99,14 +105,14 @@ public class DfuService extends DfuBaseService {
 
         BluetoothGattService flashService = gatt.getService(MINI_FLASH_SERVICE_UUID);
         if (flashService == null) {
-            logw("Cannot find MINI_FLASH_SERVICE_UUID");
+            loge("Cannot find MINI_FLASH_SERVICE_UUID");
 //            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
             return false;
         }
 
         final BluetoothGattCharacteristic flashServiceCharacteristic = flashService.getCharacteristic(MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID);
         if (flashServiceCharacteristic == null) {
-            logw("Cannot find MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID");
+            loge("Cannot find MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID");
 //            terminateConnection(gatt, PROGRESS_SERVICE_NOT_FOUND);
             return false;
         }
@@ -133,6 +139,7 @@ public class DfuService extends DfuBaseService {
 
         logi("Refreshing the cache before discoverServices() for Android version " + Build.VERSION.SDK_INT);
         refreshDeviceCache(gatt, true);
+        close(gatt);
 
         return true;
     }

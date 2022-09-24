@@ -89,6 +89,10 @@
             android:name=".service.DfuService"
             android:enabled="true" />
 
+        <service
+            android:name=".PartialFlashingService"
+            android:enabled="true" />
+
     </application>
 
 </manifest>

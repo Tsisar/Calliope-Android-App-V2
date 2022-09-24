@@ -137,9 +137,9 @@ public class PatternDialogFragment extends DialogFragment {
     @Override
     public void onDismiss(@NonNull final DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (scannerViewModel.getScannerState().getCurrentDevice() != null) {
-            pairDevice(scannerViewModel.getScannerState().getCurrentDevice().getDevice());
-        }
+//        if (scannerViewModel.getScannerState().getCurrentDevice() != null) {
+//            pairDevice(scannerViewModel.getScannerState().getCurrentDevice().getDevice());
+//        }
         final Activity activity = getActivity();
         if (activity instanceof DialogInterface.OnDismissListener) {
             ((DialogInterface.OnDismissListener) activity).onDismiss(dialog);

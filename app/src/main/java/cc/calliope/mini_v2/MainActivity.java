@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
                     ColorStateList.valueOf(
                             getColor(
                                     state.getCurrentDevice() != null
-                                            ? R.color.green : R.color.aqua_200
+                                            ? R.color.green : R.color.orange
                             )
                     )
             );
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         dialogFragment.show(fragmentManager, "fragment_pattern");
 
 //        binding.fab.setVisibility(View.GONE);
-        binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.aqua_200)));
+        binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.orange)));
     }
 
     //TODO for refactoring

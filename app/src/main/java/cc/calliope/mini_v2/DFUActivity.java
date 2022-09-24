@@ -1,6 +1,11 @@
 package cc.calliope.mini_v2;
 
+import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -10,6 +15,7 @@ import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.service.DfuService;
 import no.nordicsemi.android.dfu.DfuBaseService;
@@ -25,6 +31,17 @@ public class DFUActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private static final String TAG = DFUActivity.class.getSimpleName();
+
+    public static final String BROADCAST_PROGRESS = "org.microbit.android.partialflashing.broadcast.BROADCAST_PROGRESS";
+    public static final String EXTRA_PROGRESS = "org.microbit.android.partialflashing.extra.EXTRA_PROGRESS";
+
+    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra(EXTRA_PROGRESS);
+            Log.e("PF receiver", "PROGRESS: " + message);
+        }
+    };
 
     private final DfuProgressListener mDfuProgressListener = new DfuProgressListenerAdapter() {
         @Override
@@ -101,6 +118,9 @@ public class DFUActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dfu);
 
+//        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+//                new IntentFilter(BROADCAST_PROGRESS));
+
         deviceInfo = findViewById(R.id.statusInfo);
         timerText = findViewById(R.id.timerText);
         progressBar = findViewById(R.id.progressBar);
@@ -108,6 +128,12 @@ public class DFUActivity extends AppCompatActivity {
         timerText.setText("Device Connecting");
 
         initiateFlashing();
+    }
+
+    @Override
+    protected void onDestroy() {
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
     }
 
     @Override
@@ -134,12 +160,26 @@ public class DFUActivity extends AppCompatActivity {
         startFlashing();
     }
 
+    protected void startFlashingPF() {
+        final Intent intent = getIntent();
+        final ExtendedBluetoothDevice device = intent.getParcelableExtra("cc.calliope.mini.EXTRA_DEVICE");
+
+        Bundle extras = intent.getExtras();
+        final String filePath = extras.getString("EXTRA_FILE");
+        final String deviceAddress = device.getAddress();
+
+        Log.v("MicrobitDFU", "Start Partial Flash");
+
+        final Intent service = new Intent(this, PartialFlashingService.class);
+        service.putExtra("deviceAddress", deviceAddress);
+        service.putExtra("filepath", filePath); // a path or URI must be provided.
+
+        startService(service);
+    }
+
     /**
      * Creates and starts service to flash a program to a micro:bit board.
      */
-    private static final UUID MINI_FLASH_SERVICE_UUID = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
-    private static final UUID MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
-
     protected void startFlashing() {
         final Intent intent = getIntent();
         final ExtendedBluetoothDevice device = intent.getParcelableExtra("cc.calliope.mini.EXTRA_DEVICE");
@@ -149,13 +189,11 @@ public class DFUActivity extends AppCompatActivity {
         }
 
         Bundle extras = intent.getExtras();
-        final String file = extras.getString("EXTRA_FILE");
+        final String filePath = extras.getString("EXTRA_FILE");
 
         Log.i("DFUExtra", "mAddress: " + device.getAddress());
         Log.i("DFUExtra", "mPattern: " + device.getName());
-        Log.i("DFUExtra", "mPairingCode: " + 0);
-        Log.i("DFUExtra", "MIME_TYPE_OCTET_STREAM: " + DfuService.MIME_TYPE_OCTET_STREAM);
-        Log.i("DFUExtra", "filePath: " + file);
+        Log.i("DFUExtra", "filePath: " + filePath);
         Log.i("DFUExtra", "Start Flashing");
 
         final DfuServiceInitiator starter = new DfuServiceInitiator(device.getAddress())
@@ -167,14 +205,14 @@ public class DFUActivity extends AppCompatActivity {
                 // Bud some time we have exception:
                 // android.app.ForegroundServiceDidNotStartInTimeException: Context.startForegroundService() did not then call Service.startForeground()
 //                .setForeground(false)
-                .setNumberOfRetries(3)
+//                .setNumberOfRetries(3)
                 .setRebootTime(1000)
                 .setKeepBond(false);
 
         //TODO
         // Reboot after fw download
 
-        starter.setBinOrHex(DfuBaseService.TYPE_APPLICATION, file);
+        starter.setBinOrHex(DfuBaseService.TYPE_APPLICATION, filePath);
         starter.start(this, DfuService.class);
     }
 }
