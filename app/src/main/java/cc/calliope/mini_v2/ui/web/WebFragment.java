@@ -3,6 +3,7 @@ package cc.calliope.mini_v2.ui.web;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -139,7 +140,11 @@ public class WebFragment extends Fragment implements DownloadListener {
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                Utils.showErrorMessage(webView, "Oh no! " + error.getDescription());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    Utils.errorSnackbar(webView, "Oh no! " + error.getDescription()).show();
+                }else {
+                    Utils.errorSnackbar(webView, "Oh no! onReceivedError").show();
+                }
             }
         });
 
@@ -199,7 +204,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         } else if (file != null && !file.delete()) {
             Log.w(TAG, "Delete Error, deleting: " + file);
         } else {
-            Utils.showErrorMessage(webView, "Download error");
+            Utils.errorSnackbar(webView, "Download error").show();
         }
     }
 
@@ -309,7 +314,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             intent.putExtra("EXTRA_FILE", file.getAbsolutePath());
             startActivity(intent);
         } else {
-            Utils.showErrorMessage(webView, "No mini connected");
+            Utils.errorSnackbar(webView, "No mini connected").show();
         }
     }
 

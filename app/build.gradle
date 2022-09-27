@@ -7,8 +7,8 @@ android {
 
     defaultConfig {
         applicationId "cc.calliope.mini_v2"
-        minSdk 25
-        targetSdk 25
+        minSdk 18
+        targetSdk 33
         versionCode 1
         versionName "2.0.BETA"
 
@@ -46,6 +46,7 @@ dependencies {
     implementation 'no.nordicsemi.android:ble:2.5.1'
     // Log Bluetooth LE events in nRF Logger
     implementation 'no.nordicsemi.android:log:2.3.0'
+
 //    implementation 'no.nordicsemi.android:dfu:2.1.0'
     implementation project(':dfu-lib')
     implementation project(':partial-flashing-lib')

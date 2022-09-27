@@ -101,7 +101,7 @@ public class ScannerViewModel extends AndroidViewModel {
 
 		// Scanning settings
 		final ScanSettings settings = new ScanSettings.Builder()
-				.setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+				.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
 				// Refresh the devices list every 5000 ms (5 sec)
 				.setReportDelay(5000)
 				// Hardware filtering has some issues on selected devices

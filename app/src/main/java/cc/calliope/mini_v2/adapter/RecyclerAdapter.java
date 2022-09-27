@@ -1,5 +1,6 @@
 package cc.calliope.mini_v2.adapter;
 
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +93,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     public void sort(){
-        files.sort(new CustomComparator());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            files.sort(new CustomComparator());
+        }
     }
 
     static class CustomComparator implements Comparator<FileWrapper> {

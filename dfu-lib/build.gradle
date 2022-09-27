@@ -4,8 +4,8 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
-        minSdkVersion 25
-        targetSdkVersion 25
+        minSdkVersion 18
+        targetSdkVersion 33
         versionCode 99
         versionName "2.1.0 M"
     }

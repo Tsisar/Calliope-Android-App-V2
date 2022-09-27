@@ -25,13 +25,8 @@ public class DfuService extends DfuBaseService {
     private static final String TAG = "DfuService";
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
-//    private static final UUID DEVICE_INFORMATION_SERVICE_UUID = new UUID(0x0000180A00001000L, 0x800000805F9B34FBL);
-//    private static final UUID FIRMWARE_REVISION_UUID = new UUID(0x00002A2600001000L, 0x800000805F9B34FBL);
-
     private static final UUID MINI_FLASH_SERVICE_UUID = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
     private static final UUID MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
-
-//    private LocalBroadcastManager mBroadcastManager;
 
     @Override
     protected Class<? extends Activity> getNotificationTarget() {
@@ -40,31 +35,22 @@ public class DfuService extends DfuBaseService {
 
     @Override
     public void onCreate() {
-        super.onCreate();
-//        mBroadcastManager = LocalBroadcastManager.getInstance(this);
-
         // Enable Notification Channel for Android OREO
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             DfuServiceInitiator.createDfuNotificationChannel(getApplicationContext());
         }
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+        super.onCreate();
     }
 
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
-        assert intent != null;
-        if (!flashingWithPairCode(intent)) {
-            loge("The calliope over the air firmware update not Initialized");
-//            abort();
-        }
+        waitFor(2000);
+//        assert intent != null;
+//        if (!flashingWithPairCode(intent)) {
+//            loge("The calliope over the air firmware update not Initialized");
+//        }
         super.onHandleIntent(intent);
     }
-
 
     private boolean flashingWithPairCode(Intent intent) {
         final String deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
@@ -80,28 +66,6 @@ public class DfuService extends DfuBaseService {
             logw("Bluetooth adapter disabled");
             return false;
         }
-
-//        UUID PARTIAL_FLASHING_SERVICE = UUID.fromString("e97dd91d-251d-470a-a062-fa1922dfa9a8");
-//        BluetoothGattService partialFlashingService = gatt.getService(PARTIAL_FLASHING_SERVICE);
-//        loge("partialFlashingService " + (partialFlashingService != null?"on":"off"));
-
-//        //For Stats purpose only
-//        {
-//            BluetoothGattService deviceService = gatt.getService(DEVICE_INFORMATION_SERVICE_UUID);
-//            if (deviceService != null) {
-//                BluetoothGattCharacteristic firmwareCharacteristic = deviceService.getCharacteristic(FIRMWARE_REVISION_UUID);
-//                if (firmwareCharacteristic != null) {
-//                    String firmware = "";
-//                    gatt.readCharacteristic(firmwareCharacteristic);
-//                    firmwareCharacteristic.getStringValue(0);
-//                    loge("Firmware version String = " + firmware);
-//                } else {
-//                    loge("Error Cannot find FIRMWARE_REVISION_UUID");
-//                }
-//            } else {
-//                loge("Error Cannot find DEVICE_INFORMATION_SERVICE_UUID");
-//            }
-//        }//For Stats purpose only Ends
 
         BluetoothGattService flashService = gatt.getService(MINI_FLASH_SERVICE_UUID);
         if (flashService == null) {
@@ -151,12 +115,6 @@ public class DfuService extends DfuBaseService {
         // make sure you return true or your.app.BuildConfig.DEBUG here.
         return DEBUG;
     }
-
-//    public void abort() {
-//        final Intent pauseAction = new Intent(DfuBaseService.BROADCAST_ACTION);
-//        pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
-//        mBroadcastManager.sendBroadcast(pauseAction);
-//    }
 
     private void loge(final String message) {
         if (isDebug()) {

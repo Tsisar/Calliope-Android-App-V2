@@ -8,7 +8,7 @@ public enum ContentEditorsViewPager {
             R.string.title_make_code,
             R.drawable.ic_editors_makecode,
             R.string.info_make_code,
-            "https://makecode.calliope.cc/beta?androidapp=1"),
+            "https://makecode.calliope.cc/?androidapp=1"),
     ROBERTA(
             R.string.title_roberta,
             R.drawable.ic_editors_roberta,

@@ -106,7 +106,7 @@ public class HomeFragment extends Fragment {
             intent.putExtra("EXTRA_FILE", file.getAbsolutePath());
             startActivity(intent);
         } else {
-            Utils.showErrorMessage(binding.getRoot(), "No mini connected");
+            Utils.errorSnackbar(binding.getRoot(), "No mini connected").show();
         }
     }
 
@@ -198,7 +198,7 @@ public class HomeFragment extends Fragment {
                     if (!dest.exists() && file.renameTo(dest.getFile())) {
                         recyclerAdapter.change(file, dest);
                     } else {
-                        Utils.showErrorMessage(view, "The file with this name exists");
+                        Utils.errorSnackbar(view, "The file with this name exists").show();
                         return;
                     }
                 }

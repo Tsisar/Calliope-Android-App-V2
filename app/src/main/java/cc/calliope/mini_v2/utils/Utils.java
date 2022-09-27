@@ -3,6 +3,7 @@ package cc.calliope.mini_v2.utils;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -11,7 +12,9 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -23,6 +26,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import androidx.annotation.RequiresApi;
@@ -77,13 +85,16 @@ public class Utils {
      * @return true on Android 6.0+ if location mode is different than LOCATION_MODE_OFF.
      */
     public static boolean isLocationEnabled(final Context context) {
-        int locationMode = Settings.Secure.LOCATION_MODE_OFF;
-        try {
-            locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
-        } catch (final Settings.SettingNotFoundException e) {
-            // do nothing
+        if(Version.upperKitkat) {
+            int locationMode = Settings.Secure.LOCATION_MODE_OFF;
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+            } catch (final Settings.SettingNotFoundException e) {
+                // do nothing
+            }
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
         }
-        return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+        return true;
     }
 
     /**
@@ -177,7 +188,7 @@ public class Utils {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static void showErrorMessage(View view, String message) {
+    public static Snackbar errorSnackbar(View view, String message) {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -186,7 +197,7 @@ public class Utils {
 
         Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
         snackbar.getView().setLayoutParams(params);
-        snackbar.show();
+        return snackbar;
     }
 
     /**
@@ -194,7 +205,7 @@ public class Utils {
      *
      * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent px equivalent to dp depending on device density
+     * @return A int value to represent px equivalent to dp depending on device density
      */
     public static int convertDpToPixel(int dp, Context context) {
         return dp * (context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
@@ -213,9 +224,9 @@ public class Utils {
 
     public static String dateFormat(long lastModified) {
         final String OUTPUT_DATE_FORMAT = "EEEE dd.MM.yyyy HH:mm";
+        Date date = new Date(lastModified);
 
-        SimpleDateFormat outputDateFormat = new SimpleDateFormat(OUTPUT_DATE_FORMAT, Locale.getDefault());
-        return outputDateFormat.format(lastModified);
+        return DateFormat.format(OUTPUT_DATE_FORMAT, date.getTime()).toString();
     }
 
     public static String getFileNameFromPrefix(String url) {
