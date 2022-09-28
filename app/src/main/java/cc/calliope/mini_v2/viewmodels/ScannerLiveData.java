@@ -54,7 +54,7 @@ import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 public class ScannerLiveData extends LiveData<ScannerLiveData> {
     private final List<ExtendedBluetoothDevice> devices = new ArrayList<>();
-    private List<Float> currentPattern = Arrays.asList(0f, 0f, 0f, 0f, 0f);
+    private Float[] currentPattern = {0f, 0f, 0f, 0f, 0f};
     private Integer updatedDeviceIndex;
     private boolean scanningStarted;
     private boolean bluetoothEnabled;
@@ -98,11 +98,11 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
         postValue(this);
     }
 
-    public List<Float> getCurrentPattern() {
+    public Float[] getCurrentPattern() {
         return currentPattern;
     }
 
-    void setCurrentPattern(List<Float> pattern) {
+    void setCurrentPattern(Float[] pattern) {
         currentPattern = pattern;
         postValue(this);
     }
@@ -112,7 +112,7 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
             int coincide = 0;
             for (int i = 0; i < 5; i++) {
                 char character = device.getPattern().charAt(i);
-                String patternColumn = PatternEnum.forCode(currentPattern.get(i)).toString();
+                String patternColumn = PatternEnum.forCode(currentPattern[i]).toString();
                 if (patternColumn.contains(String.valueOf(character))) {
                     coincide++;
                 }

@@ -34,7 +34,7 @@ public class PatternDialogFragment extends DialogFragment {
 
     private static final String FOB_PARAMS_PARCELABLE = "fob_params_parcelable";
     private DialogPatternBinding binding;
-    private List<Float> currentPattern = Arrays.asList(0f, 0f, 0f, 0f, 0f);
+    private Float[] currentPattern = {0f, 0f, 0f, 0f, 0f};
 
     private ScannerViewModel scannerViewModel;
 //    private ExtendedBluetoothDevice currentDevice;
@@ -75,11 +75,11 @@ public class PatternDialogFragment extends DialogFragment {
 
         currentPattern = scannerViewModel.getScannerState().getCurrentPattern();
 
-        binding.patternMatrix.columnA.setValue(currentPattern.get(0));
-        binding.patternMatrix.columnB.setValue(currentPattern.get(1));
-        binding.patternMatrix.columnC.setValue(currentPattern.get(2));
-        binding.patternMatrix.columnD.setValue(currentPattern.get(3));
-        binding.patternMatrix.columnE.setValue(currentPattern.get(4));
+        binding.patternMatrix.columnA.setValue(currentPattern[0]);
+        binding.patternMatrix.columnB.setValue(currentPattern[1]);
+        binding.patternMatrix.columnC.setValue(currentPattern[2]);
+        binding.patternMatrix.columnD.setValue(currentPattern[3]);
+        binding.patternMatrix.columnE.setValue(currentPattern[4]);
 
         binding.patternMatrix.columnA.setOnChangeListener((bar, v, b) -> onPatternChange(0, v));
         binding.patternMatrix.columnB.setOnChangeListener((bar, v, b) -> onPatternChange(1, v));
@@ -145,7 +145,7 @@ public class PatternDialogFragment extends DialogFragment {
     }
 
     private void onPatternChange(int index, float newPatten) {
-        currentPattern.set(index, newPatten);
+        currentPattern[index] = newPatten;
         scannerViewModel.setCurrentPattern(currentPattern);
     }
 

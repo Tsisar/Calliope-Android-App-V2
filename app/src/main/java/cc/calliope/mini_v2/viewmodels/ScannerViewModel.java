@@ -161,7 +161,7 @@ public class ScannerViewModel extends AndroidViewModel {
         }
     };
 
-    public void setCurrentPattern(List<Float> pattern) {
+    public void setCurrentPattern(Float[] pattern) {
         mScannerLiveData.setCurrentPattern(pattern);
     }
 
@@ -211,21 +211,21 @@ public class ScannerViewModel extends AndroidViewModel {
     };
 
     public void savePattern() {
-        List<Float> currentPattern = mScannerLiveData.getCurrentPattern();
+        Float[] currentPattern = mScannerLiveData.getCurrentPattern();
         if (currentPattern != null) {
             SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getApplication()).edit();
             for (int i = 0; i < 5; i++) {
-                edit.putFloat("PATTERN_" + i, currentPattern.get(i));
+                edit.putFloat("PATTERN_" + i, currentPattern[i]);
             }
             edit.apply();
         }
     }
 
     public void loadPattern() {
-        List<Float> currentPattern = Arrays.asList(0f, 0f, 0f, 0f, 0f);
+        Float[] currentPattern = {0f, 0f, 0f, 0f, 0f};
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplication());
         for (int i = 0; i < 5; i++) {
-            currentPattern.set(i, preferences.getFloat("PATTERN_" + i, 0f));
+            currentPattern[i] = preferences.getFloat("PATTERN_" + i, 0f);
         }
         mScannerLiveData.setCurrentPattern(currentPattern);
     }
