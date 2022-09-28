@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void openDFUActivity(FileWrapper file) {
-        if (device != null) {
+        if (device != null && device.isRelevant()) {
             final Intent intent = new Intent(getActivity(), DFUActivity.class);
             intent.putExtra("cc.calliope.mini.EXTRA_DEVICE", device);
             intent.putExtra("EXTRA_FILE", file.getAbsolutePath());

@@ -307,7 +307,7 @@ public class WebFragment extends Fragment implements DownloadListener {
     }
 
     private void startDFUActivity(File file) {
-        if (device != null) {
+        if (device != null && device.isRelevant()) {
             Log.e(TAG, "start DFU Activity");
             final Intent intent = new Intent(getActivity(), DFUActivity.class);
             intent.putExtra("cc.calliope.mini.EXTRA_DEVICE", device);

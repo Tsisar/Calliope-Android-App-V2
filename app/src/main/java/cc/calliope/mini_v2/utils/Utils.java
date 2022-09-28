@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -40,6 +41,7 @@ import androidx.core.content.ContextCompat;
 public class Utils {
     private static final String PREFS_LOCATION_NOT_REQUIRED = "location_not_required";
     private static final String PREFS_PERMISSION_REQUESTED = "permission_requested";
+    private static final String TAG = "UTILS";
 
     /**
      * Checks whether device is connected to network
@@ -85,16 +87,23 @@ public class Utils {
      * @return true on Android 6.0+ if location mode is different than LOCATION_MODE_OFF.
      */
     public static boolean isLocationEnabled(final Context context) {
-        if(Version.upperKitkat) {
-            int locationMode = Settings.Secure.LOCATION_MODE_OFF;
-            try {
-                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
-            } catch (final Settings.SettingNotFoundException e) {
-                // do nothing
-            }
-            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        boolean gpsEnabled = false;
+        boolean networkEnabled = false;
+
+        try {
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
+            Log.e(TAG, "isLocationEnabled: " + ex);
         }
-        return true;
+
+        try {
+            networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ex) {
+            Log.e(TAG, "isLocationEnabled: " + ex);
+        }
+
+        return gpsEnabled && networkEnabled;
     }
 
     /**

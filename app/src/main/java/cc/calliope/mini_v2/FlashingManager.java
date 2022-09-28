@@ -35,7 +35,7 @@ public class FlashingManager extends BleManager {
     @Override
     public void log(int priority, @NonNull String message) {
         // Log from here.
-        Log.println(priority, TAG, message);
+        Log.println(priority, TAG, "### " + Thread.currentThread().getId() + " # " + message);
     }
 
     @NonNull

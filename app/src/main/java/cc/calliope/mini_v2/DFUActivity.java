@@ -169,7 +169,17 @@ public class DFUActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if the peripheral is cached or not
+        int deviceType = device.getDevice().getType();
+        if(deviceType == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
+            Log.e("BLE", "The peripheral is not cached");
+        } else {
+            Log.v("BLE", "The peripheral is cached");
+        }
+
         Log.v("BLE", "device: " + device.getAddress() + " " + device.getName());
+
+        Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "initiateFlashing");
 
         flashingManager.connect(device.getDevice())
                 // Automatic retries are supported, in case of 133 error.
@@ -182,17 +192,23 @@ public class DFUActivity extends AppCompatActivity {
     }
 
     private void writeCharacteristic(BluetoothDevice device){
+        Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "writeCharacteristic");
         flashingManager.writeCharacteristic()
+                .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
+                .fail((device2, s) -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: fail, status " + s))
                 .then(this::disconnect)
                 .enqueue();
     }
 
     private void disconnect(BluetoothDevice device) {
+        Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "disconnect");
         flashingManager.disconnect()
+                .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
+                .fail((device2, s) -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: fail, status " + s))
                 .then(this::startFlashing)
                 .enqueue();
 
-        refreshDeviceCache();
+        //refreshDeviceCache();
     }
 
     private void connectionFail(BluetoothDevice device, int status) {
@@ -222,6 +238,7 @@ public class DFUActivity extends AppCompatActivity {
      * @param device BluetoothDevice
      */
     protected void startFlashing(BluetoothDevice device) {
+        Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "startFlashing");
         Bundle extras = getIntent().getExtras();
         final String filePath = extras.getString("EXTRA_FILE");
 

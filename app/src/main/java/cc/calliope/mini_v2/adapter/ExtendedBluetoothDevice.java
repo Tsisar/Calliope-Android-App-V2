@@ -40,7 +40,9 @@ package cc.calliope.mini_v2.adapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.util.Date;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -52,12 +54,14 @@ public class ExtendedBluetoothDevice implements Parcelable {
 	private String name;
 	private String pattern;
 	private int rssi;
+    private long recentUpdate;
 
 	public ExtendedBluetoothDevice(final ScanResult scanResult) {
 		this.device = scanResult.getDevice();
 		this.name = scanResult.getScanRecord().getDeviceName();
 		this.pattern = "00000";
 		this.rssi = scanResult.getRssi();
+        this.recentUpdate = new Date().getTime();
 	}
 
 	public BluetoothDevice getDevice() {
@@ -114,7 +118,25 @@ public class ExtendedBluetoothDevice implements Parcelable {
 		this.rssi = rssi;
 	}
 
-	public boolean matches(final ScanResult scanResult) {
+    public float getRecentUpdate() {
+        return recentUpdate;
+    }
+
+    public void setRecentUpdate(long recentUpdate) {
+        this.recentUpdate = recentUpdate;
+    }
+
+    public boolean isRelevant(){
+        long currentTime = new Date().getTime();
+        Log.v("EXBTDevice", "isRelevant, " +
+                "current time: " + currentTime +
+                " recent update: " + recentUpdate +
+                " expression: " + (currentTime - recentUpdate)
+        );
+        return currentTime - recentUpdate < 10000;
+    }
+
+    public boolean matches(final ScanResult scanResult) {
 		return device.getAddress().equals(scanResult.getDevice().getAddress());
 	}
 

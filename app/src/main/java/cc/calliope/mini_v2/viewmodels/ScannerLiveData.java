@@ -30,7 +30,9 @@
 
 package cc.calliope.mini_v2.viewmodels;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -51,55 +53,56 @@ import no.nordicsemi.android.support.v18.scanner.ScanResult;
  */
 
 public class ScannerLiveData extends LiveData<ScannerLiveData> {
-	private final HashSet<ExtendedBluetoothDevice> devices = new HashSet<>();
+    private final List<ExtendedBluetoothDevice> devices = new ArrayList<>();
     private List<Float> currentPattern = Arrays.asList(0f, 0f, 0f, 0f, 0f);
-
+    private Integer updatedDeviceIndex;
     private boolean scanningStarted;
-	private boolean bluetoothEnabled;
-	private boolean locationEnabled;
+    private boolean bluetoothEnabled;
+    private boolean locationEnabled;
 
-	/* package */ ScannerLiveData(final boolean bluetoothEnabled, final boolean locationEnabled) {
-		scanningStarted = false;
-		this.bluetoothEnabled = bluetoothEnabled;
-		this.locationEnabled = locationEnabled;
-		postValue(this);
-	}
+    /* package */ ScannerLiveData(final boolean bluetoothEnabled, final boolean locationEnabled) {
+        this.scanningStarted = false;
+        this.bluetoothEnabled = bluetoothEnabled;
+        this.locationEnabled = locationEnabled;
+        postValue(this);
+    }
 
-	/* package */ void refresh() {
-		postValue(this);
-	}
+    /* package */ void refresh() {
+        postValue(this);
+    }
 
-	/* package */ void scanningStarted() {
-		scanningStarted = true;
-		postValue(this);
-	}
+    /* package */ void scanningStarted() {
+        scanningStarted = true;
+        postValue(this);
+    }
 
-	/* package */ void scanningStopped() {
-		scanningStarted = false;
-		postValue(this);
-	}
+    /* package */ void scanningStopped() {
+        scanningStarted = false;
+        postValue(this);
+    }
 
-	/* package */ void bluetoothEnabled() {
-		bluetoothEnabled = true;
-		postValue(this);
-	}
+    /* package */ void bluetoothEnabled() {
+        bluetoothEnabled = true;
+        postValue(this);
+    }
 
-	/* package */ void bluetoothDisabled() {
-		bluetoothEnabled = false;
-		devices.clear();
-		postValue(this);
-	}
+    /* package */ void bluetoothDisabled() {
+        bluetoothEnabled = false;
+        updatedDeviceIndex = null;
+        devices.clear();
+        postValue(this);
+    }
 
-	/* package */ void setLocationEnabled(final boolean enabled) {
-		locationEnabled = enabled;
-		postValue(this);
-	}
+    /* package */ void setLocationEnabled(final boolean enabled) {
+        locationEnabled = enabled;
+        postValue(this);
+    }
 
-    public List<Float> getCurrentPattern(){
+    public List<Float> getCurrentPattern() {
         return currentPattern;
     }
 
-    void setCurrentPattern(List<Float> pattern){
+    void setCurrentPattern(List<Float> pattern) {
         currentPattern = pattern;
         postValue(this);
     }
@@ -122,16 +125,16 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
     }
 
     void devicesDiscovered(final List<ScanResult> results) {
-        if(results != null){
+        if (results != null) {
             devices.clear();
-            for(ScanResult result : results){
+            for (ScanResult result : results) {
                 deviceDiscovered(result);
             }
             postValue(this);
         }
     }
 
-	/* package */ void deviceDiscovered(final ScanResult result) {
+    /* package */ void deviceDiscovered(final ScanResult result) {
         if (result.getScanRecord() != null) {
             String deviceName = result.getScanRecord().getDeviceName();
 
@@ -142,53 +145,90 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
                 Matcher m = p.matcher(deviceName.toUpperCase());
 
                 if (m.matches()) {
-                    ExtendedBluetoothDevice device = new ExtendedBluetoothDevice(result);
-                    // Update RSSI and name
-                    device.setRssi(result.getRssi());
-                    device.setName(result.getScanRecord().getDeviceName());
-                    device.setPattern(m.group(1));
 
-                    devices.remove(device);
-                    devices.add(device);
+                    ExtendedBluetoothDevice device;
+
+                    final int index = indexOf(result);
+                    if (index == -1) {
+                        device = new ExtendedBluetoothDevice(result);
+                        devices.add(device);
+                        updatedDeviceIndex = null;
+                    } else {
+                        device = devices.get(index);
+                        updatedDeviceIndex = index;
+                        // Update RSSI and name
+                        device.setRssi(result.getRssi());
+                        device.setName(result.getScanRecord().getDeviceName());
+                        device.setPattern(m.group(1));
+                        device.setRecentUpdate(new Date().getTime());
+                    }
+                    postValue(this);
                 }
             }
         }
-	}
+    }
 
-	/**
-	 * Returns the list of devices.
-	 * @return current list of devices discovered
-	 */
-	@NonNull
-	public HashSet<ExtendedBluetoothDevice> getDevices() {
-		return devices;
-	}
+    /**
+     * Returns the list of devices.
+     *
+     * @return current list of devices discovered
+     */
+    @NonNull
+    public List<ExtendedBluetoothDevice> getDevices() {
+        return devices;
+    }
 
-	/**
-	 * Returns whether the list is empty.
-	 */
-	public boolean isEmpty() {
-		return devices.isEmpty();
-	}
+    /**
+     * Returns null if a new device was added, or an index of the updated device.
+     */
+    @Nullable
+    public Integer getUpdatedDeviceIndex() {
+        final Integer i = updatedDeviceIndex;
+        updatedDeviceIndex = null;
+        return i;
+    }
 
-	/**
-	 * Returns whether scanning is in progress.
-	 */
-	public boolean isScanning() {
-		return scanningStarted;
-	}
+    /**
+     * Returns whether the list is empty.
+     */
+    public boolean isEmpty() {
+        return devices.isEmpty();
+    }
 
-	/**
-	 * Returns whether Bluetooth adapter is enabled.
-	 */
-	public boolean isBluetoothEnabled() {
-		return bluetoothEnabled;
-	}
+    /**
+     * Returns whether scanning is in progress.
+     */
+    public boolean isScanning() {
+        return scanningStarted;
+    }
 
-	/**
-	 * Returns whether Location is enabled.
-	 */
-	public boolean isLocationEnabled() {
-		return locationEnabled;
-	}
+    /**
+     * Returns whether Bluetooth adapter is enabled.
+     */
+    public boolean isBluetoothEnabled() {
+        return bluetoothEnabled;
+    }
+
+    /**
+     * Returns whether Location is enabled.
+     */
+    public boolean isLocationEnabled() {
+        return locationEnabled;
+    }
+
+    /**
+     * Finds the index of existing devices on the scan results list.
+     *
+     * @param result scan result
+     * @return index of -1 if not found
+     */
+    private int indexOf(final ScanResult result) {
+        int i = 0;
+        for (final ExtendedBluetoothDevice device : devices) {
+            if (device.matches(result))
+                return i;
+            i++;
+        }
+        return -1;
+    }
 }

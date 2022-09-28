@@ -2,7 +2,6 @@ package cc.calliope.mini_v2.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,7 +71,7 @@ public class PatternDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        onCustomDialog(view);
+        customizingDialog(view);
 
         currentPattern = scannerViewModel.getScannerState().getCurrentPattern();
 
@@ -98,7 +96,7 @@ public class PatternDialogFragment extends DialogFragment {
         binding = null;
     }
 
-    private void onCustomDialog(View view) {
+    private void customizingDialog(View view) {
         Dialog dialog = getDialog();
         if (dialog != null) {
             Window window = dialog.getWindow();
@@ -153,7 +151,7 @@ public class PatternDialogFragment extends DialogFragment {
 
     private void setButtonBackground(ExtendedBluetoothDevice device) {
 //        Log.i("DIALOG: ", "currentDevice: " + device);
-        if (device != null) {
+        if (device != null && device.isRelevant()) {
             binding.buttonAction.setBackgroundResource(R.drawable.btn_connect_green);
         } else {
             binding.buttonAction.setBackgroundResource(R.drawable.btn_connect_aqua);

@@ -49,6 +49,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import cc.calliope.mini_v2.utils.Utils;
+import cc.calliope.mini_v2.utils.Version;
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
 import no.nordicsemi.android.support.v18.scanner.ScanCallback;
 import no.nordicsemi.android.support.v18.scanner.ScanFilter;
@@ -59,155 +60,159 @@ import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 
 public class ScannerViewModel extends AndroidViewModel {
 
-	/** MutableLiveData containing the scanner state to notify MainActivity. */
-	private final ScannerLiveData mScannerLiveData;
+    /**
+     * MutableLiveData containing the scanner state to notify MainActivity.
+     */
+    private final ScannerLiveData mScannerLiveData;
 
-	public ScannerLiveData getScannerState() {
-		return mScannerLiveData;
-	}
+    public ScannerLiveData getScannerState() {
+        return mScannerLiveData;
+    }
 
-	public ScannerViewModel(final Application application) {
-		super(application);
+    public ScannerViewModel(final Application application) {
+        super(application);
 
-		mScannerLiveData = new ScannerLiveData(Utils.isBluetoothEnabled(),
-                Utils.isLocationEnabled(application) || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
-		registerBroadcastReceivers(application);
+        mScannerLiveData = new ScannerLiveData(
+                Utils.isBluetoothEnabled(),
+                Utils.isLocationEnabled(application) || Version.upperSnowCone);
+        registerBroadcastReceivers(application);
 
         loadPattern();
-	}
+    }
 
-	@Override
-	protected void onCleared() {
-		super.onCleared();
-		getApplication().unregisterReceiver(mBluetoothStateBroadcastReceiver);
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        getApplication().unregisterReceiver(mBluetoothStateBroadcastReceiver);
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-			getApplication().unregisterReceiver(mLocationProviderChangedReceiver);
-		}
-	}
+        if (Version.upperMarshmallow) {
+            getApplication().unregisterReceiver(mLocationProviderChangedReceiver);
+        }
+    }
 
-	public void refresh() {
-		mScannerLiveData.refresh();
-	}
+    public void refresh() {
+        mScannerLiveData.refresh();
+    }
 
-	/**
-	 * Start scanning for Bluetooth devices.
-	 */
-	public void startScan() {
+    /**
+     * Start scanning for Bluetooth devices.
+     */
+    public void startScan() {
         Log.e("SCANNER", "start scan");
-		if (mScannerLiveData.isScanning()) {
-			return;
-		}
+        if (mScannerLiveData.isScanning()) {
+            return;
+        }
 
-		// Scanning settings
-		final ScanSettings settings = new ScanSettings.Builder()
-				.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-				// Refresh the devices list every 5000 ms (5 sec)
-				.setReportDelay(5000)
-				// Hardware filtering has some issues on selected devices
-				.setUseHardwareFilteringIfSupported(false)
-				// Samsung S6 and S6 Edge report equal value of RSSI for all devices. In this app we ignore the RSSI.
-					/*.setUseHardwareBatchingIfSupported(false)*/
-				.build();
+        // Scanning settings
+        final ScanSettings settings = new ScanSettings.Builder()
+                .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+                // Refresh the devices list every 5000 ms (5 sec)
+                .setReportDelay(0)
+                // Hardware filtering has some issues on selected devices
+                .setUseHardwareFilteringIfSupported(false)
+                // Samsung S6 and S6 Edge report equal value of RSSI for all devices. In this app we ignore the RSSI.
+                /*.setUseHardwareBatchingIfSupported(false)*/
+                .build();
 
-		// Let's use the filter to scan only for Blinky devices
+        // Let's use the filter to scan only for Blinky devices
 //		final ParcelUuid uuid = new ParcelUuid(LBS_UUID_SERVICE);
-		final List<ScanFilter> filters = new ArrayList<>();
+        final List<ScanFilter> filters = new ArrayList<>();
 //		filters.add(new ScanFilter.Builder().setServiceUuid(uuid).build());
 //		filters.add(new ScanFilter.Builder().setDeviceName(Pattern.compile("\\u005b([a-z]){5}\\u005d")).build());
 
-		final BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
-		scanner.startScan(filters, settings, scanCallback);
-		mScannerLiveData.scanningStarted();
-	}
+        final BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
+        scanner.startScan(filters, settings, scanCallback);
+        mScannerLiveData.scanningStarted();
+    }
 
-	/**
-	 * stop scanning for bluetooth devices.
-	 */
-	public void stopScan() {
+    /**
+     * stop scanning for bluetooth devices.
+     */
+    public void stopScan() {
         Log.e("SCANNER", "stop scan");
-		final BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
-		scanner.stopScan(scanCallback);
-		mScannerLiveData.scanningStopped();
+        final BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
+        scanner.stopScan(scanCallback);
+        mScannerLiveData.scanningStopped();
         savePattern();
-	}
+    }
 
-	private final ScanCallback scanCallback = new ScanCallback() {
-		@Override
-		public void onScanResult(final int callbackType, @NonNull final ScanResult result) {
+    private final ScanCallback scanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(final int callbackType, @NonNull final ScanResult result) {
 
+            //TODO Are we need it?
 //			if (Utils.isLocationRequired(getApplication()) && !Utils.isLocationEnabled(getApplication())) {
 //                Utils.markLocationNotRequired(getApplication());
 //            }
-//
-//			mScannerLiveData.deviceDiscovered(result);
-		}
 
-		@Override
-		public void onBatchScanResults(@NonNull final List<ScanResult> results) {
+			mScannerLiveData.deviceDiscovered(result);
+        }
+
+        @Override
+        public void onBatchScanResults(@NonNull final List<ScanResult> results) {
             // If the packet has been obtained while Location was disabled, mark Location as not required
-            mScannerLiveData.devicesDiscovered(results);
-		}
+//            mScannerLiveData.devicesDiscovered(results);
+        }
 
-		@Override
-		public void onScanFailed(final int errorCode) {
-			// TODO This should be handled
-			mScannerLiveData.scanningStopped();
-		}
-	};
+        @Override
+        public void onScanFailed(final int errorCode) {
+            // TODO This should be handled
+            mScannerLiveData.scanningStopped();
+        }
+    };
 
-    public void setCurrentPattern(List<Float> pattern){
+    public void setCurrentPattern(List<Float> pattern) {
         mScannerLiveData.setCurrentPattern(pattern);
     }
 
-	/**
-	 * Register for required broadcast receivers.
-	 */
-	private void registerBroadcastReceivers(final Application application) {
-		application.registerReceiver(mBluetoothStateBroadcastReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-			application.registerReceiver(mLocationProviderChangedReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
-		}
-	}
+    /**
+     * Register for required broadcast receivers.
+     */
+    private void registerBroadcastReceivers(final Application application) {
+        application.registerReceiver(mBluetoothStateBroadcastReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+        if (Version.upperMarshmallow) {
+            application.registerReceiver(mLocationProviderChangedReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
+        }
+    }
 
-	/**
-	 * Broadcast receiver to monitor the changes in the location provider
-	 */
-	private final BroadcastReceiver mLocationProviderChangedReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(final Context context, final Intent intent) {
-			final boolean enabled = Utils.isLocationEnabled(context);
-			mScannerLiveData.setLocationEnabled(enabled);
-		}
-	};
+    /**
+     * Broadcast receiver to monitor the changes in the location provider
+     */
+    private final BroadcastReceiver mLocationProviderChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final boolean enabled = Utils.isLocationEnabled(context);
+            mScannerLiveData.setLocationEnabled(enabled);
+        }
+    };
 
-	/**
-	 * Broadcast receiver to monitor the changes in the bluetooth adapter
-	 */
-	private final BroadcastReceiver mBluetoothStateBroadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(final Context context, final Intent intent) {
-			final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
-			final int previousState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_STATE, BluetoothAdapter.STATE_OFF);
+    /**
+     * Broadcast receiver to monitor the changes in the bluetooth adapter
+     */
+    private final BroadcastReceiver mBluetoothStateBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF);
+            final int previousState = intent.getIntExtra(BluetoothAdapter.EXTRA_PREVIOUS_STATE, BluetoothAdapter.STATE_OFF);
 
-			switch (state) {
-				case BluetoothAdapter.STATE_ON:
-					mScannerLiveData.bluetoothEnabled();
-					break;
-				case BluetoothAdapter.STATE_TURNING_OFF:
-				case BluetoothAdapter.STATE_OFF:
-					if (previousState != BluetoothAdapter.STATE_TURNING_OFF && previousState != BluetoothAdapter.STATE_OFF) {
-						stopScan();
-						mScannerLiveData.bluetoothDisabled();
-					}
-					break;
-			}
-		}
-	};
+            switch (state) {
+                case BluetoothAdapter.STATE_ON:
+                    mScannerLiveData.bluetoothEnabled();
+                    break;
+                case BluetoothAdapter.STATE_TURNING_OFF:
+                case BluetoothAdapter.STATE_OFF:
+                    if (previousState != BluetoothAdapter.STATE_TURNING_OFF && previousState != BluetoothAdapter.STATE_OFF) {
+                        stopScan();
+                        mScannerLiveData.bluetoothDisabled();
+                    }
+                    break;
+            }
+        }
+    };
 
     public void savePattern() {
         List<Float> currentPattern = mScannerLiveData.getCurrentPattern();
-        if(currentPattern != null) {
+        if (currentPattern != null) {
             SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getApplication()).edit();
             for (int i = 0; i < 5; i++) {
                 edit.putFloat("PATTERN_" + i, currentPattern.get(i));

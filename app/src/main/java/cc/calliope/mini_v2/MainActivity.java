@@ -2,6 +2,7 @@ package cc.calliope.mini_v2;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -25,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Permission;
@@ -93,7 +95,8 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     @Override
     public void onDismiss(final DialogInterface dialog) {
         //Fragment dialog had been dismissed
-        binding.fab.setVisibility(View.VISIBLE);
+//        binding.fab.setVisibility(View.VISIBLE);
+        scannerViewModel.startScan();
     }
 
     private void onFabClick(View view) {
@@ -116,19 +119,17 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     private void scanResults(final ScannerLiveData state) {
-//        Log.e("SCANNER", "current device: " + state.getCurrentDevice());
+//        Log.v("SCANNER", "current device: " + state.getCurrentDevice());
 
         if (hasOpenedDialogs(this))
             return;
 
-        int color = getColorWrapper(R.color.orange);
-        if (state.isBluetoothEnabled()) {
-            if (state.getCurrentDevice() != null) {
-                color = getColorWrapper(R.color.green);
-            }
-        } else {
+        if (!state.isBluetoothEnabled()) {
             showPeripheralsStatus(state.isBluetoothEnabled(), true);
         }
+
+        ExtendedBluetoothDevice device = state.getCurrentDevice();
+        int color = getColorWrapper(device != null && device.isRelevant() ? R.color.green : R.color.orange);
         binding.fab.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
@@ -145,28 +146,26 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         }
     }
 
-    private void showPeripheralsStatus(boolean isBluetoothEnabled, boolean isLocationEnabled){
+    private void showPeripheralsStatus(boolean isBluetoothEnabled, boolean isLocationEnabled) {
         if (!isBluetoothEnabled) {
             Utils.errorSnackbar(binding.getRoot(), "Bluetooth is disable")
                     .setAction("Enable", view -> openBluetoothEnableActivity())
                     .show();
-            openBluetoothEnableActivity();
-        } else if (Version.upperSnowCone || !isLocationEnabled) {
+        } else if (!Version.upperSnowCone && !isLocationEnabled) {
             Utils.errorSnackbar(binding.getRoot(), "Location is disable").show();
         }
     }
 
     private void showContent() {
-        binding.content.setVisibility(View.VISIBLE);
+        binding.constraintLayout.setVisibility(View.VISIBLE);
         binding.infoNoPermission.getRoot().setVisibility(View.GONE);
     }
 
     private void showInfoNoPermission(@Permission.RequestType int requestType) {
         ContentNoPermission content = ContentNoPermission.getContent(requestType);
         boolean deniedForever = Permission.isAccessDeniedForever(this, requestType);
-        ;
 
-        binding.content.setVisibility(View.GONE);
+        binding.constraintLayout.setVisibility(View.GONE);
         binding.infoNoPermission.getRoot().setVisibility(View.VISIBLE);
 
         binding.infoNoPermission.ivNoPermission.setImageResource(content.getIcResId());

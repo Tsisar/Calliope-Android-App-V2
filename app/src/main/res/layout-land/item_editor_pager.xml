@@ -41,7 +41,7 @@
         android:id="@+id/title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="@string/title_make_code"
         android:textSize="17sp"
         android:textStyle="bold"
