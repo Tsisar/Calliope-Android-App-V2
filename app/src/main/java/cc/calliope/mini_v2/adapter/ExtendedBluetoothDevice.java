@@ -50,7 +50,7 @@ import cc.calliope.mini_v2.R;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 public class ExtendedBluetoothDevice implements Parcelable {
-    private static final long RELEVANT_LIMIT = 3000; //the time during which the device is relevant in ms
+    private static final long RELEVANT_LIMIT = 5000; //the time during which the device is relevant in ms
 	private final BluetoothDevice device;
 	private String name;
 	private String pattern;
@@ -129,9 +129,6 @@ public class ExtendedBluetoothDevice implements Parcelable {
 
     public boolean isRelevant(){
         long currentTime = new Date().getTime();
-        Log.v("EXBTDevice", "isRelevant, " +
-                "expression: " + (currentTime - recentUpdate)
-        );
         return currentTime - recentUpdate < RELEVANT_LIMIT;
     }
 

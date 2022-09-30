@@ -45,6 +45,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -60,6 +62,11 @@ import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 
 public class ScannerViewModel extends AndroidViewModel {
 
+    // For checking the availability of the device.
+    // If there is no one device in the bluetooth visibility range callback not working.
+    private Timer timer;
+    private static final int REFRESH_PERIOD = 3000;
+
     /**
      * MutableLiveData containing the scanner state to notify MainActivity.
      */
@@ -72,11 +79,9 @@ public class ScannerViewModel extends AndroidViewModel {
     public ScannerViewModel(final Application application) {
         super(application);
 
-        mScannerLiveData = new ScannerLiveData(
-                Utils.isBluetoothEnabled(),
+        mScannerLiveData = new ScannerLiveData(Utils.isBluetoothEnabled(),
                 Utils.isLocationEnabled(application) || Version.upperSnowCone);
         registerBroadcastReceivers(application);
-
         loadPattern();
     }
 
@@ -98,10 +103,12 @@ public class ScannerViewModel extends AndroidViewModel {
      * Start scanning for Bluetooth devices.
      */
     public void startScan() {
-        Log.e("SCANNER", "start scan");
-        if (mScannerLiveData.isScanning()) {
+        Log.e("SCANNER", "### " + Thread.currentThread().getId() + " # " + "startScan()");
+        if (mScannerLiveData.isScanning() || !mScannerLiveData.isBluetoothEnabled()) {
             return;
         }
+
+        startTimer();
 
         // Scanning settings
         final ScanSettings settings = new ScanSettings.Builder()
@@ -129,7 +136,8 @@ public class ScannerViewModel extends AndroidViewModel {
      * stop scanning for bluetooth devices.
      */
     public void stopScan() {
-        Log.e("SCANNER", "stop scan");
+        stopTimer();
+        Log.e("SCANNER", "### " + Thread.currentThread().getId() + " # " + "stopScan()");
         final BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
         scanner.stopScan(scanCallback);
         mScannerLiveData.scanningStopped();
@@ -145,7 +153,7 @@ public class ScannerViewModel extends AndroidViewModel {
 //                Utils.markLocationNotRequired(getApplication());
 //            }
 
-			mScannerLiveData.deviceDiscovered(result);
+            mScannerLiveData.deviceDiscovered(result);
         }
 
         @Override
@@ -197,6 +205,7 @@ public class ScannerViewModel extends AndroidViewModel {
 
             switch (state) {
                 case BluetoothAdapter.STATE_ON:
+                    startScan();
                     mScannerLiveData.bluetoothEnabled();
                     break;
                 case BluetoothAdapter.STATE_TURNING_OFF:
@@ -228,5 +237,25 @@ public class ScannerViewModel extends AndroidViewModel {
             currentPattern[i] = preferences.getFloat("PATTERN_" + i, 0f);
         }
         mScannerLiveData.setCurrentPattern(currentPattern);
+    }
+
+    public void startTimer() {
+        stopTimer();
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                refresh();
+//                Log.w("Timer", "### " + Thread.currentThread().getId() + " # " + "scannerViewModel.refresh()");
+            }
+        }, 0, REFRESH_PERIOD);
+        Log.d("Timer", "### " + Thread.currentThread().getId() + " # " + "timer: " + timer);
+    }
+
+    public void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
     }
 }

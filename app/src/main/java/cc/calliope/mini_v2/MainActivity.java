@@ -2,7 +2,6 @@ package cc.calliope.mini_v2;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -14,6 +13,8 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -96,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     public void onDismiss(final DialogInterface dialog) {
         //Fragment dialog had been dismissed
 //        binding.fab.setVisibility(View.VISIBLE);
-        scannerViewModel.startScan();
     }
 
     private void onFabClick(View view) {
@@ -187,12 +187,13 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     private void showPatternDialog(FobParams params) {
+        binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColorWrapper(R.color.orange)));
+        scannerViewModel.startScan(); // On older devices, "auto-tart" scanning does not work after bluetooth is turned on.
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         PatternDialogFragment dialogFragment = PatternDialogFragment.newInstance(params);
         dialogFragment.show(fragmentManager, "fragment_pattern");
-
 //        binding.fab.setVisibility(View.GONE);
-        binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColorWrapper(R.color.orange)));
     }
 
     private void requestPermissions() {

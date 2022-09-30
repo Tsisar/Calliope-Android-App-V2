@@ -1,17 +1,12 @@
 package cc.calliope.mini_v2;
 
-import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,12 +15,10 @@ import java.lang.reflect.Method;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.service.DfuService;
 import no.nordicsemi.android.ble.PhyRequest;
-import no.nordicsemi.android.ble.callback.AfterCallback;
-import no.nordicsemi.android.ble.callback.SuccessCallback;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
@@ -39,11 +32,19 @@ public class DFUActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private static final String TAG = DFUActivity.class.getSimpleName();
+    private static final String TAG_PL = "DfuProgressListener";
 
     public static final String BROADCAST_PROGRESS = "org.microbit.android.partialflashing.broadcast.BROADCAST_PROGRESS";
     public static final String EXTRA_PROGRESS = "org.microbit.android.partialflashing.extra.EXTRA_PROGRESS";
 
     private FlashingManager flashingManager;
+
+    private final Handler timerHandler = new Handler();
+    private final Runnable deferredFinish = this::finish;
+    private static final int DELAY_TO_FINISH = 5000;
+
+    private boolean onPause;
+
 
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -58,60 +59,63 @@ public class DFUActivity extends AppCompatActivity {
         public void onDeviceConnecting(@NonNull final String deviceAddress) {
             timerText.setText("Device Connecting");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method);
+            Log.e(TAG_PL, method);
         }
 
         @Override
         public void onDfuProcessStarting(@NonNull final String deviceAddress) {
             timerText.setText("Process Starting");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method);
+            Log.e(TAG_PL, method);
         }
 
         @Override
         public void onEnablingDfuMode(@NonNull final String deviceAddress) {
             timerText.setText("Enabling Dfu Mode");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method);
+            Log.e(TAG_PL, method);
         }
 
         @Override
         public void onFirmwareValidating(@NonNull final String deviceAddress) {
             timerText.setText("Firmware Validating");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method);
+            Log.e(TAG_PL, method);
         }
 
         @Override
         public void onDeviceDisconnecting(@NonNull final String deviceAddress) {
             timerText.setText("Device Disconnecting");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method);
+            Log.e(TAG_PL, method);
         }
 
         @Override
         public void onDfuCompleted(@NonNull final String deviceAddress) {
             timerText.setText("Dfu Completed");
-            finish();
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method);
+            Log.e(TAG_PL, method);
+            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH);
         }
 
         @Override
         public void onDfuAborted(@NonNull final String deviceAddress) {
             timerText.setText("Dfu Aborted");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method);
+            Log.e(TAG_PL, method);
+            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH);
         }
 
         @Override
         public void onProgressChanged(@NonNull final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
-            deviceInfo.setText(percent + "%");
-            timerText.setText("Uploading");
-            progressBar.setProgress(39 + percent / 3);
+            if(!onPause) {
+                deviceInfo.setText(percent + "%");
+                timerText.setText("Uploading, avgSpeed: " + avgSpeed);
+                progressBar.setProgress(39 + percent / 3);
+            }
 
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method + " percent: " + percent);
+            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+            Log.e(TAG, method + " percent: " + percent);
         }
 
         @Override
@@ -119,7 +123,8 @@ public class DFUActivity extends AppCompatActivity {
             deviceInfo.setText("ERROR");
             timerText.setText(message);
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method + " error: " + message);
+            Log.e(TAG_PL, method + " error: " + message);
+            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH);
         }
     };
 
@@ -158,7 +163,8 @@ public class DFUActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener);
+        onPause = true;
+        //DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener);
     }
 
     protected void initiateFlashing() {
@@ -268,10 +274,10 @@ public class DFUActivity extends AppCompatActivity {
                 final Method refresh = gatt.getClass().getMethod("refresh");
                 if (refresh != null) {
                     refresh.invoke(gatt);
-                    Log.v(TAG, "Refresh device cache");
+                    Log.v("BLE", "Refresh device cache");
                 }
             } catch (final Exception e) {
-                Log.e(TAG, "An exception occurred while refreshing device" + e);
+                Log.e("BLE", "An exception occurred while refreshing device" + e);
             }
         }
     }
