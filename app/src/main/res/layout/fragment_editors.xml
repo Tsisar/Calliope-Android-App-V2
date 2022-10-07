@@ -7,7 +7,7 @@
     tools:context=".ui.editors.EditorsFragment">
 
     <cc.calliope.mini_v2.views.ClickableViewPager
-        android:id="@+id/viewpager"
+        android:id="@+id/editor_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"

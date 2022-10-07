@@ -25,7 +25,7 @@ public class HelpFragment extends Fragment {
 
         TextView appInfo = binding.appInfo;
         appInfo.setMovementMethod(LinkMovementMethod.getInstance());
-        Spanned spanned = Html.fromHtml( getString(R.string.info_app));
+        Spanned spanned = Html.fromHtml(getString(R.string.info_app));
         appInfo.setText(spanned);
 
         return binding.getRoot();

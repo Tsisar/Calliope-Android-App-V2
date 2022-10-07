@@ -12,9 +12,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     @Override
     public void onResume() {
         super.onResume();
+        requestWasSent = false;
         checkPermission();
     }
 
@@ -147,9 +148,10 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     private void showPeripheralsStatus(boolean isBluetoothEnabled, boolean isLocationEnabled) {
-        if (!isBluetoothEnabled) {
-            Utils.errorSnackbar(binding.getRoot(), "Bluetooth is disable")
-                    .setAction("Enable", view -> openBluetoothEnableActivity())
+        if (!isBluetoothEnabled && !requestWasSent) {
+            Snackbar snackbar = Utils.errorSnackbar(binding.getRoot(), "Bluetooth is disable");
+            snackbar.setDuration(10000);
+            snackbar.setAction("Enable", this::openBluetoothEnableActivity)
                     .show();
         } else if (!Version.upperSnowCone && !isLocationEnabled) {
             Utils.errorSnackbar(binding.getRoot(), "Location is disable").show();
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
                 .setVisibility(deniedForever ? View.VISIBLE : View.GONE);
     }
 
-    public void openBluetoothEnableActivity() {
+    public void openBluetoothEnableActivity(View view) {
         if (!requestWasSent) {
             requestWasSent = true;
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);

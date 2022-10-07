@@ -26,10 +26,10 @@ public class EditorsFragment extends Fragment implements ClickableViewPager.OnIt
         binding = FragmentEditorsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.viewpager.setAdapter(new EditorsPagerAdapter(getActivity()));
-        binding.viewpager.setOnItemClickListener(this);
+        binding.editorViewpager.setAdapter(new EditorsPagerAdapter(getActivity()));
+        binding.editorViewpager.setOnItemClickListener(this);
 
-        binding.tabDots.setupWithViewPager(binding.viewpager, true);
+        binding.tabDots.setupWithViewPager(binding.editorViewpager, true);
 
         return root;
     }

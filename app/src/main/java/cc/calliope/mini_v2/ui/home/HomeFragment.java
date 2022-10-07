@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,14 +29,18 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import androidx.viewpager2.widget.ViewPager2;
 import cc.calliope.mini_v2.DFUActivity;
+import cc.calliope.mini_v2.ConnectFragmentStateAdapter;
 import cc.calliope.mini_v2.FileWrapper;
 import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.ZoomOutPageTransformer;
 import cc.calliope.mini_v2.adapter.RecyclerAdapter;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentHomeBinding;
@@ -48,6 +53,8 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private ExtendedBluetoothDevice device;
     private RecyclerAdapter recyclerAdapter;
+
+    private ViewPager2 viewPager2;
 
     @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -67,12 +74,13 @@ public class HomeFragment extends Fragment {
                     Guideline guideLine = binding.guideline;
                     if(guideLine != null) {
                         int height = binding.getRoot().getHeight();
+                        int margin = Utils.convertDpToPixel(64, view.getContext());
+                        float guidePercent = (motionEvent.getRawY() - margin) / height;
+
                         ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) guideLine.getLayoutParams();
-                        params.guidePercent = (
-                                motionEvent.getRawY()
-                                        - view.getHeight() // Height of text view
-                                        - Utils.convertDpToPixel(12, view.getContext()) // paddingVertical + marginTop
-                        ) / height;
+                        if(guidePercent > 0.25f && guidePercent < 0.95f) {
+                            params.guidePercent = guidePercent;
+                        }
                         guideLine.setLayoutParams(params);
                     }
                     break;
@@ -83,6 +91,18 @@ public class HomeFragment extends Fragment {
         });
 
         showRecyclerView(inflater);
+
+        viewPager2 = binding.viewPager2;
+
+        // Employee FragmentStateAdapter.
+        FragmentActivity activity = getActivity();
+        if(activity != null) {
+            ConnectFragmentStateAdapter adapter = new ConnectFragmentStateAdapter(activity);
+            viewPager2.setAdapter(adapter);
+        }
+
+        // PageTransformer
+        viewPager2.setPageTransformer(new ZoomOutPageTransformer());
 
         return binding.getRoot();
     }
