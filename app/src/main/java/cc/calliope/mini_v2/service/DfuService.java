@@ -1,11 +1,15 @@
 package cc.calliope.mini_v2.service;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import cc.calliope.mini_v2.BuildConfig;
 import cc.calliope.mini_v2.NotificationActivity;
 import cc.calliope.mini_v2.utils.Version;
@@ -44,5 +48,10 @@ public class DfuService extends DfuBaseService {
         // Library's BuildConfig in current version of Android Studio is always set to DEBUG=false, so
         // make sure you return true or your.app.BuildConfig.DEBUG here.
         return DEBUG;
+    }
+
+    @Override
+    protected void updateProgressNotification(@NonNull final NotificationCompat.Builder builder, final int progress) {
+        // Remove Abort action from the notification
     }
 }
