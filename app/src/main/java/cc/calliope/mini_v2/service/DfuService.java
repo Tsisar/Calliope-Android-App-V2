@@ -38,7 +38,9 @@ public class DfuService extends DfuBaseService {
 
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
-        waitFor(2000);
+        assert intent != null;
+        final long delay = intent.getLongExtra(DfuBaseService.EXTRA_SCAN_DELAY, 0);
+        waitFor(delay);
         super.onHandleIntent(intent);
     }
 

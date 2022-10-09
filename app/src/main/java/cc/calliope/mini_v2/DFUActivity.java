@@ -259,7 +259,7 @@ public class DFUActivity extends AppCompatActivity {
                 .setMbrSize(0x18000)
 //                .setForeground(false)
                 .setNumberOfRetries(3)
-                .setRebootTime(1000)
+                .setRebootTime(2000)
                 .setKeepBond(false);
 
         starter.setBinOrHex(DfuBaseService.TYPE_APPLICATION, filePath);
