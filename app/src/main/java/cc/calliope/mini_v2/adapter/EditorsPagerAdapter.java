@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
-import cc.calliope.mini_v2.views.ContentEditorsViewPager;
+import cc.calliope.mini_v2.views.Editor;
 import cc.calliope.mini_v2.R;
 
 public class EditorsPagerAdapter extends PagerAdapter {
@@ -23,7 +23,7 @@ public class EditorsPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup collection, int position) {
-        ContentEditorsViewPager content = ContentEditorsViewPager.values()[position];
+        Editor editor = Editor.values()[position];
 
         LayoutInflater inflater = LayoutInflater.from(context);
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.item_editor_pager, collection, false);
@@ -32,9 +32,9 @@ public class EditorsPagerAdapter extends PagerAdapter {
         ImageView icon = layout.findViewById(R.id.icon_image_view);
         TextView info = layout.findViewById(R.id.info_text_view);
 
-        title.setText(content.getTitleResId());
-        icon.setImageResource(content.getIconResId());
-        info.setText(content.getInfoResId());
+        title.setText(editor.getTitleResId());
+        icon.setImageResource(editor.getIconResId());
+        info.setText(editor.getInfoResId());
 
         collection.addView(layout);
         return layout;
@@ -47,7 +47,7 @@ public class EditorsPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return ContentEditorsViewPager.values().length;
+        return Editor.values().length;
     }
 
     @Override

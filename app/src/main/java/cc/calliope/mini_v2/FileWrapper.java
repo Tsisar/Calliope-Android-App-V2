@@ -2,23 +2,23 @@ package cc.calliope.mini_v2;
 
 import java.io.File;
 
-import cc.calliope.mini_v2.views.ContentEditorsViewPager;
+import cc.calliope.mini_v2.views.Editor;
 
 public class FileWrapper {
     private final File file;
-    private final ContentEditorsViewPager content;
+    private final Editor editor;
 
-    public FileWrapper(File file, ContentEditorsViewPager content) {
+    public FileWrapper(File file, Editor editor) {
         this.file = file;
-        this.content = content;
+        this.editor = editor;
     }
 
     public File getFile() {
         return file;
     }
 
-    public ContentEditorsViewPager getContent() {
-        return content;
+    public Editor getEditor() {
+        return editor;
     }
 
     public String getName(){

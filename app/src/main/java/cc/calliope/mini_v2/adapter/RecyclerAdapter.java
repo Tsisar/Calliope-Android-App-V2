@@ -130,7 +130,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         void setItem(FileWrapper file) {
             this.name.setText(FilenameUtils.removeExtension(file.getName()));
             this.date.setText(Utils.dateFormat(file.lastModified()));
-            this.icon.setImageResource(file.getContent().getIconResId());
+            this.icon.setImageResource(file.getEditor().getIconResId());
         }
     }
 }

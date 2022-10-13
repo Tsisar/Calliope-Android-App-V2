@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,7 +45,7 @@ import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentHomeBinding;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
-import cc.calliope.mini_v2.views.ContentEditorsViewPager;
+import cc.calliope.mini_v2.views.Editor;
 
 public class HomeFragment extends Fragment {
     private static final String FILE_EXTENSION = ".hex";
@@ -130,8 +129,8 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private ArrayList<FileWrapper> getFiles(Activity activity, ContentEditorsViewPager content) {
-        File[] filesArray = new File(activity.getFilesDir().toString() + File.separator + content).listFiles();
+    private ArrayList<FileWrapper> getFiles(Activity activity, Editor editor) {
+        File[] filesArray = new File(activity.getFilesDir().toString() + File.separator + editor).listFiles();
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 
@@ -139,7 +138,7 @@ public class HomeFragment extends Fragment {
             for (File file : filesArray) {
                 String name = file.getName();
                 if (name.contains(FILE_EXTENSION)) {
-                    filesList.add(new FileWrapper(file, content));
+                    filesList.add(new FileWrapper(file, editor));
                 }
             }
         }
@@ -153,9 +152,9 @@ public class HomeFragment extends Fragment {
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 
-        filesList.addAll(getFiles(activity, ContentEditorsViewPager.MAKECODE));
-        filesList.addAll(getFiles(activity, ContentEditorsViewPager.ROBERTA));
-        filesList.addAll(getFiles(activity, ContentEditorsViewPager.LIBRARY));
+        filesList.addAll(getFiles(activity, Editor.MAKECODE));
+        filesList.addAll(getFiles(activity, Editor.ROBERTA));
+        filesList.addAll(getFiles(activity, Editor.LIBRARY));
 
         if (!filesList.isEmpty()) {
             setMyCodeVisibility(true);
@@ -213,7 +212,7 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
             File dir = new File(FilenameUtils.getFullPath(file.getAbsolutePath()));
             if (dir.exists()) {
-                FileWrapper dest = new FileWrapper(new File(dir, editText.getText().toString() + FILE_EXTENSION), file.getContent());
+                FileWrapper dest = new FileWrapper(new File(dir, editText.getText().toString() + FILE_EXTENSION), file.getEditor());
                 if (file.exists()) {
                     if (!dest.exists() && file.renameTo(dest.getFile())) {
                         recyclerAdapter.change(file, dest);

@@ -2,7 +2,7 @@ package cc.calliope.mini_v2.views;
 
 import cc.calliope.mini_v2.R;
 
-public enum ContentEditorsViewPager {
+public enum Editor {
 
     MAKECODE(
             R.string.title_make_code,
@@ -25,7 +25,7 @@ public enum ContentEditorsViewPager {
     private final int infoResId;
     private final String url;
 
-    ContentEditorsViewPager(int titleResId, int iconResId, int infoResId, String url) {
+    Editor(int titleResId, int iconResId, int infoResId, String url) {
         this.titleResId = titleResId;
         this.iconResId = iconResId;
         this.infoResId = infoResId;
