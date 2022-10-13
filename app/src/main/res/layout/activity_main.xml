@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_layout"
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -36,7 +36,7 @@
             app:menu="@menu/bottom_nav_menu" />
 
         <cc.calliope.mini_v2.views.MovableFloatingActionButton
-            android:id="@+id/fab"
+            android:id="@+id/pattern_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
@@ -51,7 +51,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
-        android:id="@+id/info_no_permission"
+        android:id="@+id/no_permission_layout"
         layout="@layout/info_no_permission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -8,9 +8,10 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -19,6 +20,7 @@ import java.util.List;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -36,23 +38,30 @@ import cc.calliope.mini_v2.utils.Version;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 import cc.calliope.mini_v2.views.FobParams;
+import cc.calliope.mini_v2.views.MovableFloatingActionButton;
 
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
-    private static final String TAG = "MAIN";
-
     private static final int REQUEST_CODE = 1022; // random number
     private static boolean requestWasSent = false;
 
     private ActivityMainBinding binding;
     private ScannerViewModel scannerViewModel;
 
+    private View rootView;
+    private MovableFloatingActionButton patternFab;
+    private ConstraintLayout mainLayout;
+    private LinearLayout noPermissionLayout;
+    private Button actionButton;
+    private Button settingsButton;
+
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
-                    Log.i(TAG, "BluetoothEnabled");
-                    checkPermission();
+                    if (checkPermission()) {
+                        scannerViewModel.startScan();
+                    }
                 }
             });
 
@@ -66,20 +75,37 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        binding.fab.setOnClickListener(this::onFabClick);
-
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::scanResults);
 
-        binding.infoNoPermission.btnNoPermissionAction.setOnClickListener(v -> requestPermissions());
-        binding.infoNoPermission.btnNoPermissionSettings.setOnClickListener(v -> requestAppSettings());
+        getViews();
+
+        patternFab.setOnClickListener(this::onFabClick);
+        actionButton.setOnClickListener(v -> requestPermissions());
+        settingsButton.setOnClickListener(v -> requestAppSettings());
+    }
+
+    private void getViews() {
+        rootView = binding.getRoot();
+        patternFab = binding.patternFab;
+        actionButton = binding.noPermissionLayout.actionButton;
+        settingsButton = binding.noPermissionLayout.settingsButton;
+        mainLayout = binding.mainLayout;
+        noPermissionLayout = binding.noPermissionLayout.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         requestWasSent = false;
-        checkPermission();
+        if (checkPermission()) {
+            if (!Utils.isBluetoothEnabled()) {
+                showBluetoothDisabledWarning();
+            } else if (Utils.isLocationEnabled(this)) {
+                showLocationDisabledWarning();
+            }
+            scannerViewModel.startScan();
+        }
     }
 
     @Override
@@ -97,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     @Override
     public void onDismiss(final DialogInterface dialog) {
         //Fragment dialog had been dismissed
-//        binding.fab.setVisibility(View.VISIBLE);
+//        fab.setVisibility(View.VISIBLE);
     }
 
     private void onFabClick(View view) {
@@ -125,77 +151,74 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         if (hasOpenedDialogs(this))
             return;
 
-        if (!state.isBluetoothEnabled()) {
-            showPeripheralsStatus(state.isBluetoothEnabled(), true);
+        if (!state.isBluetoothEnabled() && !requestWasSent) {
+            showBluetoothDisabledWarning();
         }
 
         ExtendedBluetoothDevice device = state.getCurrentDevice();
         int color = getColorWrapper(device != null && device.isRelevant() ? R.color.green : R.color.orange);
-        binding.fab.setBackgroundTintList(ColorStateList.valueOf(color));
+        patternFab.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
-    private void checkPermission() {
+    private boolean checkPermission() {
         boolean isBluetoothAccessGranted = Permission.isAccessGranted(this, Permission.BLUETOOTH);
         boolean isLocationAccessGranted = Version.upperSnowCone || Permission.isAccessGranted(this, Permission.LOCATION);
 
         if (isBluetoothAccessGranted && isLocationAccessGranted) {
-            showPeripheralsStatus(Utils.isBluetoothEnabled(), Utils.isLocationEnabled(this));
             showContent();
-            scannerViewModel.startScan();
+            return true;
         } else {
             showInfoNoPermission(isBluetoothAccessGranted ? Permission.LOCATION : Permission.BLUETOOTH);
+            return false;
         }
     }
 
-    private void showPeripheralsStatus(boolean isBluetoothEnabled, boolean isLocationEnabled) {
-        if (!isBluetoothEnabled && !requestWasSent) {
-            Snackbar snackbar = Utils.errorSnackbar(binding.getRoot(), "Bluetooth is disable");
-            snackbar.setDuration(10000);
-            snackbar.setAction("Enable", this::openBluetoothEnableActivity)
-                    .show();
-        } else if (!Version.upperSnowCone && !isLocationEnabled) {
-            Utils.errorSnackbar(binding.getRoot(), "Location is disable").show();
-        }
+    private void showBluetoothDisabledWarning() {
+        Snackbar snackbar = Utils.errorSnackbar(rootView, "Bluetooth is disable");
+        snackbar.setDuration(10000);
+        snackbar.setAction("Enable", this::openBluetoothEnableActivity)
+                .show();
+    }
+
+    private void showLocationDisabledWarning() {
+        Utils.errorSnackbar(rootView, "Location is disable")
+                .show();
     }
 
     private void showContent() {
-        binding.constraintLayout.setVisibility(View.VISIBLE);
-        binding.infoNoPermission.getRoot().setVisibility(View.GONE);
+        mainLayout.setVisibility(View.VISIBLE);
+        noPermissionLayout.setVisibility(View.GONE);
     }
 
     private void showInfoNoPermission(@Permission.RequestType int requestType) {
         ContentNoPermission content = ContentNoPermission.getContent(requestType);
         boolean deniedForever = Permission.isAccessDeniedForever(this, requestType);
 
-        binding.constraintLayout.setVisibility(View.GONE);
-        binding.infoNoPermission.getRoot().setVisibility(View.VISIBLE);
+        mainLayout.setVisibility(View.GONE);
+        noPermissionLayout.setVisibility(View.VISIBLE);
 
-        binding.infoNoPermission.ivNoPermission.setImageResource(content.getIcResId());
-        binding.infoNoPermission.tvNoPermissionTitle.setText(content.getTitleResId());
-        binding.infoNoPermission.tvNoPermissionInfo.setText(content.getInfoResId());
+        binding.noPermissionLayout.iconImageView.setImageResource(content.getIcResId());
+        binding.noPermissionLayout.titleTextView.setText(content.getTitleResId());
+        binding.noPermissionLayout.messageTextView.setText(content.getMessageResId());
 
-        binding.infoNoPermission.btnNoPermissionAction
-                .setVisibility(deniedForever ? View.GONE : View.VISIBLE);
-        binding.infoNoPermission.btnNoPermissionSettings
-                .setVisibility(deniedForever ? View.VISIBLE : View.GONE);
+        actionButton.setVisibility(deniedForever ? View.GONE : View.VISIBLE);
+        settingsButton.setVisibility(deniedForever ? View.VISIBLE : View.GONE);
     }
 
     public void openBluetoothEnableActivity(View view) {
-        if (!requestWasSent) {
-            requestWasSent = true;
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            bluetoothEnableResultLauncher.launch(enableBtIntent);
-        }
+        requestWasSent = true;
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        bluetoothEnableResultLauncher.launch(enableBtIntent);
     }
 
     private void showPatternDialog(FobParams params) {
-        binding.fab.setBackgroundTintList(ColorStateList.valueOf(getColorWrapper(R.color.orange)));
-        scannerViewModel.startScan(); // On older devices, "auto-tart" scanning does not work after bluetooth is turned on.
+        patternFab.setBackgroundTintList(ColorStateList.valueOf(getColorWrapper(R.color.orange)));
+        scannerViewModel.startScan(); // On older devices, "auto-start" scanning does not work after bluetooth is turned on.
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         PatternDialogFragment dialogFragment = PatternDialogFragment.newInstance(params);
         dialogFragment.show(fragmentManager, "fragment_pattern");
-//        binding.fab.setVisibility(View.GONE);
+//        fab.setVisibility(View.GONE);
     }
 
     private void requestPermissions() {

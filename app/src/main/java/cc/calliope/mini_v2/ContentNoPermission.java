@@ -8,12 +8,12 @@ public enum ContentNoPermission {
 
     private final int icResId;
     private final int titleResId;
-    private final int infoResId;
+    private final int messageResId;
 
-    ContentNoPermission(int icResId, int titleResId, int infoResId) {
+    ContentNoPermission(int icResId, int titleResId, int messageResId) {
         this.icResId = icResId;
         this.titleResId = titleResId;
-        this.infoResId = infoResId;
+        this.messageResId = messageResId;
     }
 
     public static ContentNoPermission getContent(@Permission.RequestType int requestType){
@@ -30,7 +30,7 @@ public enum ContentNoPermission {
         return titleResId;
     }
 
-    public int getInfoResId() {
-        return infoResId;
+    public int getMessageResId() {
+        return messageResId;
     }
 }
