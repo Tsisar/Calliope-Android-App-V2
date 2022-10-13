@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.DFUActivity;
-import cc.calliope.mini_v2.JavaScriptInterface;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.utils.Utils;
@@ -212,6 +211,11 @@ public class WebFragment extends Fragment implements DownloadListener {
         return getFile(filename, FILE_EXTENSION);
     }
 
+    //TODO db
+    // String file absolute path
+    // String editor name
+    // boolean don't ask
+    // boolean rewrite
     private File getFile(String filename, String extension) {
         Activity activity = getActivity();
         if (activity == null)
@@ -242,6 +246,10 @@ public class WebFragment extends Fragment implements DownloadListener {
             e.printStackTrace();
         }
 
+        return null;
+    }
+
+    private File createFile(){
         return null;
     }
 
@@ -280,7 +288,7 @@ public class WebFragment extends Fragment implements DownloadListener {
     }
 
 
-    public Boolean downloadFileFromURL(final String link, File file) {
+    public Boolean downloadFileFromURL(String link, File file) {
         try {
             URL url = new URL(link);
             URLConnection ucon = url.openConnection();

@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.ui.web;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
