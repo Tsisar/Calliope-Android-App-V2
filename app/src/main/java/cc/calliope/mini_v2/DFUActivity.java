@@ -1,10 +1,12 @@
 package cc.calliope.mini_v2;
 
+import android.Manifest;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,7 +17,7 @@ import java.lang.reflect.Method;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.core.app.ActivityCompat;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.service.DfuService;
 import no.nordicsemi.android.ble.PhyRequest;
@@ -26,6 +28,10 @@ import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class DFUActivity extends AppCompatActivity {
+    private static final int NUMBER_OF_RETRIES = 3;
+    private static final int INTERVAL_OF_RETRIES = 100; // ms
+    private static final int REBOOT_TIME = 2000; // time required by the device to reboot, ms
+    private static final long CONNECTION_TIMEOUT = 10000; // default connection timeout is 30000 ms
 
     private TextView deviceInfo;
     private TextView timerText;
@@ -42,6 +48,8 @@ public class DFUActivity extends AppCompatActivity {
     private final Handler timerHandler = new Handler();
     private final Runnable deferredFinish = this::finish;
     private static final int DELAY_TO_FINISH = 5000;
+
+    private String pattern;
 
     private boolean onPause;
 
@@ -108,14 +116,14 @@ public class DFUActivity extends AppCompatActivity {
 
         @Override
         public void onProgressChanged(@NonNull final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
-            if(!onPause) {
+            if (!onPause) {
                 deviceInfo.setText(percent + "%");
                 timerText.setText("Uploading, avgSpeed: " + avgSpeed);
                 progressBar.setProgress(39 + percent / 3);
             }
 
-            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG, method + " percent: " + percent);
+//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+//            Log.e(TAG, method + " percent: " + percent);
         }
 
         @Override
@@ -175,9 +183,11 @@ public class DFUActivity extends AppCompatActivity {
             return;
         }
 
+        pattern = device.getPattern();
+
         // Check if the peripheral is cached or not
         int deviceType = device.getDevice().getType();
-        if(deviceType == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
+        if (deviceType == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
             Log.e("BLE", "The peripheral is not cached");
         } else {
             Log.v("BLE", "The peripheral is cached");
@@ -189,15 +199,15 @@ public class DFUActivity extends AppCompatActivity {
 
         flashingManager.connect(device.getDevice())
                 // Automatic retries are supported, in case of 133 error.
-                .retry(3 /* times, with */, 100 /* ms interval */)
-                .timeout(10000 /* ms */)
+                .retry(NUMBER_OF_RETRIES /* times, with */, INTERVAL_OF_RETRIES /* ms interval */)
+                .timeout(CONNECTION_TIMEOUT /* ms */)
                 .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK | PhyRequest.PHY_LE_2M_MASK)
                 .done(this::writeCharacteristic)
                 .fail(this::connectionFail)
                 .enqueue();
     }
 
-    private void writeCharacteristic(BluetoothDevice device){
+    private void writeCharacteristic(BluetoothDevice device) {
         Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "writeCharacteristic");
         flashingManager.writeCharacteristic()
                 .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
@@ -249,17 +259,17 @@ public class DFUActivity extends AppCompatActivity {
         final String filePath = extras.getString("EXTRA_FILE");
 
         Log.i("DFUExtra", "mAddress: " + device.getAddress());
-//        Log.i("DFUExtra", "mPattern: " + device.getName());
+        Log.i("DFUExtra", "mPattern: " + device.getName());
         Log.i("DFUExtra", "filePath: " + filePath);
         Log.i("DFUExtra", "Start Flashing");
 
         final DfuServiceInitiator starter = new DfuServiceInitiator(device.getAddress())
-//                .setDeviceName(device.getName())
+                .setDeviceName(pattern)
                 //TODO Modify HexInputStream
                 .setMbrSize(0x18000)
 //                .setForeground(false)
-                .setNumberOfRetries(3)
-                .setRebootTime(2000)
+                .setNumberOfRetries(NUMBER_OF_RETRIES)
+                .setRebootTime(REBOOT_TIME)
                 .setKeepBond(false);
 
         starter.setBinOrHex(DfuBaseService.TYPE_APPLICATION, filePath);

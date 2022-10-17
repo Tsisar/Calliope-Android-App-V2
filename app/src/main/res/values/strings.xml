@@ -38,5 +38,5 @@
 
     <string name="insert_battery_00">1. fill the battery compartment with two batteries of type AAA. Make sure that the batteries are aligned correctly.</string>
     <string name="insert_battery_01">2. take the battery block provided and carefully insert the small, white plastic end (JST connector) into the battery connector attached to the Calliope mini.</string>
-
+    <string name="welcome">welcome</string>
 </resources>

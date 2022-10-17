@@ -43,6 +43,7 @@ import cc.calliope.mini_v2.views.MovableFloatingActionButton;
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
     private static final int REQUEST_CODE = 1022; // random number
+    private static final int SNACKBAR_DURATION = 10000; // how long to display the snackbar message.
     private static boolean requestWasSent = false;
 
     private ActivityMainBinding binding;
@@ -98,10 +99,11 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     public void onResume() {
         super.onResume();
         requestWasSent = false;
+
         if (checkPermission()) {
             if (!Utils.isBluetoothEnabled()) {
                 showBluetoothDisabledWarning();
-            } else if (Utils.isLocationEnabled(this)) {
+            } else if (!Version.upperSnowCone && !Utils.isLocationEnabled(this)) {
                 showLocationDisabledWarning();
             }
             scannerViewModel.startScan();
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
     private void showBluetoothDisabledWarning() {
         Snackbar snackbar = Utils.errorSnackbar(rootView, "Bluetooth is disable");
-        snackbar.setDuration(10000);
+        snackbar.setDuration(SNACKBAR_DURATION);
         snackbar.setAction("Enable", this::openBluetoothEnableActivity)
                 .show();
     }

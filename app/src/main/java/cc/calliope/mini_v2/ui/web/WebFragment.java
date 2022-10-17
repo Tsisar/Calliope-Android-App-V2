@@ -151,6 +151,8 @@ public class WebFragment extends Fragment implements DownloadListener {
         return view;
     }
 
+    //TODO завантажувати xml і ділитися ними
+
     @Override
     public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
         Log.v(TAG, "URL: " + url);
