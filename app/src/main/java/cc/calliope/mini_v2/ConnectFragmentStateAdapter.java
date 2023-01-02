@@ -15,13 +15,13 @@ import java.util.List;
 public class ConnectFragmentStateAdapter extends FragmentStateAdapter {
 
     private static final String TAG = "ConnectInfoAdapter";
-    private final List<ConnectInfo> connectInfo;
+    private final List<ConnectInfo> connectInfoList;
     Context context;
 
     public ConnectFragmentStateAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
         context = fragmentActivity;
-        connectInfo = getConnectInfo();
+        connectInfoList = getConnectInfo();
     }
 
     private List<ConnectInfo> getConnectInfo()  {
@@ -52,13 +52,13 @@ public class ConnectFragmentStateAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        ConnectInfo connectInfo = this.connectInfo.get(position);
+        ConnectInfo connectInfo = connectInfoList.get(position);
         return new ConnectPageFragment(connectInfo);
     }
 
 
     @Override
     public int getItemCount() {
-        return this.connectInfo.size();
+        return connectInfoList.size();
     }
 }

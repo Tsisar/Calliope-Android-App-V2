@@ -81,7 +81,6 @@ public class ConnectPageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (this.connectInfo == null) {
-            Log.i(LOG_TAG, "Get employee data from savedInstanceState");
             // The state was saved by onSaveInstanceState(Bundle outState) method.
             this.connectInfo = this.bundleToConnectInfo(savedInstanceState);
         }

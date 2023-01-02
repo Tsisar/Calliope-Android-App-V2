@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
     public int getColorWrapper(int id) {
         if (Version.upperMarshmallow) {
-            return getColor(id);
+            return super.getColor(id);
         } else {
             //noinspection deprecation
             return getResources().getColor(id);
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     private void scanResults(final ScannerLiveData state) {
 //        Log.v("SCANNER", "current device: " + state.getCurrentDevice());
 
-        if (hasOpenedDialogs(this))
+        if (hasOpenedDialogs())
             return;
 
         if (!state.isBluetoothEnabled() && !requestWasSent) {
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     private void showPatternDialog(FobParams params) {
-        patternFab.setBackgroundTintList(ColorStateList.valueOf(getColorWrapper(R.color.orange)));
+//        patternFab.setBackgroundTintList(ColorStateList.valueOf(getColorWrapper(R.color.orange)));
         scannerViewModel.startScan(); // On older devices, "auto-start" scanning does not work after bluetooth is turned on.
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -240,8 +240,8 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         startActivity(intent);
     }
 
-    private static boolean hasOpenedDialogs(AppCompatActivity activity) {
-        List<Fragment> fragments = activity.getSupportFragmentManager().getFragments();
+    private boolean hasOpenedDialogs() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
             if (fragment instanceof DialogFragment) {
                 return true;

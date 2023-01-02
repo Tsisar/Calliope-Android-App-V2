@@ -1,20 +1,21 @@
 package cc.calliope.mini_v2.ui.home;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -24,8 +25,6 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.Guideline;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -55,47 +54,52 @@ public class HomeFragment extends Fragment {
 
     private ViewPager2 viewPager2;
 
-    @SuppressLint("ClickableViewAccessibility")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         ScannerViewModel scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
-        scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> this.device = result.getCurrentDevice());
+        scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> device = result.getCurrentDevice());
 
-        binding.myCode.linearLayout.setOnTouchListener((view, motionEvent) -> {
-            switch (motionEvent.getActionMasked()) {
-                case MotionEvent.ACTION_DOWN:
-                case MotionEvent.ACTION_UP:
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    Guideline guideLine = binding.guideline;
-                    if(guideLine != null) {
-                        int height = binding.getRoot().getHeight();
-                        int margin = Utils.convertDpToPixel(64, view.getContext());
-                        float guidePercent = (motionEvent.getRawY() - margin) / height;
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            BottomSheetBehavior<View> sheetBehavior = BottomSheetBehavior.from(binding.bottomSheet);
+            sheetBehavior.setPeekHeight(64);
+            sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
 
-                        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) guideLine.getLayoutParams();
-                        if(guidePercent > 0.25f && guidePercent < 0.95f) {
-                            params.guidePercent = guidePercent;
-                        }
-                        guideLine.setLayoutParams(params);
-                    }
-                    break;
-                default:
-                    return false;
-            }
-            return true;
-        });
+//        binding.myCode.linearLayout.setOnTouchListener((view, motionEvent) -> {
+//            switch (motionEvent.getActionMasked()) {
+//                case MotionEvent.ACTION_DOWN:
+//                case MotionEvent.ACTION_UP:
+//                    break;
+//                case MotionEvent.ACTION_MOVE:
+//                    Guideline guideLine = binding.guideline;
+//                    if(guideLine != null) {
+//                        int height = binding.getRoot().getHeight();
+//                        int margin = Utils.convertDpToPixel(64, view.getContext());
+//                        float guidePercent = (motionEvent.getRawY() - margin) / height;
+//
+//                        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) guideLine.getLayoutParams();
+//                        if(guidePercent > 0.25f && guidePercent < 0.95f) {
+//                            params.guidePercent = guidePercent;
+//                        }
+//                        guideLine.setLayoutParams(params);
+//                    }
+//                    break;
+//                default:
+//                    return false;
+//            }
+//            return true;
+//        });
 
         showRecyclerView(inflater);
 
         viewPager2 = binding.viewPager2;
 
-        // Employee FragmentStateAdapter.
         FragmentActivity activity = getActivity();
-        if(activity != null) {
+        if (activity != null) {
             ConnectFragmentStateAdapter adapter = new ConnectFragmentStateAdapter(activity);
             viewPager2.setAdapter(adapter);
         }
@@ -157,8 +161,8 @@ public class HomeFragment extends Fragment {
         filesList.addAll(getFiles(activity, Editor.LIBRARY));
 
         if (!filesList.isEmpty()) {
-            setMyCodeVisibility(true);
-            RecyclerView recyclerView = binding.myCode.recyclerView;
+            setBottomSheetVisibility(true);
+            RecyclerView recyclerView = binding.recyclerView;
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -183,13 +187,13 @@ public class HomeFragment extends Fragment {
                 popup.show();
             });
             recyclerView.setAdapter(recyclerAdapter);
-        }else {
-            setMyCodeVisibility(false);
+        } else {
+            setBottomSheetVisibility(false);
         }
     }
 
-    private void setMyCodeVisibility(boolean visible){
-        binding.myCode.layoutMyCode.setVisibility(visible?View.VISIBLE:View.GONE);
+    private void setBottomSheetVisibility(boolean visible) {
+        binding.bottomSheet.setVisibility(visible?View.VISIBLE:View.GONE);
     }
 
     private boolean renameFile(FileWrapper file) {
@@ -271,7 +275,7 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
             if (file.delete()) {
                 recyclerAdapter.remove(file);
-                setMyCodeVisibility(!recyclerAdapter.isEmpty());
+                setBottomSheetVisibility(!recyclerAdapter.isEmpty());
                 alertDialog.dismiss();
             }
         });
