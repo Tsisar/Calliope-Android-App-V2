@@ -1,7 +1,6 @@
 package cc.calliope.mini_v2.ui.home;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -59,50 +57,27 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
+        FragmentActivity activity = getActivity();
+        if(activity == null)
+            return binding.getRoot();
+
         ScannerViewModel scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> device = result.getCurrentDevice());
 
         int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            int peekHeight = Utils.convertDpToPixel(48, activity);
             BottomSheetBehavior<View> sheetBehavior = BottomSheetBehavior.from(binding.bottomSheet);
-            sheetBehavior.setPeekHeight(64);
+            sheetBehavior.setPeekHeight(peekHeight);
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
-
-//        binding.myCode.linearLayout.setOnTouchListener((view, motionEvent) -> {
-//            switch (motionEvent.getActionMasked()) {
-//                case MotionEvent.ACTION_DOWN:
-//                case MotionEvent.ACTION_UP:
-//                    break;
-//                case MotionEvent.ACTION_MOVE:
-//                    Guideline guideLine = binding.guideline;
-//                    if(guideLine != null) {
-//                        int height = binding.getRoot().getHeight();
-//                        int margin = Utils.convertDpToPixel(64, view.getContext());
-//                        float guidePercent = (motionEvent.getRawY() - margin) / height;
-//
-//                        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) guideLine.getLayoutParams();
-//                        if(guidePercent > 0.25f && guidePercent < 0.95f) {
-//                            params.guidePercent = guidePercent;
-//                        }
-//                        guideLine.setLayoutParams(params);
-//                    }
-//                    break;
-//                default:
-//                    return false;
-//            }
-//            return true;
-//        });
 
         showRecyclerView(inflater);
 
         viewPager2 = binding.viewPager2;
 
-        FragmentActivity activity = getActivity();
-        if (activity != null) {
-            ConnectFragmentStateAdapter adapter = new ConnectFragmentStateAdapter(activity);
-            viewPager2.setAdapter(adapter);
-        }
+        ConnectFragmentStateAdapter adapter = new ConnectFragmentStateAdapter(activity);
+        viewPager2.setAdapter(adapter);
 
         // PageTransformer
         viewPager2.setPageTransformer(new ZoomOutPageTransformer());
@@ -168,24 +143,7 @@ public class HomeFragment extends Fragment {
 
             recyclerAdapter = new RecyclerAdapter(inflater, filesList);
             recyclerAdapter.setOnItemClickListener(this::openDFUActivity);
-            recyclerAdapter.setOnItemLongClickListener((view, file) -> {
-                PopupMenu popup = new PopupMenu(view.getContext(), view);
-                popup.setOnMenuItemClickListener(item -> {
-                    //Non-constant Fields
-                    int id = item.getItemId();
-                    if (id == R.id.rename) {
-                        return renameFile(file);
-                    } else if (id == R.id.share) {
-                        return shareFile(file.getFile());
-                    } else if (id == R.id.remove) {
-                        return removeFile(file);
-                    } else {
-                        return false;
-                    }
-                });
-                popup.inflate(R.menu.my_code_popup_menu);
-                popup.show();
-            });
+            recyclerAdapter.setOnItemLongClickListener(this::openPopupMenu);
             recyclerView.setAdapter(recyclerAdapter);
         } else {
             setBottomSheetVisibility(false);
@@ -194,6 +152,25 @@ public class HomeFragment extends Fragment {
 
     private void setBottomSheetVisibility(boolean visible) {
         binding.bottomSheet.setVisibility(visible?View.VISIBLE:View.GONE);
+    }
+
+    private void openPopupMenu(View view, FileWrapper file){
+        PopupMenu popup = new PopupMenu(view.getContext(), view);
+        popup.setOnMenuItemClickListener(item -> {
+            //Non-constant Fields
+            int id = item.getItemId();
+            if (id == R.id.rename) {
+                return renameFile(file);
+            } else if (id == R.id.share) {
+                return shareFile(file.getFile());
+            } else if (id == R.id.remove) {
+                return removeFile(file);
+            } else {
+                return false;
+            }
+        });
+        popup.inflate(R.menu.my_code_popup_menu);
+        popup.show();
     }
 
     private boolean renameFile(FileWrapper file) {
@@ -285,15 +262,5 @@ public class HomeFragment extends Fragment {
         }
         alertDialog.show();
         return true;
-    }
-
-    private void showKeyboard(Context context) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-    }
-
-    public void closeKeyboard(Context context) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 }
