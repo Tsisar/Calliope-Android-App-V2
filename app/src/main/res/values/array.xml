@@ -2,15 +2,15 @@
 <resources>
 
     <array name="first_steps_illustrations">
-        <item>@drawable/welcome</item>
         <item>@mipmap/insert_battery_00</item>
+        <item>@mipmap/insert_battery_01</item>
         <item>@mipmap/insert_battery_02</item>
         <item>@mipmap/insert_battery_03</item>
         <item>@mipmap/insert_battery_04</item>
     </array>
 
     <array name="first_steps_descriptions">
-        <item>@string/welcome</item>
+        <item>@string/insert_battery_00</item>
         <item>@string/insert_battery_00</item>
         <item>@string/insert_battery_00</item>
         <item>@string/insert_battery_01</item>

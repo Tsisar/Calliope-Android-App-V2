@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.adapter;
+package cc.calliope.mini_v2.ui.home;
 
 import android.os.Build;
 import android.view.LayoutInflater;

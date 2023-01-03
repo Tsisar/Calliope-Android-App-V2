@@ -2,7 +2,7 @@ package cc.calliope.mini_v2;
 
 import java.io.File;
 
-import cc.calliope.mini_v2.views.Editor;
+import cc.calliope.mini_v2.ui.editors.Editor;
 
 public class FileWrapper {
     private final File file;

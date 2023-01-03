@@ -33,16 +33,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.viewpager2.widget.ViewPager2;
 import cc.calliope.mini_v2.DFUActivity;
-import cc.calliope.mini_v2.ConnectFragmentStateAdapter;
 import cc.calliope.mini_v2.FileWrapper;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.ZoomOutPageTransformer;
-import cc.calliope.mini_v2.adapter.RecyclerAdapter;
+import cc.calliope.mini_v2.views.ZoomOutPageTransformer;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentHomeBinding;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
-import cc.calliope.mini_v2.views.Editor;
+import cc.calliope.mini_v2.ui.editors.Editor;
 
 public class HomeFragment extends Fragment {
     private static final String FILE_EXTENSION = ".hex";
@@ -74,13 +72,28 @@ public class HomeFragment extends Fragment {
 
         showRecyclerView(inflater);
 
-        viewPager2 = binding.viewPager2;
+        binding.welcomeViewpager.setAdapter(new WelcomePagerAdapter(getActivity()));
+//        binding.welcomeViewpager.setOnItemClickListener(this);
+        binding.welcomeViewpager.setPageTransformer(false, new ZoomOutPageTransformer());
+        binding.welcomeTabDots.setupWithViewPager(binding.welcomeViewpager, true);
 
-        ConnectFragmentStateAdapter adapter = new ConnectFragmentStateAdapter(activity);
-        viewPager2.setAdapter(adapter);
+        binding.batteryViewpager.setAdapter(new BatteryPagerAdapter(getActivity()));
+//        binding.welcomeViewpager.setOnItemClickListener(this);
+        binding.batteryViewpager.setPageTransformer(false, new ZoomOutPageTransformer());
+        binding.batteryTabDots.setupWithViewPager(binding.batteryViewpager, true);
 
-        // PageTransformer
-        viewPager2.setPageTransformer(new ZoomOutPageTransformer());
+//        viewPager2 = binding.viewPager2;
+//
+//        ConnectFragmentStateAdapter adapter = new ConnectFragmentStateAdapter(activity);
+//        viewPager2.setAdapter(adapter);
+//
+//        // PageTransformer
+//        viewPager2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.e("onClick", "View: " + v);
+//            }
+//        });
 
         return binding.getRoot();
     }
