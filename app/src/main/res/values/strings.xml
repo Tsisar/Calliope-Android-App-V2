@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Calliope mini</string>
     <string name="title_home">Home</string>
-    <string name="title_coding">Editors and Programs</string>
+    <string name="title_editors">Editors and Programs</string>
+    <string name="title_scripts">Your scripts</string>
     <string name="title_help">Help</string>
 
     <string name="title_location_permission">LOCATION PERMISSION REQUIRED</string>
@@ -36,7 +37,10 @@
     <br/>E-Mail: <a href="mailto:info@calliope.cc">info@calliope.cc</a>
     ]]></string>
 
-    <string name="insert_battery_00">1. fill the battery compartment with two batteries of type AAA. Make sure that the batteries are aligned correctly.</string>
-    <string name="insert_battery_01">2. take the battery block provided and carefully insert the small, white plastic end (JST connector) into the battery connector attached to the Calliope mini.</string>
+    <string name="insert_battery_00">Fill the battery compartment with two batteries of type AAA.</string>
+    <string name="insert_battery_01"> </string>
+    <string name="insert_battery_02">Make sure that the batteries are aligned correctly.</string>
+    <string name="insert_battery_03"> </string>
+    <string name="insert_battery_04">Take the battery block provided and carefully insert the small, white plastic end (JST connector) into the battery connector attached to the Calliope mini.</string>
     <string name="welcome">welcome</string>
 </resources>

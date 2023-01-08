@@ -11,13 +11,24 @@
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-        <item name="snackbarStyle">@style/MySnackBarStyle</item>
+        <!-- Snackbar Style. -->
+        <item name="snackbarStyle">@style/SnackBarStyle</item>
+        <item name="snackbarButtonStyle">@style/SnackbarButton</item>
+        <item name="snackbarTextViewStyle">@style/SnackbarTextView</item>
     </style>
 
     <!-- snackbar style in res/values -->
-    <style name="MySnackBarStyle" parent="Widget.MaterialComponents.Snackbar">
-        <item name="android:background">@color/red</item>
+    <style name="SnackBarStyle" parent="Widget.MaterialComponents.Snackbar">
+        <item name="actionTextColorAlpha">1</item>
+        <item name="android:backgroundTint">@color/red</item>
+    </style>
+
+    <style name="SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="SnackbarTextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:textColor">@color/white</item>
     </style>
+
 </resources>

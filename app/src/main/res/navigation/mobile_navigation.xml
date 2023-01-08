@@ -12,9 +12,9 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_coding"
+        android:id="@+id/navigation_editors"
         android:name="cc.calliope.mini_v2.ui.editors.EditorsFragment"
-        android:label="@string/title_coding"
+        android:label="@string/title_scripts"
         tools:layout="@layout/fragment_editors" />
 
     <fragment

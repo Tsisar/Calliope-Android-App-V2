@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.home;
+package cc.calliope.mini_v2;
 
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -14,12 +14,9 @@ import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import cc.calliope.mini_v2.FileWrapper;
-import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.Utils;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
-    private final LayoutInflater inflater;
+public class ScriptsRecyclerAdapter extends RecyclerView.Adapter<ScriptsRecyclerAdapter.ViewHolder> {
     private final ArrayList<FileWrapper> files;
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
@@ -32,9 +29,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         void onItemLongClick(View view, FileWrapper file);
     }
 
-    public RecyclerAdapter(LayoutInflater inflater, ArrayList<FileWrapper> files) {
+    public ScriptsRecyclerAdapter(ArrayList<FileWrapper> files) {
         this.files = files;
-        this.inflater = inflater;
         sort();
     }
 
@@ -49,7 +45,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_file_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_list, parent, false);
         return new ViewHolder(view);
     }
 

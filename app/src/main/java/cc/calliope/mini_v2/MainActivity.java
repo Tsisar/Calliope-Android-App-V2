@@ -13,12 +13,14 @@ import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -26,12 +28,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
+import cc.calliope.mini_v2.ui.editors.EditorsFragment;
+import cc.calliope.mini_v2.ui.help.HelpFragment;
+import cc.calliope.mini_v2.ui.home.HomeFragment;
 import cc.calliope.mini_v2.utils.Permission;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
@@ -56,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     private Button actionButton;
     private Button settingsButton;
 
+    private ExtendedBluetoothDevice device;
+
+
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -73,8 +78,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+        bottomNavigation();
 
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::scanResults);
@@ -84,6 +88,44 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         patternFab.setOnClickListener(this::onFabClick);
         actionButton.setOnClickListener(v -> requestPermissions());
         settingsButton.setOnClickListener(v -> requestAppSettings());
+
+//        int peekHeight = Utils.convertDpToPixel(112, this);
+//        BottomSheetBehavior<View> sheetBehavior = BottomSheetBehavior.from(binding.bottomSheet);
+//        sheetBehavior.setPeekHeight(peekHeight);
+//        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void bottomNavigation(){
+        BottomNavigationView bottomNavigationView = binding.bottomNavigation;
+        HomeFragment homeFragment = new HomeFragment();
+        EditorsFragment editorsFragment = new EditorsFragment();
+        HelpFragment helpFragment = new HelpFragment();
+
+//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+//        NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+
+        replaceFragment(homeFragment);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                replaceFragment(homeFragment);
+                return true;
+            } else if (itemId == R.id.navigation_editors) {
+                replaceFragment(editorsFragment);
+                return true;
+            } else if (itemId == R.id.navigation_scripts) {
+                ScriptsBottomSheetFragment.newInstance(device).show(getSupportFragmentManager(), "ItemListDialogFragment");
+                return false;
+            } else if (itemId == R.id.navigation_help) {
+                replaceFragment(helpFragment);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void replaceFragment(@NonNull Fragment fragment){
+        getSupportFragmentManager().beginTransaction().replace(R.id.navigation_host_fragment, fragment).commit();
     }
 
     private void getViews() {
@@ -157,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             showBluetoothDisabledWarning();
         }
 
-        ExtendedBluetoothDevice device = state.getCurrentDevice();
+        device = state.getCurrentDevice();
         int color = getColorWrapper(device != null && device.isRelevant() ? R.color.green : R.color.orange);
         patternFab.setBackgroundTintList(ColorStateList.valueOf(color));
     }
