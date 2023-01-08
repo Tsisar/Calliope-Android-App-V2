@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -94,6 +95,7 @@ public class ScriptsBottomSheetFragment extends BottomSheetDialogFragment {
             scriptsRecyclerAdapter.setOnItemClickListener(this::openDFUActivity);
             scriptsRecyclerAdapter.setOnItemLongClickListener(this::openPopupMenu);
             recyclerView.setAdapter(scriptsRecyclerAdapter);
+            recyclerView.addItemDecoration(new SimpleDividerItemDecoration(activity));
         }else{
             Log.w("onViewCreated", "filesList is empty");
         }
