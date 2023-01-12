@@ -28,6 +28,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
@@ -78,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        bottomNavigation();
+        NavController navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
+        NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
 
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::scanResults);
@@ -101,9 +105,6 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         EditorsFragment editorsFragment = new EditorsFragment();
         HelpFragment helpFragment = new HelpFragment();
 
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-//        NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
-
         replaceFragment(homeFragment);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -113,9 +114,6 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             } else if (itemId == R.id.navigation_editors) {
                 replaceFragment(editorsFragment);
                 return true;
-            } else if (itemId == R.id.navigation_scripts) {
-                ScriptsBottomSheetFragment.newInstance(device).show(getSupportFragmentManager(), "ItemListDialogFragment");
-                return false;
             } else if (itemId == R.id.navigation_help) {
                 replaceFragment(helpFragment);
                 return true;

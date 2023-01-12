@@ -12,11 +12,6 @@
         android:title="@string/title_editors" />
 
     <item
-        android:id="@+id/navigation_scripts"
-        android:icon="@drawable/ic_action_notify_cancel"
-        android:title="@string/title_scripts" />
-
-    <item
         android:id="@+id/navigation_help"
         android:icon="@drawable/ic_help_black_24dp"
         android:title="@string/title_help" />

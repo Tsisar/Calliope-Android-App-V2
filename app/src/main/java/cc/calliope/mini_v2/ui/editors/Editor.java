@@ -18,7 +18,12 @@ public enum Editor {
             R.string.title_library,
             R.drawable.ic_editors_library,
             R.string.info_library,
-            "https://calliope.cc/calliope-mini/25programme#25");
+            "https://calliope.cc/calliope-mini/25programme#25"),
+    SCRIPTS(
+            R.string.title_scripts,
+            R.drawable.ic_launcher_foreground,
+            R.string.info_scripts,
+            null);
 
     private final int titleResId;
     private final int iconResId;

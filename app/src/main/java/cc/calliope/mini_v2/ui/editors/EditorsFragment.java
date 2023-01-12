@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import cc.calliope.mini_v2.ScriptsBottomSheetFragment;
 import cc.calliope.mini_v2.views.ZoomOutPageTransformer;
 import cc.calliope.mini_v2.views.ClickableViewPager;
 import cc.calliope.mini_v2.R;
@@ -40,23 +40,30 @@ public class EditorsFragment extends Fragment implements ClickableViewPager.OnIt
         binding = null;
     }
 
-    private void showWebFragment(String url, String editorName) {
-        Fragment webFragment = WebFragment.newInstance(url, editorName);
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-
-        transaction.replace(R.id.frameLayout, webFragment);
-//        transaction.setReorderingAllowed(true);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
     @Override
     public void onItemClick(int position) {
         if (getActivity() != null && Utils.isNetworkConnected(getActivity())) {
             Editor editor = Editor.values()[position];
-            showWebFragment(editor.getUrl(), editor.toString());
+            if(editor == Editor.SCRIPTS){
+                ScriptsBottomSheetFragment
+                        .newInstance(null) //device
+                        .show(getParentFragmentManager(), "ItemListDialogFragment");
+            }else {
+                showWebFragment(editor.getUrl(), editor.toString());
+            }
         } else {
             Utils.errorSnackbar(binding.getRoot(), "No internet available").show();
         }
+    }
+
+    private void showWebFragment(String url, String editorName) {
+        Fragment webFragment = WebFragment.newInstance(url, editorName);
+
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frameLayout, webFragment)
+                .setReorderingAllowed(true)
+                .addToBackStack("WEB")
+                .commit();
     }
 }

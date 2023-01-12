@@ -12,20 +12,27 @@
         android:id="@+id/icon_image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_editors_makecode"
         tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/title_make_code"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/roboto_mono"
+        app:layout_constraintTop_toBottomOf="@+id/icon_image_view" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_text_view">
 
         <TextView
@@ -38,17 +45,5 @@
             app:fontFamily="@font/roboto_mono"/>
     </ScrollView>
 
-    <TextView
-        android:id="@+id/title_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/title_make_code"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        app:fontFamily="@font/roboto_mono"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/icon_image_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,22 +10,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
+        <fragment
             android:id="@+id/navigation_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:defaultNavHost="true"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation">
+            app:navGraph="@navigation/mobile_navigation" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+            app:layout_constraintTop_toTopOf="parent">
 
             <cc.calliope.mini_v2.views.MovableFloatingActionButton
                 android:id="@+id/pattern_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
+                android:layout_gravity="top|end"
                 android:layout_margin="8dp"
                 android:src="@drawable/ic_device_black_24dp"
                 app:maxImageSize="32dp" />
-
         </FrameLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
