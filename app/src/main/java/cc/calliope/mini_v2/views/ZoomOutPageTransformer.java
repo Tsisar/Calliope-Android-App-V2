@@ -3,8 +3,9 @@ package cc.calliope.mini_v2.views;
 import android.view.View;
 
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
-public class ZoomOutPageTransformer implements ViewPager.PageTransformer {
+public class ZoomOutPageTransformer implements ViewPager2.PageTransformer {
     private static final float MIN_SCALE = 0.85f;
     private static final float MIN_ALPHA = 0.5f;
 

@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.ui.scripts;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,6 +7,7 @@ import android.view.View;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import cc.calliope.mini_v2.R;
 
 public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
     private final Drawable drawable;

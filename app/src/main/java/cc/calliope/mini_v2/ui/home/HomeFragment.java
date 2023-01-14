@@ -21,12 +21,12 @@ public class HomeFragment extends Fragment {
 
         binding.welcomeViewpager.setAdapter(new WelcomePagerAdapter(getActivity()));
 //        binding.welcomeViewpager.setOnItemClickListener(this);
-        binding.welcomeViewpager.setPageTransformer(false, new ZoomOutPageTransformer());
+//        binding.welcomeViewpager.setPageTransformer(false, new ZoomOutPageTransformer());
         binding.welcomeTabDots.setupWithViewPager(binding.welcomeViewpager, true);
 
         binding.batteryViewpager.setAdapter(new BatteryPagerAdapter(getActivity()));
 //        binding.welcomeViewpager.setOnItemClickListener(this);
-        binding.batteryViewpager.setPageTransformer(false, new ZoomOutPageTransformer());
+//        binding.batteryViewpager.setPageTransformer(false, new ZoomOutPageTransformer());
         binding.batteryTabDots.setupWithViewPager(binding.batteryViewpager, true);
 
         return binding.getRoot();

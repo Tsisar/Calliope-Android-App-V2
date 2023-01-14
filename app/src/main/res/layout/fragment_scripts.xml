@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingHorizontal="@dimen/activity_horizontal_margin"
-    android:paddingVertical="@dimen/activity_vertical_margin">
+    android:paddingVertical="@dimen/activity_vertical_margin"
+    tools:context=".ui.scripts.ScriptsFragment">
 
     <ImageView
         android:id="@+id/icon_image_view"
@@ -35,14 +36,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_text_view">
 
-        <TextView
-            android:id="@+id/info_text_view"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/scripts_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="fill_horizontal|top"
-            android:text="@string/info_make_code"
-            android:textSize="16sp"
-            app:fontFamily="@font/roboto_mono"/>
+            android:scrollbars="vertical" />
     </ScrollView>
 
 

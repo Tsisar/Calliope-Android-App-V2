@@ -1,24 +1,9 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.ui.scripts;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.NonNull;
-
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,54 +17,61 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import cc.calliope.mini_v2.DFUActivity;
+import cc.calliope.mini_v2.FileWrapper;
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
-import cc.calliope.mini_v2.databinding.FragmentScriptsBottomSheetBinding;
+import cc.calliope.mini_v2.databinding.FragmentScriptsBinding;
 import cc.calliope.mini_v2.ui.editors.Editor;
 import cc.calliope.mini_v2.utils.Utils;
+import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
-public class ScriptsBottomSheetFragment extends BottomSheetDialogFragment {
 
+public class ScriptsFragment extends Fragment {
     private static final String FILE_EXTENSION = ".hex";
-    private static final String DEVICE = "device_parcelable";
-    private FragmentScriptsBottomSheetBinding binding;
-    private ExtendedBluetoothDevice device;
+
+    private FragmentScriptsBinding binding;
+    private FragmentActivity activity;
+
     private ScriptsRecyclerAdapter scriptsRecyclerAdapter;
-    private Activity activity;
+    private ExtendedBluetoothDevice device;
 
-    public static ScriptsBottomSheetFragment newInstance(ExtendedBluetoothDevice device) {
-
-        final ScriptsBottomSheetFragment fragment = new ScriptsBottomSheetFragment();
-        final Bundle args = new Bundle();
-        args.putParcelable(DEVICE, device);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentScriptsBinding.inflate(inflater, container, false);
+        activity = requireActivity();
 
-        binding = FragmentScriptsBottomSheetBinding.inflate(inflater, container, false);
+        ScannerViewModel scannerViewModel = new ViewModelProvider(activity).get(ScannerViewModel.class);
+        scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> device = result.getCurrentDevice());
+
         return binding.getRoot();
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        activity = getActivity();
-        if(activity == null)
-            return;
 
-//        DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
-//        int height = displayMetrics.heightPixels;
-//        int maxHeight = (int) (height*0.40);
-//
-//        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) view.getParent());
-//        behavior.setPeekHeight(maxHeight);
+        Editor editor = Editor.SCRIPTS;
 
-        Bundle bundle = getArguments();
-        if (bundle != null)
-            device = bundle.getParcelable(DEVICE);
+        binding.titleTextView.setText(editor.getTitleResId());
+        binding.iconImageView.setImageResource(editor.getIconResId());
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 
@@ -99,12 +91,6 @@ public class ScriptsBottomSheetFragment extends BottomSheetDialogFragment {
         }else{
             Log.w("onViewCreated", "filesList is empty");
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 
     private ArrayList<FileWrapper> getFiles(Editor editor) {

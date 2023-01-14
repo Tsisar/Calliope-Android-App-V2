@@ -5,17 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import cc.calliope.mini_v2.ScriptsBottomSheetFragment;
 import cc.calliope.mini_v2.views.ZoomOutPageTransformer;
-import cc.calliope.mini_v2.views.ClickableViewPager;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.ui.web.WebFragment;
 import cc.calliope.mini_v2.databinding.FragmentEditorsBinding;
 import cc.calliope.mini_v2.utils.Utils;
 
-public class EditorsFragment extends Fragment implements ClickableViewPager.OnItemClickListener {
+public class EditorsFragment extends Fragment implements OnEditorClickListener {
 
     private FragmentEditorsBinding binding;
 
@@ -23,15 +24,18 @@ public class EditorsFragment extends Fragment implements ClickableViewPager.OnIt
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentEditorsBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
 
-        binding.editorViewpager.setAdapter(new EditorsPagerAdapter(getActivity()));
-        binding.editorViewpager.setOnItemClickListener(this);
-        binding.editorViewpager.setPageTransformer(false, new ZoomOutPageTransformer());
+        EditorsAdapter adapter = new EditorsAdapter(this);
+        adapter.setOnEditorClickListener(this);
 
-        binding.tabDots.setupWithViewPager(binding.editorViewpager, true);
+        binding.editorViewpager.setAdapter(adapter);
+        binding.editorViewpager.setPageTransformer(new ZoomOutPageTransformer());
 
-        return root;
+        new TabLayoutMediator(binding.tabDots, binding.editorViewpager,
+                (tab, position) -> tab.setTabLabelVisibility(TabLayout.TAB_LABEL_VISIBILITY_UNLABELED))
+                .attach();
+
+        return binding.getRoot();
     }
 
     @Override
@@ -41,14 +45,9 @@ public class EditorsFragment extends Fragment implements ClickableViewPager.OnIt
     }
 
     @Override
-    public void onItemClick(int position) {
+    public void onEditorClick(Editor editor) {
         if (getActivity() != null && Utils.isNetworkConnected(getActivity())) {
-            Editor editor = Editor.values()[position];
-            if(editor == Editor.SCRIPTS){
-                ScriptsBottomSheetFragment
-                        .newInstance(null) //device
-                        .show(getParentFragmentManager(), "ItemListDialogFragment");
-            }else {
+            if (editor != Editor.SCRIPTS) {
                 showWebFragment(editor.getUrl(), editor.toString());
             }
         } else {

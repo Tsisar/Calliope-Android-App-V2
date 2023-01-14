@@ -22,19 +22,19 @@ import androidx.appcompat.graphics.drawable.DrawableWrapper;
 import androidx.appcompat.widget.AppCompatRatingBar;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-public class SvgRatingBar extends AppCompatRatingBar {
+public class SvgPatternBar extends AppCompatRatingBar {
 
     private Bitmap sampleTile;
 
-    public SvgRatingBar(Context context) {
+    public SvgPatternBar(Context context) {
         this(context, null);
     }
 
-    public SvgRatingBar(Context context, AttributeSet attrs) {
+    public SvgPatternBar(Context context, AttributeSet attrs) {
         this(context, attrs, androidx.appcompat.R.attr.ratingBarStyle);
     }
 
-    public SvgRatingBar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SvgPatternBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

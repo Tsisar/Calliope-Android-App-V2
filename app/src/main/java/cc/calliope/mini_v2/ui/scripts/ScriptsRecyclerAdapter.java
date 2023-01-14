@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.ui.scripts;
 
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -14,6 +14,8 @@ import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import cc.calliope.mini_v2.FileWrapper;
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.Utils;
 
 public class ScriptsRecyclerAdapter extends RecyclerView.Adapter<ScriptsRecyclerAdapter.ViewHolder> {
