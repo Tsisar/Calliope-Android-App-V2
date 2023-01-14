@@ -16,7 +16,7 @@ import cc.calliope.mini_v2.ui.web.WebFragment;
 import cc.calliope.mini_v2.databinding.FragmentEditorsBinding;
 import cc.calliope.mini_v2.utils.Utils;
 
-public class EditorsFragment extends Fragment implements OnEditorClickListener {
+public class EditorsFragment extends Fragment{
 
     private FragmentEditorsBinding binding;
 
@@ -26,13 +26,12 @@ public class EditorsFragment extends Fragment implements OnEditorClickListener {
         binding = FragmentEditorsBinding.inflate(inflater, container, false);
 
         EditorsAdapter adapter = new EditorsAdapter(this);
-        adapter.setOnEditorClickListener(this);
 
         binding.editorViewpager.setAdapter(adapter);
         binding.editorViewpager.setPageTransformer(new ZoomOutPageTransformer());
 
-        new TabLayoutMediator(binding.tabDots, binding.editorViewpager,
-                (tab, position) -> tab.setTabLabelVisibility(TabLayout.TAB_LABEL_VISIBILITY_UNLABELED))
+        new TabLayoutMediator(binding.tabDots, binding.editorViewpager, (tab, position) ->
+                tab.setTabLabelVisibility(TabLayout.TAB_LABEL_VISIBILITY_UNLABELED))
                 .attach();
 
         return binding.getRoot();
@@ -42,27 +41,5 @@ public class EditorsFragment extends Fragment implements OnEditorClickListener {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-    }
-
-    @Override
-    public void onEditorClick(Editor editor) {
-        if (getActivity() != null && Utils.isNetworkConnected(getActivity())) {
-            if (editor != Editor.SCRIPTS) {
-                showWebFragment(editor.getUrl(), editor.toString());
-            }
-        } else {
-            Utils.errorSnackbar(binding.getRoot(), "No internet available").show();
-        }
-    }
-
-    private void showWebFragment(String url, String editorName) {
-        Fragment webFragment = WebFragment.newInstance(url, editorName);
-
-        getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frameLayout, webFragment)
-                .setReorderingAllowed(true)
-                .addToBackStack("WEB")
-                .commit();
     }
 }

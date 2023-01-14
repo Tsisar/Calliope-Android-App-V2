@@ -12,9 +12,10 @@
     <ImageView
         android:id="@+id/icon_image_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.4"
         app:srcCompat="@drawable/ic_editors_makecode"
         tools:ignore="ContentDescription" />
 
