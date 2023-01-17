@@ -111,20 +111,16 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     }
 
     public void setProgress(int progress){
-        this.progress = progress;
+        this.progress = Math.max(progress, 0);
         invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int strokeWidth = Utils.convertDpToPixel(2, getContext());
+        int strokeWidth = Utils.convertDpToPixel(4, getContext());
         int width = getWidth();
         int height = getHeight();
         int sweepAngle = (int) (360 * (progress / 100.f));
-
-        Log.e("FAB", "2dp: " + Utils.convertDpToPixel(2, getContext()));
-        Log.e("FAB", "Width: " + getWidth());
-        Log.e("FAB", "Height: " + getHeight());
 
         rectF.set(strokeWidth/2.f, strokeWidth/2.f, width-strokeWidth/2.f, height-strokeWidth/2.f);
 

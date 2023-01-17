@@ -2,15 +2,12 @@ package cc.calliope.mini_v2;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
@@ -24,7 +21,6 @@ import java.util.List;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -32,25 +28,20 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
-import cc.calliope.mini_v2.service.DfuService;
 import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Permission;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
+import cc.calliope.mini_v2.viewmodels.ProgressViewModel;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 import cc.calliope.mini_v2.views.FobParams;
 import cc.calliope.mini_v2.views.MovableFloatingActionButton;
-import no.nordicsemi.android.dfu.DfuProgressListener;
-import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
-import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
-
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
     private static final int REQUEST_CODE = 1022; // random number
@@ -97,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         scannerViewModel.getScannerState().observe(this, this::scanResults);
 
         getViews();
+
+        ProgressViewModel progressViewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
+        progressViewModel.getProgress().observe(this, this::setProgress);
 
         patternFab.setOnClickListener(this::onFabClick);
         actionButton.setOnClickListener(v -> requestPermissions());
@@ -145,14 +139,14 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             scannerViewModel.startScan();
         }
 
-        DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener);
+        //DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         scannerViewModel.stopScan();
-        DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener);
+        //DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener);
     }
 
     @Override
@@ -170,10 +164,10 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     private void onFabClick(View view) {
         view.startAnimation(new AlphaAnimation(1F, 0.75F));
 
-        if(isFlashingProcess){
+        if (isFlashingProcess) {
             final Intent intent = new Intent(this, DFUActivity.class);
             startActivity(intent);
-        }else {
+        } else {
             showPatternDialog(new FobParams(
                     view.getWidth(),
                     view.getHeight(),
@@ -201,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     private void scanResults(final ScannerLiveData state) {
 //        Log.v("SCANNER", "current device: " + state.getCurrentDevice());
 
-        if (hasOpenedDialogs())
+        if (hasOpenedDialogs() || isFlashingProcess)
             return;
 
         if (!state.isBluetoothEnabled() && !requestWasSent) {
@@ -210,10 +204,10 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
         ExtendedBluetoothDevice device = state.getCurrentDevice();
         int color = getColorWrapper(
-                (device != null && device.isRelevant())
-                        || isFlashingProcess ?
-                R.color.green :
-                R.color.orange);
+                device != null
+                        && device.isRelevant()
+                        ? R.color.green
+                        : R.color.orange);
         patternFab.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
@@ -305,61 +299,15 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         return false;
     }
 
-    /**
-     * Registers callbacks that allows to handle flashing process
-     * and react to flashing progress, errors and log some messages.
-     */
-    private void registerCallbacksForFlashing() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(DfuService.BROADCAST_PROGRESS);
-        filter.addAction(DfuService.BROADCAST_ERROR);
-        filter.addAction(DfuService.BROADCAST_LOG);
-        BroadcastReceiver dfuResultReceiver = new DFUResultReceiver();
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(dfuResultReceiver, filter);
+    private void setProgress(Integer progress) {
+        isFlashingProcess = progress > 0;
+        patternFab.setProgress(progress);
+        if (isFlashingProcess) {
+            patternFab.setBackgroundTintList(
+                    ColorStateList.valueOf(
+                            getColorWrapper(R.color.green)
+                    )
+            );
+        }
     }
-
-    private final DfuProgressListener mDfuProgressListener = new DfuProgressListenerAdapter() {
-        private static final String TAG_PL = "DfuProgressListener";
-
-        @Override
-        public void onDfuProcessStarting(@NonNull final String deviceAddress) {
-            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
-            isFlashingProcess = true;
-            binding.patternFab.setProgress(1);
-        }
-
-        @Override
-        public void onDfuCompleted(@NonNull final String deviceAddress) {
-            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
-            isFlashingProcess = false;
-            binding.patternFab.setProgress(0);
-        }
-
-        @Override
-        public void onDfuAborted(@NonNull final String deviceAddress) {
-            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
-            isFlashingProcess = false;
-            binding.patternFab.setProgress(0);
-        }
-
-        @Override
-        public void onProgressChanged(@NonNull final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
-            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method + " percent: " + percent);
-            isFlashingProcess = true;
-            binding.patternFab.setProgress(percent);
-        }
-
-        @Override
-        public void onError(@NonNull final String deviceAddress, final int error, final int errorType, final String message) {
-            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method + " error: " + message);
-            isFlashingProcess = false;
-            binding.patternFab.setProgress(0);
-        }
-    };
 }
