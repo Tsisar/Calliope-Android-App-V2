@@ -33,7 +33,8 @@
                 android:layout_gravity="top|end"
                 android:layout_margin="8dp"
                 android:src="@drawable/ic_device_black_24dp"
-                app:maxImageSize="32dp" />
+                app:maxImageSize="32dp"/>
+
         </FrameLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -53,5 +54,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

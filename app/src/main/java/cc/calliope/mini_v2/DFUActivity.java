@@ -118,7 +118,7 @@ public class DFUActivity extends AppCompatActivity {
         public void onProgressChanged(@NonNull final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
             if (!onPause) {
                 deviceInfo.setText(percent + "%");
-                timerText.setText("Uploading, avgSpeed: " + avgSpeed);
+                timerText.setText("Uploading");
                 progressBar.setProgress(39 + percent / 3);
             }
 
@@ -172,7 +172,7 @@ public class DFUActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         onPause = true;
-        //DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener);
+        DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener);
     }
 
     protected void initiateFlashing() {

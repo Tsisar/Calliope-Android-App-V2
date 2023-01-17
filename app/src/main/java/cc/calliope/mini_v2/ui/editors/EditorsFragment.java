@@ -10,11 +10,8 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import cc.calliope.mini_v2.views.ZoomOutPageTransformer;
-import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.ui.web.WebFragment;
+import cc.calliope.mini_v2.ui.ZoomOutPageTransformer;
 import cc.calliope.mini_v2.databinding.FragmentEditorsBinding;
-import cc.calliope.mini_v2.utils.Utils;
 
 public class EditorsFragment extends Fragment{
 

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import cc.calliope.mini_v2.views.ZoomOutPageTransformer;
 import cc.calliope.mini_v2.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {

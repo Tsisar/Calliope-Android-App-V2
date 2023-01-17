@@ -16,7 +16,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import java.util.Arrays;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +33,10 @@ public class PatternDialogFragment extends DialogFragment {
 
     private static final String FOB_PARAMS_PARCELABLE = "fob_params_parcelable";
     private DialogPatternBinding binding;
+    private Float[] oldPattern = {0f, 0f, 0f, 0f, 0f};
     private Float[] currentPattern = {0f, 0f, 0f, 0f, 0f};
+
+    private boolean connectClicked = false;
 
     private ScannerViewModel scannerViewModel;
 //    private ExtendedBluetoothDevice currentDevice;
@@ -73,7 +75,8 @@ public class PatternDialogFragment extends DialogFragment {
 
         customizingDialog(view);
 
-        currentPattern = scannerViewModel.getScannerState().getCurrentPattern();
+        oldPattern = scannerViewModel.getScannerState().getCurrentPattern();
+        currentPattern = Arrays.copyOf(oldPattern, oldPattern.length);
 
         binding.patternMatrix.columnA.setValue(currentPattern[0]);
         binding.patternMatrix.columnB.setValue(currentPattern[1]);
@@ -138,6 +141,9 @@ public class PatternDialogFragment extends DialogFragment {
 //        if (scannerViewModel.getScannerState().getCurrentDevice() != null) {
 //            pairDevice(scannerViewModel.getScannerState().getCurrentDevice().getDevice());
 //        }
+        if(!connectClicked){
+            scannerViewModel.setCurrentPattern(oldPattern);
+        }
         final Activity activity = getActivity();
         if (activity instanceof DialogInterface.OnDismissListener) {
             ((DialogInterface.OnDismissListener) activity).onDismiss(dialog);
@@ -160,6 +166,7 @@ public class PatternDialogFragment extends DialogFragment {
 
     // Call this method to send the data back to the parent fragment
     public void onConnectClick() {
+        connectClicked = true;
         dismiss();
     }
 

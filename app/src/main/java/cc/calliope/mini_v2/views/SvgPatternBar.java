@@ -14,7 +14,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
 
@@ -92,7 +91,7 @@ public class SvgPatternBar extends AppCompatRatingBar {
             shapeDrawable.getPaint().setColorFilter(bitmapDrawable.getPaint().getColorFilter());
             return (clip) ? new ClipDrawable(shapeDrawable, Gravity.START,
                     ClipDrawable.HORIZONTAL) : shapeDrawable;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && drawable instanceof VectorDrawable) {
+        } else if (drawable instanceof VectorDrawable) {
             return createTile(getBitmapDrawableFromVectorDrawable(drawable), clip);
         } else if (drawable instanceof VectorDrawableCompat) {
             // API 19 support.

@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.views;
+package cc.calliope.mini_v2.ui;
 
 import android.view.View;
 

@@ -1,11 +1,18 @@
 package cc.calliope.mini_v2.views;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import cc.calliope.mini_v2.utils.Utils;
 
 public class MovableFloatingActionButton extends FloatingActionButton implements View.OnTouchListener {
 
@@ -13,6 +20,10 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     private float downRawX, downRawY;
     private float dX, dY;
+
+    Paint paint;
+    RectF rectF;
+    int progress = 0;
 
     public MovableFloatingActionButton(Context context) {
         super(context);
@@ -31,6 +42,8 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     private void init() {
         setOnTouchListener(this);
+        paint = new Paint();
+        rectF = new RectF();
     }
 
     @Override
@@ -97,4 +110,30 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     }
 
+    public void setProgress(int progress){
+        this.progress = progress;
+        invalidate();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        int strokeWidth = Utils.convertDpToPixel(2, getContext());
+        int width = getWidth();
+        int height = getHeight();
+        int sweepAngle = (int) (360 * (progress / 100.f));
+
+        Log.e("FAB", "2dp: " + Utils.convertDpToPixel(2, getContext()));
+        Log.e("FAB", "Width: " + getWidth());
+        Log.e("FAB", "Height: " + getHeight());
+
+        rectF.set(strokeWidth/2.f, strokeWidth/2.f, width-strokeWidth/2.f, height-strokeWidth/2.f);
+
+        paint.setColor(Color.WHITE);
+        paint.setStrokeWidth(strokeWidth);
+        paint.setStyle(Paint.Style.STROKE);
+
+        canvas.drawArc (rectF, 270, sweepAngle, false, paint);
+
+        super.onDraw(canvas);
+    }
 }
