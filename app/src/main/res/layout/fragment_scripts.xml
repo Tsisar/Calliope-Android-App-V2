@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.scripts.ScriptsFragment">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/icon_image_view"
@@ -32,20 +31,13 @@
         app:fontFamily="@font/roboto_mono"
         app:layout_constraintTop_toBottomOf="@+id/icon_image_view" />
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/scripts_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_text_view">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/scripts_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-            android:scrollbars="vertical" />
-    </ScrollView>
-
+        app:layout_constraintTop_toBottomOf="@+id/title_text_view"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
