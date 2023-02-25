@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         settingsButton.setOnClickListener(v -> requestAppSettings());
 
         if (fullScreenButton != null) {
-            fullScreenButton.setOnClickListener(this::setFullScreenMode);
+            fullScreenButton.setOnClickListener(this::enableFullScreenMode);
         }
 
 //        registerCallbacksForFlashing();
@@ -107,9 +107,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     @Override
     public void onBackPressed() {
         if (isFullScreen) {
-            isFullScreen = false;
-            binding.bottomNavigation.setVisibility(View.VISIBLE);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            disableFullScreenMode();
         } else {
             super.onBackPressed();
         }
@@ -146,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     public void onPause() {
         super.onPause();
         scannerViewModel.stopScan();
+        disableFullScreenMode();
         //DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener);
     }
 
@@ -177,10 +176,16 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         }
     }
 
-    private void setFullScreenMode(View view) {
+    private void enableFullScreenMode(View view) {
         isFullScreen = true;
         binding.bottomNavigation.setVisibility(View.GONE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    private void disableFullScreenMode() {
+        isFullScreen = false;
+        binding.bottomNavigation.setVisibility(View.VISIBLE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     private int getColorWrapper(int id) {

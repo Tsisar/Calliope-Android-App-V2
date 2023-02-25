@@ -29,7 +29,7 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class DFUActivity extends AppCompatActivity {
     private static final int NUMBER_OF_RETRIES = 3;
-    private static final int INTERVAL_OF_RETRIES = 100; // ms
+    private static final int INTERVAL_OF_RETRIES = 500; // ms
     private static final int REBOOT_TIME = 2000; // time required by the device to reboot, ms
     private static final long CONNECTION_TIMEOUT = 10000; // default connection timeout is 30000 ms
 

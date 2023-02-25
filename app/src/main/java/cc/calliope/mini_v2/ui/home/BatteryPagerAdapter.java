@@ -32,7 +32,7 @@ public class BatteryPagerAdapter extends PagerAdapter {
         TextView info = layout.findViewById(R.id.info_text_view);
 
         icon.setImageResource(getResourceId(R.array.first_steps_illustrations, position));
-        info.setText(getResourceId(R.array.first_steps_descriptions, position));
+//        info.setText(getResourceId(R.array.first_steps_descriptions, position));
 
         collection.addView(layout);
         return layout;
