@@ -38,6 +38,9 @@ public class HomeItemFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (demoAnimation != null) {
+            demoAnimation.setCallback(null);
+        }
         binding = null;
     }
 
@@ -63,12 +66,16 @@ public class HomeItemFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        demoAnimation.start();
+        if (demoAnimation != null) {
+            demoAnimation.start();
+        }
     }
 
     @Override
     public void onPause() {
-        demoAnimation.stop();
         super.onPause();
+        if (demoAnimation != null) {
+            demoAnimation.stop();
+        }
     }
 }
