@@ -4,26 +4,28 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.FragmentBasicItemBinding;
 
-
-public class BatteryItemFragment extends Fragment {
+public class HomeItemFragment extends Fragment {
+    public static final String ARG_POSITION = "arg_position";
     private FragmentBasicItemBinding binding;
-    private AnimationDrawable insertBatteryAnimation;
+    private AnimationDrawable demoAnimation;
 
-    public static BatteryItemFragment newInstance() {
-        return new BatteryItemFragment();
+    public static HomeItemFragment newInstance(int position) {
+        HomeItemFragment fragment = new HomeItemFragment();
+        Bundle args = new Bundle();
+        args.putInt(HomeItemFragment.ARG_POSITION, position);
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
@@ -36,20 +38,37 @@ public class BatteryItemFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        insertBatteryAnimation.stop();
         binding = null;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        if (args == null)
+            return;
+
+        int position = args.getInt(ARG_POSITION);
+        Home home = Home.values()[position];
+
         ImageView insertBatteryImageView = binding.iconImageView;
-        insertBatteryImageView.setImageResource(R.drawable.anim_insert_battery);
-        insertBatteryAnimation = (AnimationDrawable) insertBatteryImageView.getDrawable();
-        insertBatteryAnimation.start();
+        insertBatteryImageView.setImageResource(home.getIconResId());
+        demoAnimation = (AnimationDrawable) insertBatteryImageView.getDrawable();
 
-        binding.titleTextView.setText(R.string.title_battery);
+        binding.titleTextView.setText(home.getTitleResId());
 
-        Spanned spanned = Html.fromHtml(getString(R.string.info_battery));
+        Spanned spanned = Html.fromHtml(getString(home.getInfoResId()));
         binding.infoTextView.setText(spanned);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        demoAnimation.start();
+    }
+
+    @Override
+    public void onPause() {
+        demoAnimation.stop();
+        super.onPause();
     }
 }

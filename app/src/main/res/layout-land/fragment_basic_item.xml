@@ -4,16 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingHorizontal="@dimen/activity_horizontal_margin"
-    android:paddingVertical="@dimen/activity_vertical_margin">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/icon_image_view"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:scaleType="centerInside"
-        app:layout_constraintWidth_percent="0.49"
+        app:layout_constraintWidth_percent="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_editors_makecode"
         tools:ignore="ContentDescription" />
@@ -21,13 +21,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:layout_constraintWidth_percent="0.49"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/icon_image_view">
 
         <TextView
             android:id="@+id/title_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:gravity="center"
             android:text="@string/title_make_code"
             android:textSize="17sp"
@@ -39,7 +41,7 @@
             android:id="@+id/scrollView2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title_text_view">
 
@@ -47,6 +49,7 @@
                 android:id="@+id/info_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                 android:gravity="fill_horizontal|top"
                 android:text="@string/info_make_code"
                 android:textSize="16sp"
@@ -54,9 +57,4 @@
         </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

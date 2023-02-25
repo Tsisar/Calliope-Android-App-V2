@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="@dimen/activity_horizontal_margin"
-    android:paddingVertical="@dimen/activity_vertical_margin"
     tools:context=".ui.scripts.ScriptsFragment">
 
     <ImageView
         android:id="@+id/icon_image_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHeight_percent="0.4"
@@ -23,7 +23,8 @@
         android:id="@+id/title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:gravity="center_horizontal"
         android:text="@string/title_scripts"
         android:textSize="18sp"
@@ -34,7 +35,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_text_view">
 
@@ -42,6 +43,7 @@
             android:id="@+id/scripts_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:scrollbars="vertical" />
     </ScrollView>
 

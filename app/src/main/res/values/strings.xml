@@ -22,18 +22,29 @@
     <string name="info_library">Here you find the original programs, to change or reload.</string>
     <string name="info_scripts">Here is you scripts.</string>
 
-    <string name="title_welcome">Let\'s go</string>
+    <string name="title_welcome">LET\'S GO</string>
     <string name="info_welcome">On this page you will learn how to get the Calliope mini up and running step by step. The first step shows you how to connect the Calliope mini correctly to the power supply.</string>
 
     <string name="title_battery">CONNECT</string>
     <string name="info_battery"><![CDATA[
-    <br/>Before you can start, the Calliope mini must be powered.
+    Before you can start, the Calliope mini must be powered.
     <br/>
     <br/>1. fill the battery compartment with two batteries of type <b>AAA</b>. Make sure that the batteries are aligned correctly.
     <br/>
     <br/>2. take the battery block provided and carefully insert the small, <b>white plastic end (JST connector)</b> into the battery connector attached to the Calliope mini.
     <br/>
     <br/>Make sure that the closed end of the plug is at the top with the raised part in the middle. If the cable connector fits easily into the battery connector on the board, it is correct.
+    ]]></string>
+
+    <string name="title_demo">DEMO SEQUENCE</string>
+    <string name="info_demo"><![CDATA[
+    Meet the Calliope mini. The Calliope mini will show you on the display which input you should make.
+    <br/>
+    <br/>1. press the button <b>A</b>.
+    <br/>2. press the button <b>B</b>.
+    <br/>3. press the keys <b>A+B</b> simultaneously.
+    <br/>4. The position sensor - shake the Calliope mini.
+    <br/>5. Ready!
     ]]></string>
 
     <string name="info_app"><![CDATA[
