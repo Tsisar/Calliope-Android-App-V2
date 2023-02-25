@@ -14,7 +14,6 @@ import cc.calliope.mini_v2.ui.ZoomOutPageTransformer;
 import cc.calliope.mini_v2.databinding.FragmentEditorsBinding;
 
 public class EditorsFragment extends Fragment{
-
     private FragmentEditorsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -27,7 +26,7 @@ public class EditorsFragment extends Fragment{
         binding.editorViewpager.setAdapter(adapter);
         binding.editorViewpager.setPageTransformer(new ZoomOutPageTransformer());
 
-        new TabLayoutMediator(binding.tabDots, binding.editorViewpager, (tab, position) ->
+        new TabLayoutMediator(binding.editorTabDots, binding.editorViewpager, (tab, position) ->
                 tab.setTabLabelVisibility(TabLayout.TAB_LABEL_VISIBILITY_UNLABELED))
                 .attach();
 

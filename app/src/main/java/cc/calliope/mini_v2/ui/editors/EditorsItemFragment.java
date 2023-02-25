@@ -11,14 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.databinding.FragmentEditorItemBinding;
+import cc.calliope.mini_v2.databinding.FragmentBasicItemBinding;
 import cc.calliope.mini_v2.ui.web.WebFragment;
 import cc.calliope.mini_v2.utils.Utils;
 
 
 public class EditorsItemFragment extends Fragment {
     public static final String ARG_POSITION = "arg_position";
-    private FragmentEditorItemBinding binding;
+    private FragmentBasicItemBinding binding;
     private final AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.75F);
 
     public static EditorsItemFragment newInstance(int position) {
@@ -33,7 +33,7 @@ public class EditorsItemFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentEditorItemBinding.inflate(inflater, container, false);
+        binding = FragmentBasicItemBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 

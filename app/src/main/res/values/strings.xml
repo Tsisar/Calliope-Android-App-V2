@@ -22,6 +22,20 @@
     <string name="info_library">Here you find the original programs, to change or reload.</string>
     <string name="info_scripts">Here is you scripts.</string>
 
+    <string name="title_welcome">Let\'s go</string>
+    <string name="info_welcome">On this page you will learn how to get the Calliope mini up and running step by step. The first step shows you how to connect the Calliope mini correctly to the power supply.</string>
+
+    <string name="title_battery">CONNECT</string>
+    <string name="info_battery"><![CDATA[
+    <br/>Before you can start, the Calliope mini must be powered.
+    <br/>
+    <br/>1. fill the battery compartment with two batteries of type <b>AAA</b>. Make sure that the batteries are aligned correctly.
+    <br/>
+    <br/>2. take the battery block provided and carefully insert the small, <b>white plastic end (JST connector)</b> into the battery connector attached to the Calliope mini.
+    <br/>
+    <br/>Make sure that the closed end of the plug is at the top with the raised part in the middle. If the cable connector fits easily into the battery connector on the board, it is correct.
+    ]]></string>
+
     <string name="info_app"><![CDATA[
     <b>Hello and welcome to the Calliope mini app!</b>
     <br/>
@@ -38,10 +52,5 @@
     <br/>E-Mail: <a href="mailto:info@calliope.cc">info@calliope.cc</a>
     ]]></string>
 
-    <string name="insert_battery_00">Fill the battery compartment with two batteries of type AAA.</string>
-    <string name="insert_battery_01"> </string>
-    <string name="insert_battery_02">Make sure that the batteries are aligned correctly.</string>
-    <string name="insert_battery_03"> </string>
-    <string name="insert_battery_04">Take the battery block provided and carefully insert the small, white plastic end (JST connector) into the battery connector attached to the Calliope mini.</string>
     <string name="welcome">welcome</string>
 </resources>

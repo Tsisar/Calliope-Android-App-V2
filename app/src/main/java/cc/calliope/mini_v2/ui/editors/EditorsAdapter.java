@@ -1,7 +1,5 @@
 package cc.calliope.mini_v2.ui.editors;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;

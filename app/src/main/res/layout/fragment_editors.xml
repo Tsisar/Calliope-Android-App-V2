@@ -16,13 +16,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:foregroundGravity="top"
-            app:layout_constraintBottom_toTopOf="@+id/tabDots"
+            app:layout_constraintBottom_toTopOf="@+id/editor_tab_dots"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabDots"
+            android:id="@+id/editor_tab_dots"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

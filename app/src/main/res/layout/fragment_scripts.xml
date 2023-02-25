@@ -16,16 +16,17 @@
         android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHeight_percent="0.4"
-        app:srcCompat="@drawable/ic_editors_makecode"
+        app:srcCompat="@drawable/ic_scripts"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:gravity="center_horizontal"
-        android:text="@string/title_make_code"
-        android:textSize="17sp"
+        android:text="@string/title_scripts"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:fontFamily="@font/roboto_mono"
         app:layout_constraintTop_toBottomOf="@+id/icon_image_view" />
