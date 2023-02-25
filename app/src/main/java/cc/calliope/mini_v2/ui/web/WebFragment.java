@@ -37,10 +37,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -155,10 +157,13 @@ public class WebFragment extends Fragment implements DownloadListener {
 
     @Override
     public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-        Log.v(TAG, "URL: " + url);
-        Log.v(TAG, "mimetype: " + mimetype);
-
-        selectDownloadMethod(url, mimetype);
+        String decodedUrl = "";
+        try {
+            decodedUrl = URLDecoder.decode(url, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        selectDownloadMethod(decodedUrl, mimetype);
     }
 
     private void selectDownloadMethod(String url, String mimetype) {
@@ -183,6 +188,9 @@ public class WebFragment extends Fragment implements DownloadListener {
             Log.w(TAG, "BASE64");
 
             String name = Utils.getFileNameFromPrefix(url);
+
+            Log.w(TAG, "URL: " + url);
+            Log.w(TAG, "FileName: " + name);
 
             file = getFile(name);
             if(file != null) {
@@ -228,7 +236,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             return null;
         }
 
-        Log.e(TAG, "DIR: " + dir);
+        Log.w(TAG, "DIR: " + dir);
         File file = new File(dir.getAbsolutePath() + File.separator + filename + extension);
 
         int i = 1;
@@ -239,7 +247,7 @@ public class WebFragment extends Fragment implements DownloadListener {
 
         try {
             if (file.createNewFile()) {
-                Log.e(TAG, "createNewFile: " + file);
+                Log.w(TAG, "createNewFile: " + file);
                 return file;
             } else {
                 Log.w(TAG, "CreateFile Error, deleting: " + file);
