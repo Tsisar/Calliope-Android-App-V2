@@ -13,6 +13,7 @@ import cc.calliope.mini_v2.DFUActivity;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.utils.Utils;
+import cc.calliope.mini_v2.utils.Version;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 import android.os.StrictMode;
@@ -21,6 +22,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
+import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
@@ -113,43 +116,34 @@ public class WebFragment extends Fragment implements DownloadListener {
         scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), result -> device = result.getCurrentDevice());
 
         webView = view.findViewById(R.id.webView);
+        WebSettings webSettings = webView.getSettings();
+
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setDatabaseEnabled(true);
+        webSettings.setDefaultTextEncodingName("utf-8");
+
+//        webView.addJavascriptInterface(new JavaScriptInterface(getContext()), "Android");
+//        webView.setWebChromeClient(new WebChromeClient());
+//        webView.setWebViewClient(new WebViewClient() {
+//            @Override
+//            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+//                if (Version.upperMarshmallow) {
+//                    Utils.errorSnackbar(webView, "Oh no! " + error.getDescription()).show();
+//                } else {
+//                    Utils.errorSnackbar(webView, "Oh no! onReceivedError").show();
+//                }
+//            }
+//        });
+        webView.setDownloadListener(this);
+
         if (savedInstanceState != null) {
             webView.restoreState(savedInstanceState);
         } else {
             webView.loadUrl(editorUrl);
         }
-
-        webView.setWebChromeClient(new WebChromeClient());
-        webView.setWebViewClient(new WebViewClient());
-
-        WebSettings settings = webView.getSettings();
-
-        settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setUseWideViewPort(true);
-        settings.setLoadWithOverviewMode(true);
-        settings.setDatabaseEnabled(true);
-
-        settings.setDefaultTextEncodingName("utf-8");
-        webView.addJavascriptInterface(new JavaScriptInterface(getContext()), "Android");
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(webView, url);
-            }
-
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    Utils.errorSnackbar(webView, "Oh no! " + error.getDescription()).show();
-                }else {
-                    Utils.errorSnackbar(webView, "Oh no! onReceivedError").show();
-                }
-            }
-        });
-
-        webView.setDownloadListener(this);
         return view;
     }
 
@@ -170,40 +164,39 @@ public class WebFragment extends Fragment implements DownloadListener {
         boolean result = false;
         File file = null;
 
+        Log.w(TAG, "URL: " + url);
+        Log.w(TAG, "mimetype: " + mimetype);
+
         if (url.startsWith("blob:")) {  // TODO: BLOB Download
             Log.w(TAG, "BLOB");
 
-            String javaScript = JavaScriptInterface.getBase64StringFromBlobUrl(url, mimetype);
-            webView.loadUrl(javaScript);
-            Log.v(TAG, "JS: " + javaScript);
+//            String javaScript = JavaScriptInterface.getBase64StringFromBlobUrl(url, mimetype);
+//            webView.loadUrl(javaScript);
+//            Log.v(TAG, "JS: " + javaScript);
             return;
-        } else if (url.startsWith("data:text/hex")){
+        } else if (url.startsWith("data:text/hex")) {
             Log.w(TAG, "HEX");
 
             file = getFile("firmware");
-            if(file != null) {
+            if (file != null) {
                 result = createAndSaveFileFromHexUrl(url, file);
             }
-        } else if (url.startsWith("data:") && url.contains("base64")){
+        } else if (url.startsWith("data:") && url.contains("base64")) {
             Log.w(TAG, "BASE64");
 
             String name = Utils.getFileNameFromPrefix(url);
-
-            Log.w(TAG, "URL: " + url);
-            Log.w(TAG, "FileName: " + name);
-
             file = getFile(name);
-            if(file != null) {
+            if (file != null) {
                 result = createAndSaveFileFromBase64Url(url, file);
             }
-        } else if (URLUtil.isValidUrl(url) && url.endsWith(".hex")){
+        } else if (URLUtil.isValidUrl(url) && url.endsWith(".hex")) {
             Log.w(TAG, "DOWNLOAD");
 
             String name = FilenameUtils.getBaseName(url);
             String extension = "." + FilenameUtils.getExtension(url);
 
             file = getFile(name, extension);
-            if(file != null) {
+            if (file != null) {
                 result = downloadFileFromURL(url, file);
             }
         }
@@ -232,7 +225,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             return null;
 
         File dir = new File(activity.getFilesDir().toString() + File.separator + editorName);
-        if(!dir.exists() && !dir.mkdirs()){
+        if (!dir.exists() && !dir.mkdirs()) {
             return null;
         }
 
@@ -259,7 +252,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         return null;
     }
 
-    private File createFile(){
+    private File createFile() {
         return null;
     }
 

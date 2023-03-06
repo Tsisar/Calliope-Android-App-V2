@@ -1,6 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.CalliopeMini" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Roboto Designed by Christian Robertson -->
+        <item name="android:fontFamily">@font/roboto_regular</item>
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/aqua_200</item>
         <item name="colorPrimaryVariant">@color/aqua_200</item>

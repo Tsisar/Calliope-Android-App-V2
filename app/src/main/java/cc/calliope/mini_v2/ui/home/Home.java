@@ -6,7 +6,7 @@ public enum Home {
 
     WELCOME(
             R.string.title_welcome,
-            R.drawable.anim_welcome,
+            R.drawable.welcome,
             R.string.info_welcome),
     BATTERY(
             R.string.title_battery,

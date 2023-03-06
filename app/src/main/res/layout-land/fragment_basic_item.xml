@@ -35,7 +35,6 @@
             android:text="@string/title_make_code"
             android:textSize="17sp"
             android:textStyle="bold"
-            app:fontFamily="@font/roboto_mono"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ScrollView
@@ -53,8 +52,7 @@
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                 android:gravity="fill_horizontal|top"
                 android:text="@string/info_make_code"
-                android:textSize="16sp"
-                app:fontFamily="@font/roboto_mono" />
+                android:textSize="16sp"/>
         </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

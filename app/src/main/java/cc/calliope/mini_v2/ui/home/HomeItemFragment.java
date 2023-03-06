@@ -17,7 +17,7 @@ import cc.calliope.mini_v2.databinding.FragmentBasicItemBinding;
 public class HomeItemFragment extends Fragment {
     public static final String ARG_POSITION = "arg_position";
     private FragmentBasicItemBinding binding;
-    private AnimationDrawable demoAnimation;
+    private AnimationDrawable animationDrawable;
 
     public static HomeItemFragment newInstance(int position) {
         HomeItemFragment fragment = new HomeItemFragment();
@@ -38,9 +38,6 @@ public class HomeItemFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (demoAnimation != null) {
-            demoAnimation.setCallback(null);
-        }
         binding = null;
     }
 
@@ -53,9 +50,11 @@ public class HomeItemFragment extends Fragment {
         int position = args.getInt(ARG_POSITION);
         Home home = Home.values()[position];
 
-        ImageView insertBatteryImageView = binding.iconImageView;
-        insertBatteryImageView.setImageResource(home.getIconResId());
-        demoAnimation = (AnimationDrawable) insertBatteryImageView.getDrawable();
+        ImageView iconImageView = binding.iconImageView;
+        iconImageView.setImageResource(home.getIconResId());
+        if(position > 0) {
+            animationDrawable = (AnimationDrawable) iconImageView.getDrawable();
+        }
 
         binding.titleTextView.setText(home.getTitleResId());
 
@@ -66,16 +65,27 @@ public class HomeItemFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (demoAnimation != null) {
-            demoAnimation.start();
+
+        if (animationDrawable != null) {
+            animationDrawable.start();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (demoAnimation != null) {
-            demoAnimation.stop();
+
+        if (animationDrawable != null) {
+            animationDrawable.stop();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (animationDrawable != null) {
+            animationDrawable.setCallback(null);
         }
     }
 }

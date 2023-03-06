@@ -28,7 +28,6 @@
         android:text="@string/title_make_code"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:fontFamily="@font/roboto_mono"
         app:layout_constraintTop_toBottomOf="@+id/icon_image_view" />
 
     <ScrollView
@@ -45,8 +44,7 @@
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:gravity="fill_horizontal|top"
             android:text="@string/info_make_code"
-            android:textSize="16sp"
-            app:fontFamily="@font/roboto_mono"/>
+            android:textSize="16sp"/>
     </ScrollView>
 
 

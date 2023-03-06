@@ -35,7 +35,6 @@
             android:text="@string/title_scripts"
             android:textSize="17sp"
             android:textStyle="bold"
-            app:fontFamily="@font/roboto_mono"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
