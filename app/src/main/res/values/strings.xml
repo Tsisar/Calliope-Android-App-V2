@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Calliope mini v.2 (BETA)</string>
     <string name="title_home">Home</string>
-    <string name="title_editors">Editors and Programs</string>
+    <string name="title_editors">Editors</string>
     <string name="title_help">Help</string>
 
     <string name="title_location_permission">LOCATION PERMISSION REQUIRED</string>
     <string name="title_bluetooth_permission">BLUETOOTH PERMISSION REQUIRED</string>
     <string name="info_location_permission">From Android 6.0 Marshmallow onwards the application requires Location permission in order to scan for Bluetooth devices.
-        \n\nThis is because Bluetooth may be used to determine the phone\'s and user\'s location. <b>mini</b> will not use this information in any way.</string>
+        \n\nThis is because Bluetooth may be used to determine the phone\'s and user\'s location, <b>mini</b> will not use this information in any way.</string>
     <string name="info_bluetooth_permission">To use Bluetooth features to communicate APP with your <b>mini</b> you must granted several permissions.</string>
 
     <string name="settings_btn_permission">Settings</string>

@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name">Calliope mini v.2 (BETA)</string>
+    <string name="title_home">Startseite</string>
+    <string name="title_editors">Redakteure</string>
+    <string name="title_help">Hilfe</string>
+
+    <string name="title_location_permission">STANDORTGENEHMIGUNG ERFORDERLICH</string>
+    <string name="title_bluetooth_permission">BLUETOOTH-ERLAUBNIS ERFORDERLICH</string>
+    <string name="info_location_permission">Ab Android 6.0 Marshmallow benötigt die Anwendung eine Standortberechtigung, um nach Bluetooth-Geräten zu suchen.
+        \n\nDies liegt daran, dass Bluetoothn verwendet werden kannn, um den Standort des Telefons und des Benutzers zu bestimmen. <b>mini</b> wird diese Informationen in keiner Weise verwenden.</string>
+    <string name="info_bluetooth_permission">Um die Bluetooth-Funktionen für die Kommunikation der APP mit deinem <b>mini</b> zu nutzen, musst du mehrere Berechtigungen vergeben.</string>
+
+    <string name="settings_btn_permission">Einstellungen</string>
+    <string name="action_btn_permission">Erlaubnis erteilen</string>
+
+    <string name="title_make_code">MakeCode</string>
+    <string name="title_roberta">Open Roberta Lab</string>
+    <string name="title_library">Vorinstallierte Programme</string>
+    <string name="title_scripts">Ihre Skripte</string>
+    <string name="info_make_code">Microsoft MakeCode vermittelt allen Schülern Informatik mit unterhaltsamen Projekten, sofortigen Ergebnissen sowie Block- und Texteditoren für alle Kenntnisstufen.</string>
+    <string name="info_roberta">Das Open Roberta Lab ist eine Cloud-basierte integrierte Programmierumgebung, die es Kindern und Jugendlichen ermöglicht, auf einfache Weise verschiedene Roboter/Mikrocontroller-Systeme zu programmieren.</string>
+    <string name="info_library">Hier finden Sie die Originalprogramme, die Sie ändern oder neu laden können.</string>
+    <string name="info_scripts">Hier sind Ihre Skripte.</string>
+
+    <string name="title_welcome">LASS UNS GEHEN</string>
+    <string name="info_welcome">Auf dieser Seite erfahren Sie, wie Sie den Calliope mini Schritt für Schritt in Betrieb nehmen. Der erste Schritt zeigt Ihnen, wie Sie den Calliope mini richtig an das Stromnetz anschließen.</string>
+
+    <string name="title_battery">VERBINDEN</string>
+    <string name="info_battery"><![CDATA[
+    Bevor du starten kannst, muss der Calliope mini mit Strom versorgt werden. Es gibt zwei Möglichkeiten.
+    <br/>
+    <br/>1. Befülle das Batteriefach mit zwei Batterien des Types <b>AAA</b>. Achte auf die richtige Ausrichtung der Batterien.
+    <br/>
+    <br/>2. Nimm den mitgelieferten Batterieblock und stecke das kleine, <b>weiße Plastikende (JST-Stecker)</b> vorsichtig in den auf dem Calliope mini befestigten Batterieanschluss.
+    <br/>
+    <br/>Achte darauf, dass die geschlossene Steckerseite mit der Erhöhung in der Mitte oben ist. Wenn der Kabelstecker leicht in den Batterieanschluss des Boards passt, ist es richtig.
+    ]]></string>
+
+    <string name="title_demo">DEMO SEQUENCE</string>
+    <string name="info_demo"><![CDATA[
+    Der Calliope mini zeigt dir auf dem Display an, welche Eingabe du ausführen sollst.
+    <br/>
+    <br/>1. Drücke die <b>Taste A</b>.
+    <br/>2. Drücke die <b>Taste B</b>.
+    <br/>3. Drücke die <b>Tasten A+B</b> gleichzeitig.
+    <br/>4. <b>Der Lagesensor</b> - schüttel den Calliope mini.
+    <br/>5. <b>Fertig!</b>
+    ]]></string>
+
+    <string name="info_app"><![CDATA[
+    <b>Hallo und willkommen in der Calliope mini App!</b>
+    <br/>
+    <br/>Mit Hilfe dieser App kannst du dich mit deinem <b>mini</b> verbinden und mobil programmieren.
+    <br/>
+    <br/>Unter <b>„Mit mini verbinden“</b> kannst du deinen <b>mini</b> finden und eine Bluetooth Verbindung herstellen.
+    <br/>Das original Skript kannst du über den Punkt <b>„Start-Program“</b> laden und auf den <b>mini</b> spielen.
+    <br/>Der Punkt <b>„Code erstellen“</b> gibt dir die Möglichkeit unterschiedliche Programmieroberflächen zu testen und deinen <b>mini</b> zu steuern.
+    <br/>Bei <b>„Deine Programme“</b> kannst du gespeicherte Programme auswählen und auf den <b>mini</b> spielen<br/>
+    <br/>Infos zu tollen Projekten oder weiteren Aktionen findest du auf der Calliope Webseite unter https://calliope.cc!
+    <br/>
+    <br/>Um die App nutzen zu können, wird ein Calliope mini dringend empfohlen.
+    <br/>
+    <br/>Falls du Fragen oder Anmerkungen hast, kannst du uns an die Emailadresse info@calliope.cc eine Nachricht schreiben.
+    <br/>
+    <br/>Viel Spaß wünscht dir das Calliope Team!
+    <br/>
+    <br/>Calliope gGmbH<br/>Raumerstrasse 11
+    <br/>10437 Berlin
+    <br/>E-Mail: <a href="mailto:info@calliope.cc">info@calliope.cc</a>
+    ]]></string>
+
+    <string name="welcome">Willkommen</string>
+</resources>
