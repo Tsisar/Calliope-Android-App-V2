@@ -184,7 +184,7 @@ public class ScriptsFragment extends Fragment {
             intentShareFile.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intentShareFile.putExtra(Intent.EXTRA_STREAM, uri);
             intentShareFile.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.subject_dialog_share));
-            intentShareFile.putExtra(Intent.EXTRA_TEXT, getString(R.string.subject_dialog_text));
+            intentShareFile.putExtra(Intent.EXTRA_TEXT, getString(R.string.text_dialog_share));
 
             startActivity(Intent.createChooser(intentShareFile, getString(R.string.title_dialog_share)));
         }
