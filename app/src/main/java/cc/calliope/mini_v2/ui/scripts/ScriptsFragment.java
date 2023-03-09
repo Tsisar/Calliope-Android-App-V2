@@ -116,7 +116,7 @@ public class ScriptsFragment extends Fragment {
             intent.putExtra("EXTRA_FILE", file.getAbsolutePath());
             startActivity(intent);
         } else {
-            Utils.errorSnackbar(binding.getRoot(), "No mini connected").show();
+            Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_connected)).show();
         }
     }
 
@@ -144,13 +144,13 @@ public class ScriptsFragment extends Fragment {
         View view = LayoutInflater.from(activity).inflate(R.layout.dialog_rename, activity.findViewById(R.id.layoutDialogContainer));
         builder.setView(view);
 
-        ((TextView) view.findViewById(R.id.textTitle)).setText("Rename file");
+        ((TextView) view.findViewById(R.id.textTitle)).setText(R.string.title_dialog_rename);
         EditText editText = view.findViewById(R.id.textName);
         editText.setText(FilenameUtils.removeExtension(file.getName()));
 //        editText.requestFocus();
 
-        ((Button) view.findViewById(R.id.buttonYes)).setText("Rename");
-        ((Button) view.findViewById(R.id.buttonNo)).setText("Cancel");
+        ((Button) view.findViewById(R.id.buttonYes)).setText(R.string.button_rename);
+        ((Button) view.findViewById(R.id.buttonNo)).setText(R.string.button_cancel);
         final AlertDialog alertDialog = builder.create();
         view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
             File dir = new File(FilenameUtils.getFullPath(file.getAbsolutePath()));
@@ -160,7 +160,7 @@ public class ScriptsFragment extends Fragment {
                     if (!dest.exists() && file.renameTo(dest.getFile())) {
                         scriptsRecyclerAdapter.change(file, dest);
                     } else {
-                        Utils.errorSnackbar(view, "The file with this name exists").show();
+                        Utils.errorSnackbar(view, getString(R.string.error_snackbar_name_exists)).show();
                         return;
                     }
                 }
@@ -183,10 +183,10 @@ public class ScriptsFragment extends Fragment {
             intentShareFile.setType("text/plain");
             intentShareFile.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intentShareFile.putExtra(Intent.EXTRA_STREAM, uri);
-            intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Sharing File...");
-            intentShareFile.putExtra(Intent.EXTRA_TEXT, "Calliope mini firmware");
+            intentShareFile.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.subject_dialog_share));
+            intentShareFile.putExtra(Intent.EXTRA_TEXT, getString(R.string.subject_dialog_text));
 
-            startActivity(Intent.createChooser(intentShareFile, "Share File"));
+            startActivity(Intent.createChooser(intentShareFile, getString(R.string.title_dialog_share)));
         }
         return true;
     }
@@ -197,11 +197,11 @@ public class ScriptsFragment extends Fragment {
                 .inflate(R.layout.dialog_warning, activity.findViewById(R.id.layoutDialogContainer));
         builder.setView(view);
 
-        ((TextView) view.findViewById(R.id.textTitle)).setText("Delete file");
+        ((TextView) view.findViewById(R.id.textTitle)).setText(R.string.title_dialog_delete);
         ((TextView) view.findViewById(R.id.textMessage)).setText(String.format(
-                "You will permanently delete \"%s\".", FilenameUtils.removeExtension(file.getName())));
-        ((Button) view.findViewById(R.id.buttonYes)).setText("Continue");
-        ((Button) view.findViewById(R.id.buttonNo)).setText("Cancel");
+                getString(R.string.info_dialog_delete), FilenameUtils.removeExtension(file.getName())));
+        ((Button) view.findViewById(R.id.buttonYes)).setText(R.string.button_continue);
+        ((Button) view.findViewById(R.id.buttonNo)).setText(R.string.button_cancel);
         final AlertDialog alertDialog = builder.create();
         view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
             if (file.delete()) {

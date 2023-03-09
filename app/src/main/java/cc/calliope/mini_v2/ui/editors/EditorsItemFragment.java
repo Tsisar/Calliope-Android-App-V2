@@ -1,7 +1,6 @@
 package cc.calliope.mini_v2.ui.editors;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +60,7 @@ public class EditorsItemFragment extends Fragment {
             if (getActivity() != null && Utils.isNetworkConnected(getActivity())) {
                 showWebFragment(editor.getUrl(), editor.toString());
             } else {
-                Utils.errorSnackbar(binding.getRoot(), "No internet available").show();
+                Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_internet)).show();
             }
         });
     }

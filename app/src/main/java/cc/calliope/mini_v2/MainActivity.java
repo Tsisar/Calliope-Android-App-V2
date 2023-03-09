@@ -230,14 +230,14 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     private void showBluetoothDisabledWarning() {
-        Snackbar snackbar = Utils.errorSnackbar(rootView, "Bluetooth is disable");
+        Snackbar snackbar = Utils.errorSnackbar(rootView, getString(R.string.error_snackbar_bluetooth_disable));
         snackbar.setDuration(SNACKBAR_DURATION);
-        snackbar.setAction("Enable", this::openBluetoothEnableActivity)
+        snackbar.setAction(R.string.button_enable, this::openBluetoothEnableActivity)
                 .show();
     }
 
     private void showLocationDisabledWarning() {
-        Utils.errorSnackbar(rootView, "Location is disable")
+        Utils.errorSnackbar(rootView, getString(R.string.error_snackbar_location_disable))
                 .show();
     }
 

@@ -56,18 +56,41 @@
     <br/>Das original Skript kannst du über den Punkt <b>„Start-Program“</b> laden und auf den <b>mini</b> spielen.
     <br/>Der Punkt <b>„Code erstellen“</b> gibt dir die Möglichkeit unterschiedliche Programmieroberflächen zu testen und deinen <b>mini</b> zu steuern.
     <br/>Bei <b>„Deine Programme“</b> kannst du gespeicherte Programme auswählen und auf den <b>mini</b> spielen<br/>
-    <br/>Infos zu tollen Projekten oder weiteren Aktionen findest du auf der Calliope Webseite unter https://calliope.cc!
+    <br/>Infos zu tollen Projekten oder weiteren Aktionen findest du auf der Calliope Webseite unter <a href="https://calliope.cc">calliope.cc</a>!
     <br/>
     <br/>Um die App nutzen zu können, wird ein Calliope mini dringend empfohlen.
     <br/>
-    <br/>Falls du Fragen oder Anmerkungen hast, kannst du uns an die Emailadresse info@calliope.cc eine Nachricht schreiben.
+    <br/>Falls du Fragen oder Anmerkungen hast, kannst du uns an die Emailadresse <a href="mailto:info@calliope.cc">info@calliope.cc</a> eine Nachricht schreiben.
     <br/>
     <br/>Viel Spaß wünscht dir das Calliope Team!
     <br/>
     <br/>Calliope gGmbH<br/>Raumerstrasse 11
     <br/>10437 Berlin
-    <br/>E-Mail: <a href="mailto:info@calliope.cc">info@calliope.cc</a>
     ]]></string>
 
     <string name="welcome">Willkommen</string>
+
+    <string name="title_rename">Umbenennen</string>
+    <string name="title_share">Freigeben</string>
+    <string name="title_delete">Löschen</string>
+
+    <string name="title_dialog_rename">Datei umbenennen</string>
+    <string name="title_dialog_delete">Datei löschen</string>
+
+    <string name="button_cancel">Abbrechen</string>
+    <string name="button_rename">Umbenennen</string>
+    <string name="button_continue">Fortsetzen</string>
+    <string name="button_enable">Aktivieren</string>
+
+    <string name="info_dialog_delete">Sie werden \"%s\" endgültig löschen.</string>
+    <string name="title_dialog_share">Datei freigeben</string>
+    <string name="subject_dialog_share">Datei freigeben…</string>
+    <string name="text_dialog_share">Calliope mini firmware</string>
+
+    <string name="error_snackbar_no_connected">Kein mini angeschlossen</string>
+    <string name="error_snackbar_name_exists">Die Datei mit diesem Namen existiert</string>
+    <string name="error_snackbar_no_internet">Kein Internet verfügbar</string>
+    <string name="error_snackbar_download_error">Fehler beim Herunterladen</string>
+    <string name="error_snackbar_bluetooth_disable">Bluetooth ist deaktiviert</string>
+    <string name="error_snackbar_location_disable">Standort ist deaktiviert</string>
 </resources>

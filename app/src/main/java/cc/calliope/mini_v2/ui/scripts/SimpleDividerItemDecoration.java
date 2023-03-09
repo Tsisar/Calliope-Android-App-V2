@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import cc.calliope.mini_v2.R;
@@ -17,7 +18,7 @@ public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
     }
  
     @Override
-    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDrawOver(@NonNull Canvas canvas, RecyclerView parent, @NonNull RecyclerView.State state) {
         int left = Math.round(parent.getResources().getDimension(R.dimen.activity_vertical_margin));
         int right = parent.getWidth() - left;
  
@@ -31,7 +32,7 @@ public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
             int bottom = top + drawable.getIntrinsicHeight();
  
             drawable.setBounds(left, top, right, bottom);
-            drawable.draw(c);
+            drawable.draw(canvas);
         }
     }
 }

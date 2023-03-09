@@ -206,7 +206,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         } else if (file != null && !file.delete()) {
             Log.w(TAG, "Delete Error, deleting: " + file);
         } else {
-            Utils.errorSnackbar(webView, "Download error").show();
+            Utils.errorSnackbar(webView, getString(R.string.error_snackbar_download_error)).show();
         }
     }
 
@@ -325,7 +325,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             intent.putExtra("EXTRA_FILE", file.getAbsolutePath());
             startActivity(intent);
         } else {
-            Utils.errorSnackbar(webView, "No mini connected").show();
+            Utils.errorSnackbar(webView, getString(R.string.error_snackbar_no_connected)).show();
         }
     }
 

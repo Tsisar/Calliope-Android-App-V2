@@ -64,4 +64,28 @@
     ]]></string>
 
     <string name="welcome">welcome</string>
+
+    <string name="title_rename">Rename</string>
+    <string name="title_share">Share</string>
+    <string name="title_delete">Delete</string>
+
+    <string name="title_dialog_rename">Rename file</string>
+    <string name="title_dialog_delete">Delete file</string>
+    <string name="title_dialog_share">Share File</string>
+
+    <string name="button_cancel">Cancel</string>
+    <string name="button_rename">Rename</string>
+    <string name="button_continue">Continue</string>
+    <string name="button_enable">Enable</string>
+
+    <string name="info_dialog_delete">You will permanently delete \"%s\".</string>
+    <string name="subject_dialog_share">Sharing File…</string>
+    <string name="text_dialog_share">Calliope mini firmware</string>
+
+    <string name="error_snackbar_no_connected">No mini connected</string>
+    <string name="error_snackbar_name_exists">The file with this name exists</string>
+    <string name="error_snackbar_bluetooth_disable">Bluetooth is disable</string>
+    <string name="error_snackbar_location_disable">Location is disable</string>
+    <string name="error_snackbar_no_internet">No internet available</string>
+    <string name="error_snackbar_download_error">Download error</string>
 </resources>

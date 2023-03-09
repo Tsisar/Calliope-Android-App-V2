@@ -19,7 +19,6 @@ import no.nordicsemi.android.dfu.DfuServiceInitiator;
 public class DfuService extends DfuBaseService {
 
     private static final String TAG = "DfuService";
-    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     @Override
     protected Class<? extends Activity> getNotificationTarget() {
@@ -49,7 +48,7 @@ public class DfuService extends DfuBaseService {
         // Here return true if you want the service to print more logs in LogCat.
         // Library's BuildConfig in current version of Android Studio is always set to DEBUG=false, so
         // make sure you return true or your.app.BuildConfig.DEBUG here.
-        return DEBUG;
+        return BuildConfig.DEBUG;
     }
 
     @Override

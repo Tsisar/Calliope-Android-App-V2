@@ -64,4 +64,28 @@
     ]]></string>
 
     <string name="welcome">ласкаво просимо</string>
+
+    <string name="title_rename">Перейменувати</string>
+    <string name="title_share">Поділитися</string>
+    <string name="title_delete">Видалити</string>
+
+    <string name="title_dialog_rename">Перейменувати файл</string>
+    <string name="title_dialog_delete">Видалити файл</string>
+    <string name="title_dialog_share">Поділитися файлом</string>
+
+    <string name="button_cancel">Скасувати</string>
+    <string name="button_rename">Перейменувати</string>
+    <string name="button_continue">Продовжити</string>
+    <string name="button_enable">Увімкнути</string>
+
+    <string name="info_dialog_delete">Ви назавжди видалите \"%s\".</string>
+    <string name="subject_dialog_share">Поділитися файлом…</string>
+    <string name="text_dialog_share">Calliope mini firmware</string>
+
+    <string name="error_snackbar_no_connected">Mini не під\`єднано</string>
+    <string name="error_snackbar_name_exists">Файл з такою назвою існує</string>
+    <string name="error_snackbar_no_internet">Немає доступу до інтернету</string>
+    <string name="error_snackbar_download_error">Помилка завантаження</string>
+    <string name="error_snackbar_bluetooth_disable">Bluetooth вимкнено</string>
+    <string name="error_snackbar_location_disable">Визначення місцезнаходження вимкнено</string>
 </resources>
