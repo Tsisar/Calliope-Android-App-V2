@@ -1,53 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="cc.calliope.mini_v2">
-
-    <!--Connect to the network-->
-    <uses-permission
-        android:name="android.permission.INTERNET" />
-    <uses-permission
-        android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission
-        android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!--To communicate with Bluetooth LE devices on Android version 4.3 until 11
-    two permissions were required: BLUETOOTH and BLUETOOTH_ADMIN.-->
+    <!--
+    Connect to the network
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--
+    To communicate with Bluetooth LE devices on Android version 4.3 until 11
+    two permissions were required: BLUETOOTH and BLUETOOTH_ADMIN.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission
         android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
+        android:maxSdkVersion="30" /> <!-- In Android 6-11, location permission is required and has to be granted in runtime before DFU is started. -->
+    <!--
+    "ACCESS_BACKGROUND_LOCATION" permission would also be required to trigger a successful
+    DFU whilst the device screen is turned off, mainly to receive the scan results when scanning
+    and connecting to the peripheral in bootloader mode while the device screen is turned off.
+    -->
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADMIN"
         android:maxSdkVersion="30" />
-
-    <!--In Android 6-11, location permission is required and has to be granted in runtime before DFU is started.-->
-    <!--"ACCESS_BACKGROUND_LOCATION" permission would also be required to trigger a successful
-    DFU whilst the device screen is turned off, mainly to receive the scan results when scanning
-    and connecting to the peripheral in bootloader mode while the device screen is turned off.-->
     <uses-permission
         android:name="android.permission.ACCESS_COARSE_LOCATION"
-        android:maxSdkVersion="30"/>
+        android:maxSdkVersion="30" />
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
-        android:maxSdkVersion="30"/>
+        android:maxSdkVersion="30" />
+    <!--
+    Starting from Android 12 location permission is not needed, instead BLUETOOTH_CONNECT is required.
+    When your device is using buttonless service and changes MAC address, it also requires BLUETOOTH_SCAN
+    permission to be granted. This permission can be used with neverForLocation flag.
+    -->
     <uses-permission
         android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
-        android:maxSdkVersion="30"/>
-
-    <!--Starting from Android 12 location permission is not needed, instead BLUETOOTH_CONNECT is required.
-    When your device is using buttonless service and changes MAC address, it also requires BLUETOOTH_SCAN
-    permission to be granted. This permission can be used with neverForLocation flag.-->
+        android:maxSdkVersion="30" />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation"
         tools:targetApi="S" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_CONNECT" />
-
-    <!--Apps that target Android 9 (API level 28) or higher and use foreground services must request
-    the FOREGROUND_SERVICE permission. This is a normal permission, so the system automatically grants it to the requesting app.-->
-    <uses-permission
-        android:name="android.permission.FOREGROUND_SERVICE" />
+    <!--
+    Apps that target Android 9 (API level 28) or higher and use foreground services must request
+    the FOREGROUND_SERVICE permission. This is a normal permission, so the system automatically grants it to the requesting app.
+    -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -62,9 +62,9 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="cc.calliope.file_provider"
+            android:authorities="cc.calliope.mini_v2.file_provider"
             android:exported="false"
-            android:grantUriPermissions="true" >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_provider_paths" />
@@ -79,6 +79,17 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".HexActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:pathPattern=".*\\.hex" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".NotificationActivity"
             android:exported="false" />
         <activity
@@ -88,11 +99,8 @@
         <service
             android:name=".service.DfuService"
             android:enabled="true" />
-
         <service
             android:name=".PartialFlashingService"
             android:enabled="true" />
-
     </application>
-
 </manifest>
