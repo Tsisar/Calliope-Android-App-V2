@@ -88,4 +88,6 @@
     <string name="error_snackbar_location_disable">Location is disable</string>
     <string name="error_snackbar_no_internet">No internet available</string>
     <string name="error_snackbar_download_error">Download error</string>
+    <string name="open_hex_info">You are trying to open the \"%s\" file and flash it to your mini. \nIf you flash an incorrect or damaged file, it can break your mini.</string>
+    <string name="open_hex_button">Flash</string>
 </resources>

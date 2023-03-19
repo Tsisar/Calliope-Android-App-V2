@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="cc.calliope.mini_v2">
+    xmlns:tools="http://schemas.android.com/tools" >
     <!--
     Connect to the network
     -->
@@ -58,13 +57,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CalliopeMini"
-        tools:targetApi="31">
+        tools:targetApi="31" >
 
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="cc.calliope.mini_v2.file_provider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true" >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_provider_paths" />
@@ -72,19 +71,22 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".HexActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="text/plain" />
                 <data android:mimeType="application/octet-stream" />
                 <data android:pathPattern=".*\\.hex" />
             </intent-filter>
@@ -94,6 +96,9 @@
             android:exported="false" />
         <activity
             android:name=".DFUActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NoPermissionActivity"
             android:exported="false" />
 
         <service

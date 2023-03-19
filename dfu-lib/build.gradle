@@ -20,6 +20,7 @@ android {
             buildConfigField("String", "VERSION_NAME", "\"2.1.0 M\"")
         }
     }
+    namespace 'no.nordicsemi.android.dfu'
 }
 
 dependencies {

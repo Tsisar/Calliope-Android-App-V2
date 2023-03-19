@@ -18,11 +18,12 @@ import androidx.core.content.ContextCompat;
 
 public class Permission {
 
-    @IntDef({BLUETOOTH, LOCATION})
+    @IntDef({NOT_DEFINED, BLUETOOTH, LOCATION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface RequestType {
     }
 
+    public static final int NOT_DEFINED = -1;
     public static final int BLUETOOTH = 0;
     public static final int LOCATION = 1;
 

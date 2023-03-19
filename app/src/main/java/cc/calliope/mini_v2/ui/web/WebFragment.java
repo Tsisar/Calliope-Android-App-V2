@@ -3,7 +3,6 @@ package cc.calliope.mini_v2.ui.web;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,8 +11,8 @@ import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.DFUActivity;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.Utils;
-import cc.calliope.mini_v2.utils.Version;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 import android.os.StrictMode;
@@ -22,16 +21,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
-import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -45,7 +38,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -57,17 +50,12 @@ import org.apache.commons.io.FilenameUtils;
 public class WebFragment extends Fragment implements DownloadListener {
 
     private static final String TAG = "WEB_VIEW";
-
     private static final String TARGET_URL = "TARGET_URL";
     private static final String TARGET_NAME = "TARGET_NAME";
-
     private static final String FILE_EXTENSION = ".hex";
-
     private String editorUrl;
     private String editorName;
-
     private WebView webView;
-
     private ExtendedBluetoothDevice device;
 
     public WebFragment() {
@@ -161,6 +149,11 @@ public class WebFragment extends Fragment implements DownloadListener {
     }
 
     private void selectDownloadMethod(String url, String mimetype) {
+        Activity activity = getActivity();
+        if(activity == null) {
+            return;
+        }
+
         boolean result = false;
         File file = null;
 
@@ -177,7 +170,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         } else if (url.startsWith("data:text/hex")) {
             Log.w(TAG, "HEX");
 
-            file = getFile("firmware");
+            file = FileUtils.getFile(activity, editorName, "firmware", FILE_EXTENSION);
             if (file != null) {
                 result = createAndSaveFileFromHexUrl(url, file);
             }
@@ -185,7 +178,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             Log.w(TAG, "BASE64");
 
             String name = Utils.getFileNameFromPrefix(url);
-            file = getFile(name);
+            file = FileUtils.getFile(activity, editorName, name, FILE_EXTENSION);
             if (file != null) {
                 result = createAndSaveFileFromBase64Url(url, file);
             }
@@ -195,7 +188,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             String name = FilenameUtils.getBaseName(url);
             String extension = "." + FilenameUtils.getExtension(url);
 
-            file = getFile(name, extension);
+            file = FileUtils.getFile(activity, editorName, name, extension);
             if (file != null) {
                 result = downloadFileFromURL(url, file);
             }
@@ -210,47 +203,47 @@ public class WebFragment extends Fragment implements DownloadListener {
         }
     }
 
-    private File getFile(String filename) {
-        return getFile(filename, FILE_EXTENSION);
-    }
-
-    //TODO db
-    // String file absolute path
-    // String editor name
-    // boolean don't ask
-    // boolean rewrite
-    private File getFile(String filename, String extension) {
-        Activity activity = getActivity();
-        if (activity == null)
-            return null;
-
-        File dir = new File(activity.getFilesDir().toString() + File.separator + editorName);
-        if (!dir.exists() && !dir.mkdirs()) {
-            return null;
-        }
-
-        Log.w(TAG, "DIR: " + dir);
-        File file = new File(dir.getAbsolutePath() + File.separator + filename + extension);
-
-        int i = 1;
-        while (file.exists()) {
-            String number = String.format("(%s)", ++i);
-            file = new File(dir.getAbsolutePath() + File.separator + filename + number + extension);
-        }
-
-        try {
-            if (file.createNewFile()) {
-                Log.w(TAG, "createNewFile: " + file);
-                return file;
-            } else {
-                Log.w(TAG, "CreateFile Error, deleting: " + file);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
+//    private File getFile(String filename) {
+//        return getFile(filename, FILE_EXTENSION);
+//    }
+//
+//    //TODO db
+//    // String file absolute path
+//    // String editor name
+//    // boolean don't ask
+//    // boolean rewrite
+//    private File getFile(String filename, String extension) {
+//        Activity activity = getActivity();
+//        if (activity == null)
+//            return null;
+//
+//        File dir = new File(activity.getFilesDir().toString() + File.separator + editorName);
+//        if (!dir.exists() && !dir.mkdirs()) {
+//            return null;
+//        }
+//
+//        Log.w(TAG, "DIR: " + dir);
+//        File file = new File(dir.getAbsolutePath() + File.separator + filename + extension);
+//
+//        int i = 1;
+//        while (file.exists()) {
+//            String number = String.format("(%s)", ++i);
+//            file = new File(dir.getAbsolutePath() + File.separator + filename + number + extension);
+//        }
+//
+//        try {
+//            if (file.createNewFile()) {
+//                Log.w(TAG, "createNewFile: " + file);
+//                return file;
+//            } else {
+//                Log.w(TAG, "CreateFile Error, deleting: " + file);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+//    }
 
     private File createFile() {
         return null;
@@ -259,10 +252,10 @@ public class WebFragment extends Fragment implements DownloadListener {
     public boolean createAndSaveFileFromHexUrl(String url, File file) {
         try {
             String hexEncodedString = url.substring(url.indexOf(",") + 1);
-            String decodedHex = URLDecoder.decode(hexEncodedString, "utf-8");
+//            String decodedHex = URLDecoder.decode(hexEncodedString, "utf-8");
             OutputStream outputStream = new FileOutputStream(file);
-            try (Writer writer = new OutputStreamWriter(outputStream, "UTF-8")) {
-                writer.write(decodedHex);
+            try (Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+                writer.write(hexEncodedString);
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
