@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">Calliope mini v.2 (BETA)</string>
     <string name="title_home">Startseite</string>
-    <string name="title_editors">Redakteure</string>
+    <string name="title_editors">Editoren</string>
     <string name="title_help">Hilfe</string>
 
     <string name="title_location_permission">STANDORTGENEHMIGUNG ERFORDERLICH</string>
     <string name="title_bluetooth_permission">BLUETOOTH-ERLAUBNIS ERFORDERLICH</string>
-    <string name="info_location_permission">Ab Android 6.0 Marshmallow benötigt die Anwendung eine Standortberechtigung, um nach Bluetooth-Geräten zu suchen.
-        \n\nDies liegt daran, dass Bluetoothn verwendet werden kannn, um den Standort des Telefons und des Benutzers zu bestimmen. <b>mini</b> wird diese Informationen in keiner Weise verwenden.</string>
-    <string name="info_bluetooth_permission">Um die Bluetooth-Funktionen für die Kommunikation der APP mit deinem <b>mini</b> zu nutzen, musst du mehrere Berechtigungen vergeben.</string>
+    <string name="info_location_permission">Ab Android 6.0 (Marshmallow) benötigt die Anwendung eine Standortberechtigung, um nach Bluetooth-Geräten zu suchen.
+        \n\nDies liegt daran, dass Bluetoothn verwendet werden kannn, um den Standort des Telefons und des Benutzers zu bestimmen. <b>Calliope</b> wird diese Informationen in keiner Weise verwenden.</string>
+    <string name="info_bluetooth_permission">Um die Bluetooth-Funktionen für die Kommunikation der App mit deinem <b>Calliope mini</b> zu nutzen, musst du mehrere Berechtigungen vergeben.</string>
 
     <string name="settings_btn_permission">Einstellungen</string>
     <string name="action_btn_permission">Erlaubnis erteilen</string>
@@ -16,22 +16,22 @@
     <string name="title_make_code">MakeCode</string>
     <string name="title_roberta">Open Roberta Lab</string>
     <string name="title_library">Vorinstallierte Programme</string>
-    <string name="title_scripts">Ihre Skripte</string>
-    <string name="info_make_code">Microsoft MakeCode vermittelt allen Schülern Informatik mit unterhaltsamen Projekten, sofortigen Ergebnissen sowie Block- und Texteditoren für alle Kenntnisstufen.</string>
+    <string name="title_scripts">Deine Skripte</string>
+    <string name="info_make_code">MakeCode vermittelt allen Schülern Programmierung mit unterhaltsamen Projekten, sofortigen Ergebnissen mit Block- und Texteditoren für alle Kenntnisstufen.</string>
     <string name="info_roberta">Das Open Roberta Lab ist eine Cloud-basierte integrierte Programmierumgebung, die es Kindern und Jugendlichen ermöglicht, auf einfache Weise verschiedene Roboter/Mikrocontroller-Systeme zu programmieren.</string>
-    <string name="info_library">Hier finden Sie die Originalprogramme, die Sie ändern oder neu laden können.</string>
-    <string name="info_scripts">Hier sind Ihre Skripte.</string>
+    <string name="info_library">Hier findest du die Originalprogramme, die verändert oder neu geladen werden können.</string>
+    <string name="info_scripts">Hier sind deine Skripte.</string>
 
-    <string name="title_welcome">LASS UNS GEHEN</string>
-    <string name="info_welcome">Auf dieser Seite erfahren Sie, wie Sie den Calliope mini Schritt für Schritt in Betrieb nehmen. Der erste Schritt zeigt Ihnen, wie Sie den Calliope mini richtig an das Stromnetz anschließen.</string>
+    <string name="title_welcome">Los geht's</string>
+    <string name="info_welcome">Auf dieser Seite erfährst du, wie du den Calliope mini in Betrieb nehmen kannst.</string>
 
     <string name="title_battery">VERBINDEN</string>
     <string name="info_battery"><![CDATA[
     Bevor du starten kannst, muss der Calliope mini mit Strom versorgt werden. Es gibt zwei Möglichkeiten.
     <br/>
-    <br/>1. Befülle das Batteriefach mit zwei Batterien des Types <b>AAA</b>. Achte auf die richtige Ausrichtung der Batterien.
+    <br/>1. Nutze das Batteriefach mit zwei Batterien des Typs <b>AAA</b>. Achte auf die richtige Ausrichtung der Batterien.
     <br/>
-    <br/>2. Nimm den mitgelieferten Batterieblock und stecke das kleine, <b>weiße Plastikende (JST-Stecker)</b> vorsichtig in den auf dem Calliope mini befestigten Batterieanschluss.
+    <br/>2. Nimm den mitgelieferten Batterieblock und stecke das kleine, <b>weiße Plastikende</b> vorsichtig in den auf dem Calliope mini befestigten Batterieanschluss.
     <br/>
     <br/>Achte darauf, dass die geschlossene Steckerseite mit der Erhöhung in der Mitte oben ist. Wenn der Kabelstecker leicht in den Batterieanschluss des Boards passt, ist es richtig.
     ]]></string>
@@ -50,13 +50,7 @@
     <string name="info_app"><![CDATA[
     <b>Hallo und willkommen in der Calliope mini App!</b>
     <br/>
-    <br/>Mit Hilfe dieser App kannst du dich mit deinem <b>mini</b> verbinden und mobil programmieren.
-    <br/>
-    <br/>Unter <b>„Mit mini verbinden“</b> kannst du deinen <b>mini</b> finden und eine Bluetooth Verbindung herstellen.
-    <br/>Das original Skript kannst du über den Punkt <b>„Start-Program“</b> laden und auf den <b>mini</b> spielen.
-    <br/>Der Punkt <b>„Code erstellen“</b> gibt dir die Möglichkeit unterschiedliche Programmieroberflächen zu testen und deinen <b>mini</b> zu steuern.
-    <br/>Bei <b>„Deine Programme“</b> kannst du gespeicherte Programme auswählen und auf den <b>mini</b> spielen<br/>
-    <br/>Infos zu tollen Projekten oder weiteren Aktionen findest du auf der Calliope Webseite unter <a href="https://calliope.cc">calliope.cc</a>!
+    <br/>Mit Hilfe dieser App kannst du dich mit deinem <b>Calliope mini</b> verbinden und diesen mobil programmieren.
     <br/>
     <br/>Um die App nutzen zu können, wird ein Calliope mini dringend empfohlen.
     <br/>
@@ -70,25 +64,25 @@
 
     <string name="welcome">Willkommen</string>
 
-    <string name="title_rename">Umbenennen</string>
-    <string name="title_share">Freigeben</string>
-    <string name="title_delete">Löschen</string>
+    <string name="title_rename">umbenennen</string>
+    <string name="title_share">freigeben</string>
+    <string name="title_delete">löschen</string>
 
     <string name="title_dialog_rename">Datei umbenennen</string>
     <string name="title_dialog_delete">Datei löschen</string>
 
-    <string name="button_cancel">Abbrechen</string>
-    <string name="button_rename">Umbenennen</string>
-    <string name="button_continue">Fortsetzen</string>
-    <string name="button_enable">Aktivieren</string>
+    <string name="button_cancel">abbrechen</string>
+    <string name="button_rename">umbenennen</string>
+    <string name="button_continue">fortsetzen</string>
+    <string name="button_enable">aktivieren</string>
 
-    <string name="info_dialog_delete">Sie werden \"%s\" endgültig löschen.</string>
-    <string name="title_dialog_share">Datei freigeben</string>
-    <string name="subject_dialog_share">Datei freigeben…</string>
-    <string name="text_dialog_share">Calliope mini firmware</string>
+    <string name="info_dialog_delete">\"%s\" wird entgültig gelöscht.</string>
+    <string name="title_dialog_share">Datei teilen</string>
+    <string name="subject_dialog_share">Datei teilen…</string>
+    <string name="text_dialog_share">Calliope mini Skript teilen</string>
 
-    <string name="error_snackbar_no_connected">Kein mini angeschlossen</string>
-    <string name="error_snackbar_name_exists">Die Datei mit diesem Namen existiert</string>
+    <string name="error_snackbar_no_connected">Kein Calliope mini verbunden</string>
+    <string name="error_snackbar_name_exists">Die Datei mit diesem Namen existiert bereits</string>
     <string name="error_snackbar_no_internet">Kein Internet verfügbar</string>
     <string name="error_snackbar_download_error">Fehler beim Herunterladen</string>
     <string name="error_snackbar_bluetooth_disable">Bluetooth ist deaktiviert</string>
