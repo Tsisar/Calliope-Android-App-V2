@@ -7,8 +7,8 @@
     <string name="title_location_permission">ПОТРІБЕН ДОЗВІЛ НА ВИКОРИСТАННЯ ГЕОЛОКАЦІЇ</string>
     <string name="title_bluetooth_permission">ПОТРІБЕН ДОЗВІЛ НА ВИКОРИСТАННЯ BLUETOOTH</string>
     <string name="info_location_permission">Починаючи з Android 6.0 Marshmallow, для сканування Bluetooth-пристроїв програмі потрібен дозвіл на використання геолокації.
-        \n\nЦе пов\'язано з тим, що Bluetooth може використовуватися для визначення місцезнаходження телефону і користувача, <b>mini</b> не використовуватиме цю інформацію жодним чином.</string>
-    <string name="info_bluetooth_permission">Щоб використовувати функції Bluetooth для зв\'язку програми з вашим <b>mini</b>, вам потрібно надати кілька дозволів.</string>
+        \n\nЦе пов\'язано з тим, що Bluetooth може використовуватися для визначення місцезнаходження телефону і користувача, <b>Calliope</b> не використовуватиме цю інформацію жодним чином.</string>
+    <string name="info_bluetooth_permission">Щоб використовувати функції Bluetooth для зв\'язку програми з вашим <b>Calliope mini</b>, вам потрібно надати кілька дозволів.</string>
 
     <string name="settings_btn_permission">Налаштування</string>
     <string name="action_btn_permission">Надати дозвіл</string>
@@ -48,7 +48,7 @@
     ]]></string>
 
     <string name="info_app"><![CDATA[
-    <b>Привіт і ласкаво просимо до Calliope!Calliope mini додатку!</b>
+    <b>Привіт і ласкаво просимо до Calliope mini додатку!</b>
     <br/>
     <br/>За допомогою цієї програми ви можете підключати, кодувати і прошивати програми до вашого <b>Calliope mini</b> через Bluetooth.
     <br/>
@@ -74,18 +74,21 @@
     <string name="title_dialog_share">Поділитися файлом</string>
 
     <string name="button_cancel">Скасувати</string>
-    <string name="button_rename">Перейменувати</string>
-    <string name="button_continue">Продовжити</string>
+    <string name="button_rename">Так</string>
+    <string name="button_continue">Так</string>
     <string name="button_enable">Увімкнути</string>
 
     <string name="info_dialog_delete">Ви назавжди видалите \"%s\".</string>
     <string name="subject_dialog_share">Поділитися файлом…</string>
     <string name="text_dialog_share">Calliope mini firmware</string>
 
-    <string name="error_snackbar_no_connected">Mini не під\`єднано</string>
+    <string name="error_snackbar_no_connected">Calliope mini не під\`єднано</string>
     <string name="error_snackbar_name_exists">Файл з такою назвою існує</string>
     <string name="error_snackbar_no_internet">Немає доступу до інтернету</string>
     <string name="error_snackbar_download_error">Помилка завантаження</string>
     <string name="error_snackbar_bluetooth_disable">Bluetooth вимкнено</string>
     <string name="error_snackbar_location_disable">Визначення місцезнаходження вимкнено</string>
+    <string name="open_hex_info">Ви намагаєтеся відкрити файл \"%s\" і прошити його до вашого Calliope mini.
+        \n\nЯкщо ви прошиєте неправильний або пошкоджений файл, можливо, вам доведеться під\'єднати Calliope mini до комп\'ютера, щоб перепрошити його.</string>
+    <string name="open_hex_button">Прошити</string>
 </resources>

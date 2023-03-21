@@ -5,12 +5,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+
 import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityHexBinding;
 import cc.calliope.mini_v2.ui.editors.Editor;
@@ -18,7 +23,7 @@ import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 
-public class HexActivity extends ScannerActivity{
+public class HexActivity extends ScannerActivity {
     private ActivityHexBinding binding;
     private ExtendedBluetoothDevice device;
     private View rootView;
@@ -45,26 +50,30 @@ public class HexActivity extends ScannerActivity{
 
         if (Intent.ACTION_VIEW.equals(action) && type != null /*&& type.equals("application/octet-stream")*/) {
             Uri uri = intent.getData();
+            String decodedUri;
 
-            String name = FilenameUtils.getBaseName(uri.toString());
+            try {
+                decodedUri = URLDecoder.decode(uri.toString(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+
+            String name = FilenameUtils.getBaseName(decodedUri);
             String extension = "." + FilenameUtils.getExtension(uri.toString());
 
-            File file = FileUtils.getFile(this, Editor.LIBRARY.toString(), name, extension);
-            if(file == null){
-                return;
-            }
             binding.infoTextView.setText(
-                    String.format(
-                            getString(R.string.open_hex_info),
-                            FilenameUtils.removeExtension(file.getName())
-                    )
+                    String.format(getString(R.string.open_hex_info), name)
             );
             binding.flashButton.setOnClickListener(v -> {
                 try {
+                    File file = FileUtils.getFile(this, Editor.LIBRARY.toString(), name, extension);
+                    if (file == null) {
+                        return;
+                    }
+
                     isStartFlashing = true;
                     copyFile(uri, file);
                     startDFUActivity(file);
-                    Log.w("HexActivity", "URI: " + uri);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -76,7 +85,7 @@ public class HexActivity extends ScannerActivity{
     @Override
     public void onResume() {
         super.onResume();
-        if(isStartFlashing){
+        if (isStartFlashing) {
             finish();
         }
     }
