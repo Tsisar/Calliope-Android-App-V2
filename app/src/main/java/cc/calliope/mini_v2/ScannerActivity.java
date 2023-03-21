@@ -1,6 +1,5 @@
 package cc.calliope.mini_v2;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,15 +38,8 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     private View rootView;
     private Boolean isFlashingProcess = false; //
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                // TODO are we really need this?
-                if (result.getResultCode() == Activity.RESULT_OK) {
-//                    if (permissionGranted()) {
-//                        scannerViewModel.startScan();
-//                    }
-                }
-            });
+            new ActivityResultContracts.StartActivityForResult(), result -> {}
+    );
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

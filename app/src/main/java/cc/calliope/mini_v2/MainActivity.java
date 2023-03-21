@@ -1,6 +1,5 @@
 package cc.calliope.mini_v2;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;

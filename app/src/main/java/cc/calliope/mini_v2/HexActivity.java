@@ -22,6 +22,7 @@ public class HexActivity extends ScannerActivity{
     private ActivityHexBinding binding;
     private ExtendedBluetoothDevice device;
     private View rootView;
+    private boolean isStartFlashing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class HexActivity extends ScannerActivity{
             );
             binding.flashButton.setOnClickListener(v -> {
                 try {
+                    isStartFlashing = true;
                     copyFile(uri, file);
                     startDFUActivity(file);
                     Log.w("HexActivity", "URI: " + uri);
@@ -69,6 +71,26 @@ public class HexActivity extends ScannerActivity{
             });
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(isStartFlashing){
+            finish();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
+    }
+
+    @Override
+    protected void scanResults(final ScannerLiveData state) {
+        super.scanResults(state);
+        device = state.getCurrentDevice();
     }
 
     public void copyFile(Uri uri, File destFile) throws IOException {
@@ -84,18 +106,6 @@ public class HexActivity extends ScannerActivity{
         outputStream.flush();
         outputStream.close();
         inputStream.close();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        binding = null;
-    }
-
-    @Override
-    protected void scanResults(final ScannerLiveData state) {
-        super.scanResults(state);
-        device = state.getCurrentDevice();
     }
 
     private void startDFUActivity(File file) {
