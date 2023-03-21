@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Calliope mini v.2 (BETA)</string>
     <string name="title_home">Startseite</string>
-    <string name="title_editors">Editoren</string>
+    <string name="title_editors">Programmieren</string>
     <string name="title_help">Hilfe</string>
 
     <string name="title_location_permission">STANDORTGENEHMIGUNG ERFORDERLICH</string>
@@ -22,7 +22,7 @@
     <string name="info_library">Hier findest du die Originalprogramme, die verändert oder neu geladen werden können.</string>
     <string name="info_scripts">Hier sind deine Skripte.</string>
 
-    <string name="title_welcome">Los geht's</string>
+    <string name="title_welcome">Los geht\'s</string>
     <string name="info_welcome">Auf dieser Seite erfährst du, wie du den Calliope mini in Betrieb nehmen kannst.</string>
 
     <string name="title_battery">VERBINDEN</string>
@@ -36,9 +36,9 @@
     <br/>Achte darauf, dass die geschlossene Steckerseite mit der Erhöhung in der Mitte oben ist. Wenn der Kabelstecker leicht in den Batterieanschluss des Boards passt, ist es richtig.
     ]]></string>
 
-    <string name="title_demo">DEMO SEQUENCE</string>
+    <string name="title_demo">DEMO SEQUENZ</string>
     <string name="info_demo"><![CDATA[
-    Der Calliope mini zeigt dir auf dem Display an, welche Eingabe du ausführen sollst.
+    Der Calliope mini zeigt dir auf der LED-Matrix an, welche Eingabe du ausführen sollst.
     <br/>
     <br/>1. Drücke die <b>Taste A</b>.
     <br/>2. Drücke die <b>Taste B</b>.
