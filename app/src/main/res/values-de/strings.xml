@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Calliope mini v.2 (BETA)</string>
     <string name="title_home">Startseite</string>
-    <string name="title_editors">Editoren</string>
+    <string name="title_editors">Programmieren</string>
     <string name="title_help">Hilfe</string>
 
     <string name="title_location_permission">STANDORTGENEHMIGUNG ERFORDERLICH</string>
@@ -38,7 +38,7 @@
 
     <string name="title_demo">DEMO SEQUENZ</string>
     <string name="info_demo"><![CDATA[
-    Der Calliope mini zeigt dir auf dem Display an, welche Eingabe du ausführen sollst.
+    Der Calliope mini zeigt dir auf der LED-Matrix an, welche Eingabe du ausführen sollst.
     <br/>
     <br/>1. Drücke die <b>Taste A</b>.
     <br/>2. Drücke die <b>Taste B</b>.
