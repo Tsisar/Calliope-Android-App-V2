@@ -1,6 +1,7 @@
 package cc.calliope.mini_v2.ui.editors;
 
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.FragmentBasicItemBinding;
 import cc.calliope.mini_v2.ui.web.WebFragment;
 import cc.calliope.mini_v2.utils.Utils;
+import cc.calliope.mini_v2.utils.Version;
 
 
 public class EditorsItemFragment extends Fragment {
@@ -54,6 +56,10 @@ public class EditorsItemFragment extends Fragment {
         binding.titleTextView.setText(editor.getTitleResId());
         binding.iconImageView.setImageResource(editor.getIconResId());
         binding.infoTextView.setText(editor.getInfoResId());
+
+//        if (Version.upperOreo) {
+//            binding.infoTextView.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+//        }
 
         view.setOnClickListener(v -> {
             v.startAnimation(buttonClick);

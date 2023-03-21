@@ -79,7 +79,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HexActivity"
+            android:name=".OpenHexActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

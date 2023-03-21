@@ -23,7 +23,8 @@ import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 
-public class HexActivity extends ScannerActivity {
+
+public class OpenHexActivity extends ScannerActivity {
     private ActivityHexBinding binding;
     private ExtendedBluetoothDevice device;
     private View rootView;
@@ -61,9 +62,14 @@ public class HexActivity extends ScannerActivity {
             String name = FilenameUtils.getBaseName(decodedUri);
             String extension = "." + FilenameUtils.getExtension(uri.toString());
 
+//            if (Version.upperOreo) {
+//                binding.infoTextView.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+//            }
+
             binding.infoTextView.setText(
                     String.format(getString(R.string.open_hex_info), name)
             );
+
             binding.flashButton.setOnClickListener(v -> {
                 try {
                     File file = FileUtils.getFile(this, Editor.LIBRARY.toString(), name, extension);

@@ -3,6 +3,7 @@ package cc.calliope.mini_v2.ui.home;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.Layout;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import cc.calliope.mini_v2.databinding.FragmentBasicItemBinding;
+import cc.calliope.mini_v2.utils.Version;
 
 public class HomeItemFragment extends Fragment {
     public static final String ARG_POSITION = "arg_position";
@@ -60,6 +62,10 @@ public class HomeItemFragment extends Fragment {
 
         Spanned spanned = Html.fromHtml(getString(home.getInfoResId()));
         binding.infoTextView.setText(spanned);
+
+//        if (Version.upperOreo) {
+//            binding.infoTextView.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+//        }
     }
 
     @Override
