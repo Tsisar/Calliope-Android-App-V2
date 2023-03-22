@@ -32,7 +32,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
                 android:layout_margin="8dp"
-                android:src="@drawable/ic_device_black_24dp"
+                android:src="@drawable/ic_device_24dp"
+                app:tint="@color/white"
                 app:maxImageSize="32dp" />
         </FrameLayout>
 
