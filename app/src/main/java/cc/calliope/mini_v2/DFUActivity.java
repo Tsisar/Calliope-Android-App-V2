@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.service.DfuService;
+import cc.calliope.mini_v2.views.CustomView;
 import no.nordicsemi.android.ble.PhyRequest;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
@@ -35,7 +36,7 @@ public class DFUActivity extends AppCompatActivity {
 
     private TextView deviceInfo;
     private TextView timerText;
-    private ProgressBar progressBar;
+    private CustomView progressBar;
 
     private static final String TAG = DFUActivity.class.getSimpleName();
     private static final String TAG_PL = "DfuProgressListener";
@@ -119,7 +120,7 @@ public class DFUActivity extends AppCompatActivity {
             if (!onPause) {
                 deviceInfo.setText(percent + "%");
                 timerText.setText("Uploading");
-                progressBar.setProgress(39 + percent / 3);
+                progressBar.setProgress(percent);
             }
 
 //            String method = Thread.currentThread().getStackTrace()[2].getMethodName();

@@ -21,9 +21,9 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private float downRawX, downRawY;
     private float dX, dY;
 
-    Paint paint;
-    RectF rectF;
-    int progress = 0;
+    private Paint paint;
+    private RectF rectF;
+    private int progress = 0;
 
     public MovableFloatingActionButton(Context context) {
         super(context);

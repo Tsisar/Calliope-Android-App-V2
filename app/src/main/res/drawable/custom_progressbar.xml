@@ -11,5 +11,4 @@
             <inset android:drawable="@drawable/ic_ble_01"/>
         </clip>
     </item>
-
 </layer-list>

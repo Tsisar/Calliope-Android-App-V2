@@ -8,16 +8,13 @@
     tools:context=".DFUActivity">
 
 
-    <ProgressBar
+    <cc.calliope.mini_v2.views.CustomView
         android:id="@+id/progressBar"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="32dp"
-        android:indeterminate="false"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:progressDrawable="@drawable/custom_progressbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
