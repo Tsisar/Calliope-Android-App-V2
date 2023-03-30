@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item android:id="@+id/background">
+        <inset android:drawable="@drawable/ic_ble_00"/>
+    </item>
+    <item android:id="@+id/progress_01">
+        <inset android:drawable="@drawable/progress_01"/>
+    </item>
+    <item android:id="@+id/progress_02">
+        <inset android:drawable="@drawable/progress_02"/>
+    </item>
+    <item android:id="@+id/progress_03">
+        <inset android:drawable="@drawable/progress_03"/>
+    </item>
+    <item android:id="@+id/progress_04">
+        <inset android:drawable="@drawable/progress_04"/>
+    </item>
+    <item android:id="@+id/progress_05">
+        <inset android:drawable="@drawable/progress_05"/>
+    </item>
+    <item android:id="@+id/progress_06">
+        <inset android:drawable="@drawable/progress_06"/>
+    </item>
+    <item android:id="@+id/progress_07">
+        <inset android:drawable="@drawable/progress_07"/>
+    </item>
+    <item android:id="@+id/progress_08">
+        <inset android:drawable="@drawable/progress_08"/>
+    </item>
+    <item android:id="@+id/progress_09">
+        <inset android:drawable="@drawable/progress_09"/>
+    </item>
+    <item android:id="@+id/progress_10">
+        <inset android:drawable="@drawable/progress_10"/>
+    </item>
+    <item android:id="@+id/progress_11">
+        <inset android:drawable="@drawable/progress_11"/>
+    </item>
+    <item android:id="@+id/progress_12">
+        <inset android:drawable="@drawable/progress_12"/>
+    </item>
+    <item android:id="@+id/progress_13">
+        <inset android:drawable="@drawable/progress_13"/>
+    </item>
+    <item android:id="@+id/progress_14">
+        <inset android:drawable="@drawable/progress_14"/>
+    </item>
+    <item android:id="@+id/progress_15">
+        <inset android:drawable="@drawable/progress_15"/>
+    </item>
+    <item android:id="@+id/progress_16">
+        <inset android:drawable="@drawable/progress_16"/>
+    </item>
+    <item android:id="@+id/progress_17">
+        <inset android:drawable="@drawable/progress_17"/>
+    </item>
+    <item android:id="@+id/progress_18">
+        <inset android:drawable="@drawable/progress_18"/>
+    </item>
+    <item android:id="@+id/progress_19">
+        <inset android:drawable="@drawable/progress_19"/>
+    </item>
+    <item android:id="@+id/progress_20">
+        <inset android:drawable="@drawable/progress_20"/>
+    </item>
+    <item android:id="@+id/progress_21">
+        <inset android:drawable="@drawable/progress_21"/>
+    </item>
+    <item android:id="@+id/progress_22">
+        <inset android:drawable="@drawable/progress_22"/>
+    </item>
+    <item android:id="@+id/progress_23">
+        <inset android:drawable="@drawable/progress_23"/>
+    </item>
+    <item android:id="@+id/progress_24">
+        <inset android:drawable="@drawable/progress_24"/>
+    </item>
+    <item android:id="@+id/progress_25">
+        <inset android:drawable="@drawable/progress_25"/>
+    </item>
+</layer-list>
