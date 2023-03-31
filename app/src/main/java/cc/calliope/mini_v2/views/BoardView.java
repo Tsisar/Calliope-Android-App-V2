@@ -34,7 +34,6 @@ public class BoardView extends View {
     private Drawable drawable;
     private final boolean[] ledArray = new boolean[26];
 
-
     public BoardView(Context context) {
         super(context);
         init();
@@ -53,25 +52,29 @@ public class BoardView extends View {
     private void init() {
         Log.w(TAG, "init()");
         setImageResource(R.drawable.layers_board);
-        Arrays.fill(ledArray, false);
+        setAllLed(false);
     }
 
     public void setImageResource(int resId) {
         drawable = ResourcesCompat.getDrawable(getResources(), resId, null);
     }
 
-    public void setLed(@LedRange int led) {
+    public void setLed(boolean turnedOn, @LedRange int led) {
         if (led > 0 && led < ledArray.length) {
-            ledArray[led] = true;
+            ledArray[led] = turnedOn;
         }
     }
 
-    public void setLed(@LedRange int... led) {
+    public void setLed(boolean turnedOn, @LedRange int... led) {
         for (int j : led) {
             if (j > 0 && j < ledArray.length) {
-                ledArray[j] = true;
+                ledArray[j] = turnedOn;
             }
         }
+    }
+
+    public void setAllLed(boolean turnedOn) {
+        Arrays.fill(ledArray, turnedOn);
     }
 
     @Override
@@ -89,7 +92,6 @@ public class BoardView extends View {
 
             for (int i = 1; i < max; i++) {
                 if (ledArray[i]) {
-                    ledArray[i] = false;
                     Drawable layer = layerDrawable.getDrawable(i);
                     layer.setBounds(0, 0, width, height);
                     layer.draw(canvas);

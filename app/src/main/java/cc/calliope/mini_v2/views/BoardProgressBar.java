@@ -25,7 +25,7 @@ public class BoardProgressBar extends BoardView {
 
     public void setProgress(int progress) {
         if (progress == DfuService.PROGRESS_COMPLETED) {
-            setLed(2, 3, 4, 6, 10, 17, 19);
+            setLed(false, 2, 3, 4, 6, 10, 17, 19);
         } else {
             Log.w(TAG, "Progress: " + progress);
 
@@ -33,7 +33,7 @@ public class BoardProgressBar extends BoardView {
             int max = p / 4;
 
             for (int i = 0; i <= max; i++) {
-                setLed(i);
+                setLed(true, i);
             }
         }
         invalidate();

@@ -29,7 +29,6 @@ public class DFUActivity extends AppCompatActivity {
     private static final int INTERVAL_OF_RETRIES = 500; // ms
     private static final int REBOOT_TIME = 2000; // time required by the device to reboot, ms
     private static final long CONNECTION_TIMEOUT = 10000; // default connection timeout is 30000 ms
-
     private TextView deviceInfo;
     private TextView timerText;
     private BoardProgressBar progressBar;
@@ -39,15 +38,11 @@ public class DFUActivity extends AppCompatActivity {
 
     public static final String BROADCAST_PROGRESS = "org.microbit.android.partialflashing.broadcast.BROADCAST_PROGRESS";
     public static final String EXTRA_PROGRESS = "org.microbit.android.partialflashing.extra.EXTRA_PROGRESS";
-
     private FlashingManager flashingManager;
-
     private final Handler timerHandler = new Handler();
     private final Runnable deferredFinish = this::finish;
     private static final int DELAY_TO_FINISH = 5000;
-
     private String pattern;
-
     private boolean onPause;
 
 
