@@ -1,26 +1,22 @@
 package cc.calliope.mini_v2;
 
-import android.Manifest;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.reflect.Method;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.service.DfuService;
-import cc.calliope.mini_v2.views.CustomView;
+import cc.calliope.mini_v2.views.BoardProgressBar;
 import no.nordicsemi.android.ble.PhyRequest;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
@@ -36,7 +32,7 @@ public class DFUActivity extends AppCompatActivity {
 
     private TextView deviceInfo;
     private TextView timerText;
-    private CustomView progressBar;
+    private BoardProgressBar progressBar;
 
     private static final String TAG = DFUActivity.class.getSimpleName();
     private static final String TAG_PL = "DfuProgressListener";
@@ -105,6 +101,7 @@ public class DFUActivity extends AppCompatActivity {
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
             Log.e(TAG_PL, method);
             timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH);
+            progressBar.setProgress(DfuService.PROGRESS_COMPLETED);
         }
 
         @Override

@@ -15,7 +15,7 @@
         android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/double_constraint_layout"
-        app:srcCompat="@drawable/ic_scripts"
+        app:srcCompat="@drawable/ic_board"
         tools:ignore="ContentDescription" />
 
     <androidx.constraintlayout.widget.ConstraintLayout

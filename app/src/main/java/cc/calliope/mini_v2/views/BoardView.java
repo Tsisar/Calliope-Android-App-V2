@@ -1,0 +1,101 @@
+package cc.calliope.mini_v2.views;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import cc.calliope.mini_v2.R;
+
+public class BoardView extends View {
+
+    //TODO колгосп?
+    @IntDef({
+            1,  2,  3,  4,  5,
+            6,  7,  8,  9,  10,
+            11, 12, 13, 14, 15,
+            16, 17, 18, 19, 20,
+            21, 22, 23, 24, 25
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LedRange {}
+
+    private static final String TAG = "BoardView";
+    private Drawable drawable;
+    private final boolean[] ledArray = new boolean[26];
+
+
+    public BoardView(Context context) {
+        super(context);
+        init();
+    }
+
+    public BoardView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public BoardView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        Log.w(TAG, "init()");
+        setImageResource(R.drawable.layers_board);
+        Arrays.fill(ledArray, false);
+    }
+
+    public void setImageResource(int resId) {
+        drawable = ResourcesCompat.getDrawable(getResources(), resId, null);
+    }
+
+    public void setLed(@LedRange int led) {
+        if (led > 0 && led < ledArray.length) {
+            ledArray[led] = true;
+        }
+    }
+
+    public void setLed(@LedRange int... led) {
+        for (int j : led) {
+            if (j > 0 && j < ledArray.length) {
+                ledArray[j] = true;
+            }
+        }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (drawable instanceof LayerDrawable) {
+            int width = getWidth();
+            int height = getHeight();
+            LayerDrawable layerDrawable = (LayerDrawable) drawable;
+
+            Drawable background = layerDrawable.findDrawableByLayerId(R.id.background);
+            background.setBounds(0, 0, width, height);
+            background.draw(canvas);
+
+            int max = Math.min(ledArray.length, layerDrawable.getNumberOfLayers());
+
+            for (int i = 1; i < max; i++) {
+                if (ledArray[i]) {
+                    ledArray[i] = false;
+                    Drawable layer = layerDrawable.getDrawable(i);
+                    layer.setBounds(0, 0, width, height);
+                    layer.draw(canvas);
+                }
+            }
+        }
+        super.onDraw(canvas);
+    }
+}

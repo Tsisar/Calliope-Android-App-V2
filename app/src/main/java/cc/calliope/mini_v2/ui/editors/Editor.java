@@ -21,7 +21,7 @@ public enum Editor {
             "https://calliope.cc/calliope-mini/25programme#25"),
     SCRIPTS(
             R.string.title_scripts,
-            R.drawable.ic_scripts,
+            R.drawable.ic_board,
             R.string.info_scripts,
             null);
 

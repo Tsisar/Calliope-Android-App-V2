@@ -8,7 +8,7 @@
     tools:context=".DFUActivity">
 
 
-    <cc.calliope.mini_v2.views.CustomView
+    <cc.calliope.mini_v2.views.BoardProgressBar
         android:id="@+id/progressBar"
         android:layout_width="200dp"
         android:layout_height="200dp"

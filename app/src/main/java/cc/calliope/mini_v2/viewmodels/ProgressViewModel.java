@@ -16,13 +16,14 @@ import cc.calliope.mini_v2.service.DfuService;
 
 public class ProgressViewModel extends AndroidViewModel {
 
+    private static final String TAG = "ProgressViewModel";
     private final BroadcastReceiver dfuResultReceiver;
     private final MutableLiveData<Integer> progress;
 
     public ProgressViewModel(@NonNull Application application) {
         super(application);
 
-        Log.e("PROGRESS", "register");
+        Log.i(TAG, "register");
         progress = new MutableLiveData<>();
         progress.setValue(0);
         dfuResultReceiver = new DFUResultReceiver();
@@ -32,7 +33,7 @@ public class ProgressViewModel extends AndroidViewModel {
     @Override
     protected void onCleared() {
         LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(dfuResultReceiver);
-        Log.e("PROGRESS", "onCleared");
+        Log.i(TAG, "onCleared");
     }
 
     private void registerCallbacksForFlashing() {
@@ -54,7 +55,7 @@ public class ProgressViewModel extends AndroidViewModel {
 
             if (intent.getAction().equals(DfuService.BROADCAST_ERROR)) {
                 String state = intent.getStringExtra(DfuService.EXTRA_DATA);
-                Log.e("DFULogStatus", "ERROR: " + state);
+                Log.e(TAG, "ERROR: " + state);
             } else if (intent.getAction().equals(DfuService.BROADCAST_PROGRESS)) {
                 int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
                 progress.setValue(state);

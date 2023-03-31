@@ -15,7 +15,7 @@
         android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHeight_percent="0.4"
-        app:srcCompat="@drawable/ic_scripts"
+        app:srcCompat="@drawable/ic_board"
         tools:ignore="ContentDescription" />
 
     <TextView
