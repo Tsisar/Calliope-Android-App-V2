@@ -13,6 +13,7 @@ import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.Utils;
+import cc.calliope.mini_v2.utils.Version;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 import android.os.StrictMode;
@@ -23,8 +24,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -114,17 +119,17 @@ public class WebFragment extends Fragment implements DownloadListener {
         webSettings.setDefaultTextEncodingName("utf-8");
 
 //        webView.addJavascriptInterface(new JavaScriptInterface(getContext()), "Android");
-//        webView.setWebChromeClient(new WebChromeClient());
-//        webView.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-//                if (Version.upperMarshmallow) {
-//                    Utils.errorSnackbar(webView, "Oh no! " + error.getDescription()).show();
-//                } else {
-//                    Utils.errorSnackbar(webView, "Oh no! onReceivedError").show();
-//                }
-//            }
-//        });
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                if (Version.upperMarshmallow) {
+                    Utils.errorSnackbar(webView, "Oh no! " + error.getDescription()).show();
+                } else {
+                    Utils.errorSnackbar(webView, "Oh no! onReceivedError").show();
+                }
+            }
+        });
         webView.setDownloadListener(this);
 
         if (savedInstanceState != null) {
