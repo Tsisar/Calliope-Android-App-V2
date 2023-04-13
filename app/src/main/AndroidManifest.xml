@@ -98,6 +98,9 @@
             android:name=".DFUActivity"
             android:exported="false" />
         <activity
+            android:name=".DFUActivity2"
+            android:exported="false" />
+        <activity
             android:name=".NoPermissionActivity"
             android:exported="false" />
 

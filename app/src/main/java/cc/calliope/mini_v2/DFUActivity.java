@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGatt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -190,40 +191,19 @@ public class DFUActivity extends AppCompatActivity {
 
         Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "initiateFlashing");
 
-        flashingManager.connect(device.getDevice())
-                // Automatic retries are supported, in case of 133 error.
-                .retry(NUMBER_OF_RETRIES /* times, with */, INTERVAL_OF_RETRIES /* ms interval */)
-                .timeout(CONNECTION_TIMEOUT /* ms */)
-                .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK | PhyRequest.PHY_LE_2M_MASK)
-                .done(this::writeCharacteristic)
-                .fail(this::connectionFail)
-                .enqueue();
+        ConnectTask task = new ConnectTask(flashingManager);
+        task.execute(device.getDevice());
+
+//        flashingManager.connect(device.getDevice())
+//                // Automatic retries are supported, in case of 133 error.
+//                .retry(NUMBER_OF_RETRIES /* times, with */, INTERVAL_OF_RETRIES /* ms interval */)
+//                .timeout(CONNECTION_TIMEOUT /* ms */)
+//                .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK | PhyRequest.PHY_LE_2M_MASK)
+//                .done(this::writeCharacteristic)
+//                .fail(this::connectionFail)
+//                .enqueue();
     }
 
-    private void writeCharacteristic(BluetoothDevice device) {
-        Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "writeCharacteristic");
-        flashingManager.writeCharacteristic()
-                .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
-                .fail((device2, s) -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: fail, status " + s))
-                .then(this::disconnect)
-                .enqueue();
-    }
-
-    private void disconnect(BluetoothDevice device) {
-        Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "disconnect");
-        flashingManager.disconnect()
-                .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
-                .fail((device2, s) -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: fail, status " + s))
-                .then(this::startFlashing)
-                .enqueue();
-
-        //refreshDeviceCache();
-    }
-
-    private void connectionFail(BluetoothDevice device, int status) {
-        Log.e("BLE", "Connection error to device " + device.getAddress() + ", status: " + status);
-        timerText.setText("Connection error to device " + device.getAddress() + ", status: " + status);
-    }
 
     protected void startFlashingPF() {
         final Intent intent = getIntent();
@@ -242,36 +222,10 @@ public class DFUActivity extends AppCompatActivity {
         startService(service);
     }
 
-    /**
-     * Creates and starts service to flash a program to a micro:bit board.
-     * @param device BluetoothDevice
-     */
-    protected void startFlashing(BluetoothDevice device) {
-        Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "startFlashing");
-        Bundle extras = getIntent().getExtras();
-        final String filePath = extras.getString("EXTRA_FILE");
-
-        Log.i("DFUExtra", "mAddress: " + device.getAddress());
-        Log.i("DFUExtra", "mPattern: " + device.getName());
-        Log.i("DFUExtra", "filePath: " + filePath);
-        Log.i("DFUExtra", "Start Flashing");
-
-        final DfuServiceInitiator starter = new DfuServiceInitiator(device.getAddress())
-                .setDeviceName(pattern)
-                //TODO Modify HexInputStream
-                .setMbrSize(0x18000)
-//                .setForeground(false)
-                .setNumberOfRetries(NUMBER_OF_RETRIES)
-                .setRebootTime(REBOOT_TIME)
-                .setKeepBond(false);
-
-        starter.setBinOrHex(DfuBaseService.TYPE_APPLICATION, filePath);
-        starter.start(this, DfuService.class);
-    }
 
     protected void refreshDeviceCache() {
         BluetoothGatt gatt = flashingManager.getGatt();
-        if(gatt != null) {
+        if (gatt != null) {
             try {
                 //noinspection JavaReflectionMemberAccess
                 final Method refresh = gatt.getClass().getMethod("refresh");
@@ -282,6 +236,81 @@ public class DFUActivity extends AppCompatActivity {
             } catch (final Exception e) {
                 Log.e("BLE", "An exception occurred while refreshing device" + e);
             }
+        }
+    }
+
+    public class ConnectTask extends AsyncTask<BluetoothDevice, Void, Void> {
+        private FlashingManager mFlashingManager;
+
+        public ConnectTask(FlashingManager flashingManager) {
+            mFlashingManager = flashingManager;
+        }
+
+        @Override
+        protected Void doInBackground(BluetoothDevice... devices) {
+            BluetoothDevice device = devices[0];
+            flashingManager.connect(device)
+                    // Automatic retries are supported, in case of 133 error.
+                    .retry(NUMBER_OF_RETRIES /* times, with */, INTERVAL_OF_RETRIES /* ms interval */)
+                    .timeout(CONNECTION_TIMEOUT /* ms */)
+                    .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK | PhyRequest.PHY_LE_2M_MASK)
+                    .done(this::writeCharacteristic)
+                    .fail(this::connectionFail)
+                    .enqueue();
+            return null;
+        }
+
+        private void writeCharacteristic(BluetoothDevice device) {
+            Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "writeCharacteristic");
+            flashingManager.writeCharacteristic()
+                    .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
+                    .fail((device1, s) -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: fail, status " + s))
+                    .then(this::disconnect)
+                    .enqueue();
+        }
+
+        private void disconnect(BluetoothDevice device) {
+            Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "disconnect");
+            flashingManager.disconnect()
+                    .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
+                    .fail((device1, s) -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: fail, status " + s))
+                    .then(this::startFlashing)
+                    .enqueue();
+
+            //refreshDeviceCache();
+        }
+
+        private void connectionFail(BluetoothDevice device, int status) {
+            Log.e("BLE", "Connection error to device " + device.getAddress() + ", status: " + status);
+            timerText.setText("Connection error to device " + device.getAddress() + ", status: " + status);
+        }
+
+        /**
+         * Creates and starts service to flash a program to a micro:bit board.
+         *
+         * @param device BluetoothDevice
+         */
+        protected void startFlashing(BluetoothDevice device) {
+            Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "startFlashing");
+            Bundle extras = getIntent().getExtras();
+            final String filePath = extras.getString("EXTRA_FILE");
+
+            Log.i("DFUExtra", "mAddress: " + device.getAddress());
+            Log.i("DFUExtra", "mPattern: " + device.getName());
+            Log.i("DFUExtra", "filePath: " + filePath);
+            Log.i("DFUExtra", "Start Flashing");
+
+            final DfuServiceInitiator starter = new DfuServiceInitiator(device.getAddress())
+                    .setDeviceName(pattern)
+                    //TODO Modify HexInputStream
+                    .setMbrSize(0x18000)
+//                .setForeground(false)
+                    .setNumberOfRetries(NUMBER_OF_RETRIES)
+                    .setRebootTime(REBOOT_TIME)
+                    .setKeepBond(false);
+
+            starter.setBinOrHex(DfuBaseService.TYPE_APPLICATION, filePath);
+            starter.start(getApplicationContext(), DfuService.class);
         }
     }
 }
