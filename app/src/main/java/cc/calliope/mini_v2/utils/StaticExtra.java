@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.utils;
 
 public class StaticExtra {
     public static final String EXTRA_DEVICE = "cc.calliope.mini_v2.EXTRA_DEVICE";

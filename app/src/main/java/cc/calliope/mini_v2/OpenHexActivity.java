@@ -20,6 +20,7 @@ import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityHexBinding;
 import cc.calliope.mini_v2.ui.editors.Editor;
 import cc.calliope.mini_v2.utils.FileUtils;
+import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 

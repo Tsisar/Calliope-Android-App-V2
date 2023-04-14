@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityDfuBinding;
 import cc.calliope.mini_v2.service.DfuService;
+import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.views.BoardProgressBar;
 import no.nordicsemi.android.ble.PhyRequest;
 import no.nordicsemi.android.dfu.DfuBaseService;

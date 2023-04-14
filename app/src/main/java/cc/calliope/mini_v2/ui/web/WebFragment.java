@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.DFUActivity;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.StaticExtra;
+import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.Utils;
