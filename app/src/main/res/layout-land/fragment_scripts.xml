@@ -51,6 +51,7 @@
             android:id="@+id/info_text_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:text="@string/info_scripts"
             android:textSize="16sp"

@@ -15,7 +15,6 @@ import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.FragmentHelpBinding;
 
 public class HelpFragment extends Fragment {
-
     private FragmentHelpBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,

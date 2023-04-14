@@ -30,7 +30,6 @@ import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 public class PatternDialogFragment extends DialogFragment {
-
     private static final String FOB_PARAMS_PARCELABLE = "fob_params_parcelable";
     private DialogPatternBinding binding;
     private Float[] oldPattern = {0f, 0f, 0f, 0f, 0f};

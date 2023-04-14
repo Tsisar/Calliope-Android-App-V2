@@ -1,7 +1,6 @@
 package cc.calliope.mini_v2.ui.editors;
 
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,18 +13,16 @@ import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.FragmentBasicItemBinding;
 import cc.calliope.mini_v2.ui.web.WebFragment;
 import cc.calliope.mini_v2.utils.Utils;
-import cc.calliope.mini_v2.utils.Version;
-
 
 public class EditorsItemFragment extends Fragment {
-    public static final String ARG_POSITION = "arg_position";
+    private static final String ARG_POSITION = "arg_position";
     private FragmentBasicItemBinding binding;
     private final AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.75F);
 
     public static EditorsItemFragment newInstance(int position) {
         EditorsItemFragment fragment = new EditorsItemFragment();
         Bundle args = new Bundle();
-        args.putInt(EditorsItemFragment.ARG_POSITION, position);
+        args.putInt(ARG_POSITION, position);
         fragment.setArguments(args);
 
         return fragment;

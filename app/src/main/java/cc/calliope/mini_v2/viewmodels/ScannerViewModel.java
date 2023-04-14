@@ -58,8 +58,6 @@ import no.nordicsemi.android.support.v18.scanner.ScanFilter;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 
-//import static cc.calliope.mini_v2.profile.BlinkyManager.LBS_UUID_SERVICE;
-
 public class ScannerViewModel extends AndroidViewModel {
 
     // For checking the availability of the device.

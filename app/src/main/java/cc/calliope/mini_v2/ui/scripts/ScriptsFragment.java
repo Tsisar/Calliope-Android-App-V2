@@ -41,7 +41,6 @@ import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 public class ScriptsFragment extends Fragment {
     private static final String FILE_EXTENSION = ".hex";
-
     private FragmentScriptsBinding binding;
     private FragmentActivity activity;
 

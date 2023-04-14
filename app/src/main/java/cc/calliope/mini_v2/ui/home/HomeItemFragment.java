@@ -3,7 +3,6 @@ package cc.calliope.mini_v2.ui.home;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Layout;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,17 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import cc.calliope.mini_v2.databinding.FragmentBasicItemBinding;
-import cc.calliope.mini_v2.utils.Version;
+
 
 public class HomeItemFragment extends Fragment {
-    public static final String ARG_POSITION = "arg_position";
+    private static final String ARG_POSITION = "arg_position";
     private FragmentBasicItemBinding binding;
     private AnimationDrawable animationDrawable;
 
     public static HomeItemFragment newInstance(int position) {
         HomeItemFragment fragment = new HomeItemFragment();
         Bundle args = new Bundle();
-        args.putInt(HomeItemFragment.ARG_POSITION, position);
+        args.putInt(ARG_POSITION, position);
         fragment.setArguments(args);
 
         return fragment;
