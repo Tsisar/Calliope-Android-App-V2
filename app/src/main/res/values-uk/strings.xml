@@ -20,12 +20,12 @@
     <string name="info_make_code">Microsoft MakeCode - це інтерактивна платформа для створення програм та проектів, зокрема, для програмування мікроконтролерів та розробки ігор. Вона надає зручне середовище розробки з використанням графічного програмування, що дає змогу створювати програми без необхідності вручну писати код.</string>
     <string name="info_roberta">Open Roberta Lab - це хмарне інтегроване середовище програмування, яке дозволяє дітям та підліткам легко програмувати різні системи роботів/мікроконтролерів.</string>
     <string name="info_library">Тут ви знайдете оригінальні програми, які можна змінити або перезавантажити.</string>
-    <string name="info_scripts">Ось ваші скрипти.</string>
+    <string name="info_scripts">Тут будуть ваші скрипти.</string>
 
-    <string name="title_welcome">РОЗПОЧНІМО!</string>
+    <string name="title_welcome">Розпочнімо!</string>
     <string name="info_welcome">На цій сторінці ви дізнаєтеся, як крок за кроком підготувати Calliope mini до роботи. У першому кроці показано, як правильно під\'єднати Calliope mini до джерела живлення.</string>
 
-    <string name="title_battery">ПІД\'ЄДНАТИ БАТАРЕЙКИ</string>
+    <string name="title_battery">Під\'єднання батарейок</string>
     <string name="info_battery"><![CDATA[
     Перед початком роботи Calliope mini необхідно увімкнути.
     <br/>
@@ -36,7 +36,7 @@
     <br/>Переконайтеся, що закрита сторона штекера знаходиться зверху, а напрямна посередині. Якщо роз\'єм кабелю легко вставляється в роз\'єм акумулятора на платі, ви під\'єднуєте правильно.
     ]]></string>
 
-    <string name="title_demo">ДЕМО-ПОСЛІДОВНІСТЬ</string>
+    <string name="title_demo">Демо-послідовність</string>
     <string name="info_demo"><![CDATA[
     Знайомтеся з Calliope mini. Calliope mini покаже вам на дисплеї, що саме ви маєте зробити.
     <br/>
@@ -91,4 +91,16 @@
     <string name="open_hex_info">Ви намагаєтеся відкрити файл \"%s\" і прошити його до вашого Calliope mini.
         \n\nЯкщо ви прошиєте неправильний або пошкоджений файл, можливо, вам доведеться під\'єднати Calliope mini до комп\'ютера, щоб перепрошити його.</string>
     <string name="open_hex_button">Прошити</string>
+
+    <string name="flashing_device_connecting">Під\'єднання пристрою…</string>
+    <string name="flashing_process_starting">Розпочинаємо процес…</string>
+    <string name="flashing_enabling_dfu_mode">Увімкнення режиму DFU…</string>
+    <string name="flashing_firmware_validating">Перевірка прошивки…</string>
+    <string name="flashing_device_disconnecting">Від\'єднання пристрою…</string>
+    <string name="flashing_dfu_completed">DFU завершено</string>
+    <string name="flashing_dfu_aborted">DFU скасовано</string>
+    <string name="flashing_uploading">Завантаження…</string>
+    <string name="flashing_error">Помилка</string>
+    <string name="flashing_connection_fail">Помилка з\'єднання</string>
+    <string name="flashing_status">Статус: %d</string>
 </resources>

@@ -126,8 +126,8 @@ public class OpenHexActivity extends ScannerActivity {
     private void startDFUActivity(File file) {
         if (device != null && device.isRelevant()) {
             final Intent intent = new Intent(this, DFUActivity.class);
-            intent.putExtra("cc.calliope.mini.EXTRA_DEVICE", device);
-            intent.putExtra("EXTRA_FILE", file.getAbsolutePath());
+            intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
+            intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);
         } else {
             Utils.errorSnackbar(rootView, getString(R.string.error_snackbar_no_connected)).show();

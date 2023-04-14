@@ -29,8 +29,8 @@ public class BoardView extends View {
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LedRange {}
-
-    private static final String TAG = "BoardView";
+    private int aspectRatioWidth = 1;
+    private int aspectRatioHeight = 1;
     private Drawable drawable;
     private final boolean[] ledArray = new boolean[26];
 
@@ -50,7 +50,6 @@ public class BoardView extends View {
     }
 
     private void init() {
-        Log.w(TAG, "init()");
         setImageResource(R.drawable.layers_board);
         setAllLed(false);
     }
@@ -78,6 +77,26 @@ public class BoardView extends View {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int originalWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int originalHeight = MeasureSpec.getSize(heightMeasureSpec);
+        int calculatedHeight = originalWidth * aspectRatioHeight / aspectRatioWidth;
+
+        int finalWidth, finalHeight;
+        finalWidth = originalWidth;
+        finalHeight = calculatedHeight;
+        if (calculatedHeight > originalHeight) {
+            finalHeight = originalHeight;
+            finalWidth = originalHeight * aspectRatioWidth / aspectRatioHeight;
+        }
+
+        super.onMeasure(
+                MeasureSpec.makeMeasureSpec(finalWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(finalHeight, MeasureSpec.EXACTLY)
+        );
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         if (drawable instanceof LayerDrawable) {
             int width = getWidth();
@@ -99,5 +118,19 @@ public class BoardView extends View {
             }
         }
         super.onDraw(canvas);
+    }
+
+    public void setAspectRatio(int aspectRatioWidth, int aspectRatioHeight) {
+        this.aspectRatioWidth = aspectRatioWidth;
+        this.aspectRatioHeight = aspectRatioHeight;
+        requestLayout();
+    }
+
+    public int getAspectRatioWidth() {
+        return aspectRatioWidth;
+    }
+
+    public int getAspectRatioHeight() {
+        return aspectRatioHeight;
     }
 }

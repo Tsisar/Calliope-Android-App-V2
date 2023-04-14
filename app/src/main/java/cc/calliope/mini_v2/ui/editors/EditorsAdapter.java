@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import cc.calliope.mini_v2.ui.scripts.ScriptsFragment;
 
-public class EditorsAdapter extends FragmentStateAdapter{
+public class EditorsAdapter extends FragmentStateAdapter {
     public EditorsAdapter(Fragment fragment) {
         super(fragment);
     }
@@ -13,11 +13,7 @@ public class EditorsAdapter extends FragmentStateAdapter{
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if(position == 3){
-            return new ScriptsFragment();
-        }else {
-            return EditorsItemFragment.newInstance(position);
-        }
+        return EditorsItemFragment.newInstance(position);
     }
 
     @Override

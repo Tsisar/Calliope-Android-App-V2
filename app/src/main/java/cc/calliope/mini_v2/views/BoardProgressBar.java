@@ -9,8 +9,6 @@ import cc.calliope.mini_v2.service.DfuService;
 
 public class BoardProgressBar extends BoardView {
 
-    private static final String TAG = "BoardProgressBar";
-
     public BoardProgressBar(Context context) {
         super(context);
     }
@@ -25,10 +23,9 @@ public class BoardProgressBar extends BoardView {
 
     public void setProgress(int progress) {
         if (progress == DfuService.PROGRESS_COMPLETED) {
-            setLed(false, 2, 3, 4, 6, 10, 17, 19);
+            setAllLed(false);
+            setLed(true, 2, 3, 4, 6, 10, 17, 19);
         } else {
-            Log.w(TAG, "Progress: " + progress);
-
             int p = Math.max(progress, 0);
             int max = p / 4;
 

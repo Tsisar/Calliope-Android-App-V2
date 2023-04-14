@@ -14,13 +14,9 @@ import no.nordicsemi.android.ble.WriteRequest;
 
 public class FlashingManager extends BleManager {
     private static final String TAG = "FlashingManager";
-
     private static final UUID MINI_FLASH_SERVICE_UUID = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
     private static final UUID MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
-
     private BluetoothGattCharacteristic flashServiceCharacteristic;
-
-    private BluetoothGatt mGatt;
 
     public FlashingManager(@NonNull final Context context) {
         super(context);
@@ -44,26 +40,22 @@ public class FlashingManager extends BleManager {
         return new MyGattCallbackImpl();
     }
 
-    public BluetoothGatt getGatt() {
-        return mGatt;
-    }
-
     private class MyGattCallbackImpl extends BleManagerGattCallback {
         @Override
         protected boolean isRequiredServiceSupported(@NonNull BluetoothGatt gatt) {
-            log(Log.DEBUG, "isRequiredServiceSupported " + gatt.getDevice().getAddress());
-            mGatt = gatt;
+            log(Log.DEBUG, "Checking if the flash service is supported...");
+
             // Here get instances of your characteristics.
             // Return false if a required service has not been discovered.
             BluetoothGattService flashService = gatt.getService(MINI_FLASH_SERVICE_UUID);
             if (flashService == null) {
-                log(Log.WARN, "Cannot find MINI_FLASH_SERVICE_UUID");
+                log(Log.WARN, "Can't find MINI_FLASH_SERVICE_UUID");
                 return false;
             }
 
             flashServiceCharacteristic = flashService.getCharacteristic(MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID);
             if (flashServiceCharacteristic == null) {
-                log(Log.WARN, "Cannot find MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID");
+                log(Log.WARN, "Can't find MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID");
                 return false;
             }
 
@@ -72,18 +64,18 @@ public class FlashingManager extends BleManager {
 
         @Override
         protected void initialize() {
-            log(Log.DEBUG, "initialize");
+            log(Log.DEBUG, "Initialize...");
             // Initialize your device.
             // This means e.g. enabling notifications, setting notification callbacks,
             // sometimes writing something to some Control Point.
             // Kotlin projects should not use suspend methods here, which require a scope.
 
-            //requestMtu(517).enqueue();
+            requestMtu(23).enqueue();
         }
 
         @Override
         protected void onServicesInvalidated() {
-            log(Log.DEBUG, "onServicesInvalidated");
+            log(Log.DEBUG, "Services invalidated...");
             // This method is called when the services get invalidated, i.e. when the device
             // disconnects.
             // References to characteristics should be nullified here.
@@ -93,7 +85,7 @@ public class FlashingManager extends BleManager {
 
 	public WriteRequest writeCharacteristic() {
         byte[] data = {1};
-        Log.v(TAG, "Writing Flash Command...");
+        log(Log.DEBUG, "Writing flash command...");
         return writeCharacteristic(flashServiceCharacteristic, data, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
 	}
 }

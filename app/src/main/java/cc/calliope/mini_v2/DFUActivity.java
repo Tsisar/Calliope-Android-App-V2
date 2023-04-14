@@ -1,21 +1,16 @@
 package cc.calliope.mini_v2;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
-import java.lang.reflect.Method;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.databinding.ActivityDfuBinding;
 import cc.calliope.mini_v2.service.DfuService;
 import cc.calliope.mini_v2.views.BoardProgressBar;
 import no.nordicsemi.android.ble.PhyRequest;
@@ -26,291 +21,223 @@ import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class DFUActivity extends AppCompatActivity {
+    private static final String TAG = "DFUActivity";
     private static final int NUMBER_OF_RETRIES = 3;
     private static final int INTERVAL_OF_RETRIES = 500; // ms
     private static final int REBOOT_TIME = 2000; // time required by the device to reboot, ms
     private static final long CONNECTION_TIMEOUT = 10000; // default connection timeout is 30000 ms
-    private TextView deviceInfo;
-    private TextView timerText;
+    private static final int DELAY_TO_FINISH_ACTIVITY = 5000; //delay to finish activity after flashing
+    private TextView statusTextView;
+    private TextView timerTextView;
     private BoardProgressBar progressBar;
-
-    private static final String TAG = DFUActivity.class.getSimpleName();
-    private static final String TAG_PL = "DfuProgressListener";
-
-    public static final String BROADCAST_PROGRESS = "org.microbit.android.partialflashing.broadcast.BROADCAST_PROGRESS";
-    public static final String EXTRA_PROGRESS = "org.microbit.android.partialflashing.extra.EXTRA_PROGRESS";
+    private String pattern;
+    private boolean onPause;
     private FlashingManager flashingManager;
     private final Handler timerHandler = new Handler();
     private final Runnable deferredFinish = this::finish;
-    private static final int DELAY_TO_FINISH = 5000;
-    private String pattern;
-    private boolean onPause;
 
-
-    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra(EXTRA_PROGRESS);
-            Log.e("PF receiver", "PROGRESS: " + message);
-        }
-    };
-
-    private final DfuProgressListener mDfuProgressListener = new DfuProgressListenerAdapter() {
+    private final DfuProgressListener progressListener = new DfuProgressListenerAdapter() {
         @Override
         public void onDeviceConnecting(@NonNull final String deviceAddress) {
-            timerText.setText("Device Connecting");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
+            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method);
+
+            timerTextView.setText(R.string.flashing_device_connecting);
         }
 
         @Override
         public void onDfuProcessStarting(@NonNull final String deviceAddress) {
-            timerText.setText("Process Starting");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
+            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method);
+
+            timerTextView.setText(R.string.flashing_process_starting);
         }
 
         @Override
         public void onEnablingDfuMode(@NonNull final String deviceAddress) {
-            timerText.setText("Enabling Dfu Mode");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
+            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method);
+
+            timerTextView.setText(R.string.flashing_enabling_dfu_mode);
         }
 
         @Override
         public void onFirmwareValidating(@NonNull final String deviceAddress) {
-            timerText.setText("Firmware Validating");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
+            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method);
+
+            timerTextView.setText(R.string.flashing_firmware_validating);
         }
 
         @Override
         public void onDeviceDisconnecting(@NonNull final String deviceAddress) {
-            timerText.setText("Device Disconnecting");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
+            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method);
+
+            timerTextView.setText(R.string.flashing_device_disconnecting);
         }
 
         @Override
         public void onDfuCompleted(@NonNull final String deviceAddress) {
-            timerText.setText("Dfu Completed");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
-            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH);
+            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method);
+
+            timerTextView.setText(R.string.flashing_dfu_completed);
+            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
             progressBar.setProgress(DfuService.PROGRESS_COMPLETED);
         }
 
         @Override
         public void onDfuAborted(@NonNull final String deviceAddress) {
-            timerText.setText("Dfu Aborted");
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method);
-            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH);
+            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method);
+
+            timerTextView.setText(R.string.flashing_dfu_aborted);
+            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
         }
 
         @Override
-        public void onProgressChanged(@NonNull final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
+        public void onProgressChanged(@NonNull final String deviceAddress, final int percent,
+                                      final float speed, final float avgSpeed,
+                                      final int currentPart, final int partsTotal) {
+//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
+//            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method + " percent: " + percent +
+//                    "; speed: " + speed + "; avgSpeed: " + avgSpeed +
+//                    "; currentPart " + currentPart + "; partsTotal: " + partsTotal + ";");
+
             if (!onPause) {
-                deviceInfo.setText(percent + "%");
-                timerText.setText("Uploading");
+                statusTextView.setText(String.format(getString(R.string.flashing_percent), percent));
+                timerTextView.setText(R.string.flashing_uploading);
                 progressBar.setProgress(percent);
             }
-
-//            String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-//            Log.e(TAG, method + " percent: " + percent);
         }
 
         @Override
         public void onError(@NonNull final String deviceAddress, final int error, final int errorType, final String message) {
-            deviceInfo.setText("ERROR");
-            timerText.setText(message);
             String method = Thread.currentThread().getStackTrace()[2].getMethodName();
-            Log.e(TAG_PL, method + " error: " + message);
-            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH);
+            Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + method + " " + message);
+
+            statusTextView.setText(R.string.flashing_error);
+            timerTextView.setText(message);
+            timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dfu);
+
+        ActivityDfuBinding binding = ActivityDfuBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        statusTextView = binding.statusTextView;
+        timerTextView = binding.timerTextView;
+        progressBar = binding.progressBar;
 
         flashingManager = new FlashingManager(this);
 
-//        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-//                new IntentFilter(BROADCAST_PROGRESS));
-
-        deviceInfo = findViewById(R.id.statusInfo);
-        timerText = findViewById(R.id.timerText);
-        progressBar = findViewById(R.id.progressBar);
-
-        timerText.setText("Device Connecting");
-
-        initiateFlashing();
+        initFlashing();
     }
 
     @Override
     protected void onDestroy() {
         flashingManager.close();
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener);
+        onPause = false;
+        DfuServiceListenerHelper.registerProgressListener(this, progressListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         onPause = true;
-        DfuServiceListenerHelper.unregisterProgressListener(this, mDfuProgressListener);
+        DfuServiceListenerHelper.unregisterProgressListener(this, progressListener);
     }
 
-    protected void initiateFlashing() {
-        final Intent intent = getIntent();
-        final ExtendedBluetoothDevice device = intent.getParcelableExtra("cc.calliope.mini.EXTRA_DEVICE");
+    private void initFlashing() {
+        Intent intent = getIntent();
+        ExtendedBluetoothDevice device = intent.getParcelableExtra(StaticExtra.EXTRA_DEVICE);
 
         if (device == null) {
             return;
         }
-
         pattern = device.getPattern();
 
-        // Check if the peripheral is cached or not
-        int deviceType = device.getDevice().getType();
-        if (deviceType == BluetoothDevice.DEVICE_TYPE_UNKNOWN) {
-            Log.e("BLE", "The peripheral is not cached");
-        } else {
-            Log.v("BLE", "The peripheral is cached");
-        }
+        Log.i(TAG, "device: " + device.getAddress() + " " + device.getName());
+        Log.d(TAG, "### " + Thread.currentThread().getId() + " # " + "Init flashing...");
 
-        Log.v("BLE", "device: " + device.getAddress() + " " + device.getName());
-
-        Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "initiateFlashing");
-
-        ConnectTask task = new ConnectTask(flashingManager);
-        task.execute(device.getDevice());
-
-//        flashingManager.connect(device.getDevice())
-//                // Automatic retries are supported, in case of 133 error.
-//                .retry(NUMBER_OF_RETRIES /* times, with */, INTERVAL_OF_RETRIES /* ms interval */)
-//                .timeout(CONNECTION_TIMEOUT /* ms */)
-//                .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK | PhyRequest.PHY_LE_2M_MASK)
-//                .done(this::writeCharacteristic)
-//                .fail(this::connectionFail)
-//                .enqueue();
+        connect(device.getDevice());
     }
 
-
-    protected void startFlashingPF() {
-        final Intent intent = getIntent();
-        final ExtendedBluetoothDevice device = intent.getParcelableExtra("cc.calliope.mini.EXTRA_DEVICE");
-
-        Bundle extras = intent.getExtras();
-        final String filePath = extras.getString("EXTRA_FILE");
-        final String deviceAddress = device.getAddress();
-
-        Log.v("MicrobitDFU", "Start Partial Flash");
-
-        final Intent service = new Intent(this, PartialFlashingService.class);
-        service.putExtra("deviceAddress", deviceAddress);
-        service.putExtra("filepath", filePath); // a path or URI must be provided.
-
-        startService(service);
+    private void connect(BluetoothDevice device) {
+        Log.d(TAG, "### " + Thread.currentThread().getId() + " # " + "Connecting...");
+        flashingManager.connect(device)
+                // Automatic retries are supported, in case of 133 error.
+                .retry(NUMBER_OF_RETRIES, INTERVAL_OF_RETRIES)
+                .timeout(CONNECTION_TIMEOUT)
+                .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK | PhyRequest.PHY_LE_2M_MASK)
+                .done(this::writeCharacteristic)
+                .fail(this::connectionFail)
+                .enqueue();
     }
 
-
-    protected void refreshDeviceCache() {
-        BluetoothGatt gatt = flashingManager.getGatt();
-        if (gatt != null) {
-            try {
-                //noinspection JavaReflectionMemberAccess
-                final Method refresh = gatt.getClass().getMethod("refresh");
-                if (refresh != null) {
-                    refresh.invoke(gatt);
-                    Log.v("BLE", "Refresh device cache");
-                }
-            } catch (final Exception e) {
-                Log.e("BLE", "An exception occurred while refreshing device" + e);
-            }
-        }
+    private void writeCharacteristic(BluetoothDevice device) {
+        Log.d(TAG, "### " + Thread.currentThread().getId() + " # " + "Done");
+        Log.d(TAG, "### " + Thread.currentThread().getId() + " # " + "Writing characteristic...");
+        flashingManager.writeCharacteristic()
+                .done(this::done)
+                .fail(this::fail)
+                .then(this::disconnect)
+                .enqueue();
     }
 
-    public class ConnectTask extends AsyncTask<BluetoothDevice, Void, Void> {
-        private FlashingManager mFlashingManager;
+    private void disconnect(BluetoothDevice device) {
+        Log.d(TAG, "### " + Thread.currentThread().getId() + " # " + "Disconnecting...");
+        flashingManager.disconnect()
+                .done(this::done)
+                .fail(this::fail)
+                .then(this::startFlashing)
+                .enqueue();
+    }
 
-        public ConnectTask(FlashingManager flashingManager) {
-            mFlashingManager = flashingManager;
-        }
+    private void startFlashing(BluetoothDevice device) {
+        Log.w(TAG, "### " + Thread.currentThread().getId() + " # " + "Starting flashing");
+        Bundle extras = getIntent().getExtras();
+        String filePath = extras.getString(StaticExtra.EXTRA_FILE_PATH);
 
-        @Override
-        protected Void doInBackground(BluetoothDevice... devices) {
-            BluetoothDevice device = devices[0];
-            flashingManager.connect(device)
-                    // Automatic retries are supported, in case of 133 error.
-                    .retry(NUMBER_OF_RETRIES /* times, with */, INTERVAL_OF_RETRIES /* ms interval */)
-                    .timeout(CONNECTION_TIMEOUT /* ms */)
-                    .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK | PhyRequest.PHY_LE_2M_MASK)
-                    .done(this::writeCharacteristic)
-                    .fail(this::connectionFail)
-                    .enqueue();
-            return null;
-        }
+        Log.i(TAG, "Address: " + device.getAddress());
+        Log.i(TAG, "Pattern: " + pattern);
+        Log.i(TAG, "File path: " + filePath);
+        Log.i(TAG, "Start flashing");
 
-        private void writeCharacteristic(BluetoothDevice device) {
-            Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "writeCharacteristic");
-            flashingManager.writeCharacteristic()
-                    .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
-                    .fail((device1, s) -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: fail, status " + s))
-                    .then(this::disconnect)
-                    .enqueue();
-        }
+        final DfuServiceInitiator starter = new DfuServiceInitiator(device.getAddress())
+                .setDeviceName(pattern)
+                //TODO Modify HexInputStream
+                .setMbrSize(0x18000)
+                .setNumberOfRetries(NUMBER_OF_RETRIES)
+                .setRebootTime(REBOOT_TIME)
+                .setKeepBond(false);
 
-        private void disconnect(BluetoothDevice device) {
-            Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "disconnect");
-            flashingManager.disconnect()
-                    .done(device1 -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: done"))
-                    .fail((device1, s) -> Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "onRequestCompleted: fail, status " + s))
-                    .then(this::startFlashing)
-                    .enqueue();
+        starter.setBinOrHex(DfuBaseService.TYPE_APPLICATION, filePath);
+        starter.start(this, DfuService.class);
+    }
 
-            //refreshDeviceCache();
-        }
+    private void done(BluetoothDevice device) {
+        Log.d(TAG, "### " + Thread.currentThread().getId() + " # " + "Done");
+    }
 
-        private void connectionFail(BluetoothDevice device, int status) {
-            Log.e("BLE", "Connection error to device " + device.getAddress() + ", status: " + status);
-            timerText.setText("Connection error to device " + device.getAddress() + ", status: " + status);
-        }
+    private void fail(BluetoothDevice device, int status) {
+        Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + "Fail, status " + status);
+    }
 
-        /**
-         * Creates and starts service to flash a program to a micro:bit board.
-         *
-         * @param device BluetoothDevice
-         */
-        protected void startFlashing(BluetoothDevice device) {
-            Log.w("BLE", "### " + Thread.currentThread().getId() + " # " + "startFlashing");
-            Bundle extras = getIntent().getExtras();
-            final String filePath = extras.getString("EXTRA_FILE");
-
-            Log.i("DFUExtra", "mAddress: " + device.getAddress());
-            Log.i("DFUExtra", "mPattern: " + device.getName());
-            Log.i("DFUExtra", "filePath: " + filePath);
-            Log.i("DFUExtra", "Start Flashing");
-
-            final DfuServiceInitiator starter = new DfuServiceInitiator(device.getAddress())
-                    .setDeviceName(pattern)
-                    //TODO Modify HexInputStream
-                    .setMbrSize(0x18000)
-//                .setForeground(false)
-                    .setNumberOfRetries(NUMBER_OF_RETRIES)
-                    .setRebootTime(REBOOT_TIME)
-                    .setKeepBond(false);
-
-            starter.setBinOrHex(DfuBaseService.TYPE_APPLICATION, filePath);
-            starter.start(getApplicationContext(), DfuService.class);
-        }
+    private void connectionFail(BluetoothDevice device, int status) {
+        Log.e(TAG, "Connection error, device " + device.getAddress() + ", status: " + status);
+        statusTextView.setText(R.string.flashing_connection_fail);
+        timerTextView.setText(String.format(getString(R.string.flashing_status), status));
     }
 }

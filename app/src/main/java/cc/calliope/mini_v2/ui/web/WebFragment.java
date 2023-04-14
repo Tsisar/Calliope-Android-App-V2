@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.DFUActivity;
 import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.StaticExtra;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.Utils;
@@ -319,8 +320,8 @@ public class WebFragment extends Fragment implements DownloadListener {
         if (device != null && device.isRelevant()) {
             Log.e(TAG, "start DFU Activity");
             final Intent intent = new Intent(getActivity(), DFUActivity.class);
-            intent.putExtra("cc.calliope.mini.EXTRA_DEVICE", device);
-            intent.putExtra("EXTRA_FILE", file.getAbsolutePath());
+            intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
+            intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);
         } else {
             Utils.errorSnackbar(webView, getString(R.string.error_snackbar_no_connected)).show();

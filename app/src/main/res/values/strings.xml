@@ -22,10 +22,10 @@
     <string name="info_library">Here you find the original programs, to change or reload.</string>
     <string name="info_scripts">Here is you scripts.</string>
 
-    <string name="title_welcome">LET\'S GO</string>
+    <string name="title_welcome">Let\'s Go</string>
     <string name="info_welcome">On this page you will learn how to get the Calliope mini up and running step by step. The first step shows you how to connect the Calliope mini correctly to the power supply.</string>
 
-    <string name="title_battery">CONNECT</string>
+    <string name="title_battery">"Connect "</string>
     <string name="info_battery"><![CDATA[
     Before you can start, the Calliope mini must be powered.
     <br/>
@@ -36,7 +36,7 @@
     <br/>Make sure that the closed end of the plug is at the top with the raised part in the middle. If the cable connector fits easily into the battery connector on the board, it is correct.
     ]]></string>
 
-    <string name="title_demo">DEMO SEQUENCE</string>
+    <string name="title_demo">Demo sequence</string>
     <string name="info_demo"><![CDATA[
     Meet the Calliope mini. The Calliope mini will show you on the display which input you should make.
     <br/>
@@ -92,4 +92,18 @@
     <string name="open_hex_info">You are trying to open the \"%s\" file and flash it to your Calliope mini.
         \n\nIf you flash an incorrect or damaged file, you may have to connect your Calliope mini to the computer to reflash it.</string>
     <string name="open_hex_button">Flash</string>
+
+    <string name="flashing_device_connecting">Device connecting…</string>
+    <string name="flashing_process_starting">Process starting…</string>
+    <string name="flashing_enabling_dfu_mode">Enabling DFU mode…</string>
+    <string name="flashing_firmware_validating">Firmware validating…</string>
+    <string name="flashing_device_disconnecting">Device disconnecting…</string>
+    <string name="flashing_dfu_completed">DFU completed</string>
+    <string name="flashing_dfu_aborted">DFU aborted</string>
+    <string name="flashing_uploading">Uploading…</string>
+    <string name="flashing_percent" translatable="false">%d%%</string>
+    <string name="flashing_error">Error</string>
+    <string name="flashing_connection_fail">Connection fail</string>
+    <string name="flashing_status">Status: %d</string>
+    <string name="points" translatable="false">…</string>
 </resources>

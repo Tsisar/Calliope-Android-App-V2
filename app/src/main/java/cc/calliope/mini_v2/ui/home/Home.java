@@ -15,7 +15,11 @@ public enum Home {
     DEMO(
             R.string.title_demo,
             R.drawable.anim_demo,
-            R.string.info_demo);
+            R.string.info_demo),
+    SCRIPTS(
+            R.string.title_scripts,
+            R.drawable.ic_board,
+            R.string.info_scripts);
 
     private final int titleResId;
     private final int iconResId;

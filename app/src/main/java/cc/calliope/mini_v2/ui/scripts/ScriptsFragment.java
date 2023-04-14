@@ -31,9 +31,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import cc.calliope.mini_v2.DFUActivity;
 import cc.calliope.mini_v2.FileWrapper;
 import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.StaticExtra;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentScriptsBinding;
 import cc.calliope.mini_v2.ui.editors.Editor;
+import cc.calliope.mini_v2.ui.home.Home;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
@@ -67,11 +69,8 @@ public class ScriptsFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
-        Editor editor = Editor.SCRIPTS;
-
-        binding.titleTextView.setText(editor.getTitleResId());
-        binding.iconImageView.setImageResource(editor.getIconResId());
+        binding.titleTextView.setText(Home.SCRIPTS.getTitleResId());
+        binding.iconImageView.setImageResource(Home.SCRIPTS.getIconResId());
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 
@@ -79,8 +78,12 @@ public class ScriptsFragment extends Fragment {
         filesList.addAll(getFiles(Editor.ROBERTA));
         filesList.addAll(getFiles(Editor.LIBRARY));
 
+        final TextView infoTextView = binding.infoTextView;
+        final RecyclerView recyclerView = binding.scriptsRecyclerView;
+
         if (!filesList.isEmpty()) {
-            final RecyclerView recyclerView = binding.scriptsRecyclerView;
+            infoTextView.setVisibility(View.INVISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             scriptsRecyclerAdapter = new ScriptsRecyclerAdapter(filesList);
@@ -88,8 +91,9 @@ public class ScriptsFragment extends Fragment {
             scriptsRecyclerAdapter.setOnItemLongClickListener(this::openPopupMenu);
             recyclerView.setAdapter(scriptsRecyclerAdapter);
             recyclerView.addItemDecoration(new SimpleDividerItemDecoration(activity));
-        }else{
-            Log.w("onViewCreated", "filesList is empty");
+        } else {
+            infoTextView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -112,8 +116,8 @@ public class ScriptsFragment extends Fragment {
     private void openDFUActivity(FileWrapper file) {
         if (device != null && device.isRelevant()) {
             final Intent intent = new Intent(activity, DFUActivity.class);
-            intent.putExtra("cc.calliope.mini.EXTRA_DEVICE", device);
-            intent.putExtra("EXTRA_FILE", file.getAbsolutePath());
+            intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
+            intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);
         } else {
             Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_connected)).show();

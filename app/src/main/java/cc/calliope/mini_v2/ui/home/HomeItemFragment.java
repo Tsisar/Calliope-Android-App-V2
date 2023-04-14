@@ -54,7 +54,7 @@ public class HomeItemFragment extends Fragment {
 
         ImageView iconImageView = binding.iconImageView;
         iconImageView.setImageResource(home.getIconResId());
-        if(position > 0) {
+        if(position == 1 || position == 2) {
             animationDrawable = (AnimationDrawable) iconImageView.getDrawable();
         }
 

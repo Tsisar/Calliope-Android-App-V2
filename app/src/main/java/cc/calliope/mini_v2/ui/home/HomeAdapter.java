@@ -3,6 +3,7 @@ package cc.calliope.mini_v2.ui.home;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import cc.calliope.mini_v2.ui.scripts.ScriptsFragment;
 
 public class HomeAdapter extends FragmentStateAdapter {
     public HomeAdapter(Fragment fragment) {
@@ -12,7 +13,11 @@ public class HomeAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return HomeItemFragment.newInstance(position);
+        if(position == 3){
+            return new ScriptsFragment();
+        }else {
+            return HomeItemFragment.newInstance(position);
+        }
     }
 
     @Override
