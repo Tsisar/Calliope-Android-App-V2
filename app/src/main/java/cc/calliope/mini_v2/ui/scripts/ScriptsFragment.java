@@ -143,11 +143,11 @@ public class ScriptsFragment extends Fragment {
 
     private boolean renameFile(FileWrapper file) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        View view = LayoutInflater.from(activity).inflate(R.layout.dialog_rename, activity.findViewById(R.id.layoutDialogContainer));
+        View view = LayoutInflater.from(activity).inflate(R.layout.dialog_edit, activity.findViewById(R.id.layoutDialogContainer));
         builder.setView(view);
 
         ((TextView) view.findViewById(R.id.textTitle)).setText(R.string.title_dialog_rename);
-        EditText editText = view.findViewById(R.id.textName);
+        EditText editText = view.findViewById(R.id.editField);
         editText.setText(FilenameUtils.removeExtension(file.getName()));
 //        editText.requestFocus();
 

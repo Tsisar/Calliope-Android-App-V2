@@ -13,13 +13,13 @@
     <string name="settings_btn_permission">Налаштування</string>
     <string name="action_btn_permission">Надати дозвіл</string>
 
-    <string name="title_make_code">MakeCode</string>
-    <string name="title_roberta">Open Roberta Lab</string>
     <string name="title_library">Передвстановлені програми</string>
+    <string name="title_custom">Кастомний редактор</string>
     <string name="title_scripts">Ваші скрипти</string>
     <string name="info_make_code">Microsoft MakeCode - це інтерактивна платформа для створення програм та проектів, зокрема, для програмування мікроконтролерів та розробки ігор. Вона надає зручне середовище розробки з використанням графічного програмування, що дає змогу створювати програми без необхідності вручну писати код.</string>
     <string name="info_roberta">Open Roberta Lab - це хмарне інтегроване середовище програмування, яке дозволяє дітям та підліткам легко програмувати різні системи роботів/мікроконтролерів.</string>
     <string name="info_library">Тут ви знайдете оригінальні програми, які можна змінити або перезавантажити.</string>
+    <string name="info_custom">Тут ви можете налаштувати посилання на ваш редактор.</string>
     <string name="info_scripts">Тут будуть ваші скрипти.</string>
 
     <string name="title_welcome">Розпочнімо!</string>
@@ -103,4 +103,6 @@
     <string name="flashing_error">Помилка</string>
     <string name="flashing_connection_fail">Помилка з\'єднання</string>
     <string name="flashing_status">Статус: %d</string>
+    <string name="title_dialog_edit_link">Редагувати лінк</string>
+    <string name="title_save">Зберегти</string>
 </resources>

@@ -13,14 +13,16 @@
     <string name="settings_btn_permission">Settings</string>
     <string name="action_btn_permission">Grant permission</string>
 
-    <string name="title_make_code">MakeCode</string>
-    <string name="title_roberta">Open Roberta Lab</string>
+    <string name="title_make_code" translatable="false">MakeCode</string>
+    <string name="title_roberta" translatable="false">Open Roberta Lab</string>
     <string name="title_library">Preinstalled Programs</string>
+    <string name="title_custom">Custom editor</string>
     <string name="title_scripts">Your scripts</string>
     <string name="info_make_code">Microsoft MakeCode is a free, open source platform for creating engaging computer science learning experiences that support a progression path into real-world programming.</string>
     <string name="info_roberta">The Open Roberta Lab is a cloud-based integrated programming environment that enables children and adolescents to program easily different robot/microcontroller systems.</string>
     <string name="info_library">Here you find the original programs, to change or reload.</string>
-    <string name="info_scripts">Here is you scripts.</string>
+    <string name="info_custom">Here you can enter to the custom editor and customize the link to it.</string>
+    <string name="info_scripts">Your scripts will be here.</string>
 
     <string name="title_welcome">Let\'s Go</string>
     <string name="info_welcome">On this page you will learn how to get the Calliope mini up and running step by step. The first step shows you how to connect the Calliope mini correctly to the power supply.</string>
@@ -68,10 +70,12 @@
     <string name="title_rename">Rename</string>
     <string name="title_share">Share</string>
     <string name="title_delete">Delete</string>
+    <string name="title_save">Save</string>
 
     <string name="title_dialog_rename">Rename file</string>
     <string name="title_dialog_delete">Delete file</string>
     <string name="title_dialog_share">Share File</string>
+    <string name="title_dialog_edit_link">Edit link</string>
 
     <string name="button_cancel">Cancel</string>
     <string name="button_rename">Rename</string>
