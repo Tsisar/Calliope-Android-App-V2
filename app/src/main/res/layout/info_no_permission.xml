@@ -36,8 +36,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingEnd="@dimen/activity_horizontal_margin"
-    android:paddingStart="@dimen/activity_horizontal_margin"
+    android:paddingEnd="@dimen/horizontal_margin"
+    android:paddingStart="@dimen/horizontal_margin"
     tools:ignore="ContentDescription">
 
     <ImageView
@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:padding="@dimen/activity_horizontal_margin"
+        android:padding="@dimen/horizontal_margin"
         app:srcCompat="@drawable/ic_location_disabled"/>
 
     <TextView
@@ -61,8 +61,8 @@
         android:id="@+id/message_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:layout_marginTop="@dimen/vertical_margin"
         android:text="@string/info_location_permission"/>
 
     <Button

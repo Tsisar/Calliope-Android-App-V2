@@ -12,12 +12,12 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import cc.calliope.mini_v2.databinding.FragmentBasicItemBinding;
+import cc.calliope.mini_v2.databinding.FragmentHomeItemBinding;
 
 
 public class HomeItemFragment extends Fragment {
     private static final String ARG_POSITION = "arg_position";
-    private FragmentBasicItemBinding binding;
+    private FragmentHomeItemBinding binding;
     private AnimationDrawable animationDrawable;
 
     public static HomeItemFragment newInstance(int position) {
@@ -32,7 +32,7 @@ public class HomeItemFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentBasicItemBinding.inflate(inflater, container, false);
+        binding = FragmentHomeItemBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 

@@ -52,7 +52,7 @@
     <br/>
     <br/>За допомогою цієї програми ви можете підключати, кодувати і прошивати програми до вашого <b>Calliope mini</b> через Bluetooth.
     <br/>
-    <br/>Ви можете знайти надихаючі та цікаві проекти на сайті Calliope за адресою <a href="https://calliope.cc">calliope.cc</a>!
+    <br/>Ви можете знайти надихаючі та цікаві проекти на сайті Calliope за посиланням <a href="https://calliope.cc">calliope.cc</a>!
     <br/>
     <br/>Розважайтеся!
     <br/>
@@ -103,6 +103,6 @@
     <string name="flashing_error">Помилка</string>
     <string name="flashing_connection_fail">Помилка з\'єднання</string>
     <string name="flashing_status">Статус: %d</string>
-    <string name="title_dialog_edit_link">Редагувати лінк</string>
+    <string name="title_dialog_edit_link">Редагувати посилання</string>
     <string name="title_save">Зберегти</string>
 </resources>

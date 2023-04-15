@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+    android:layout_marginHorizontal="@dimen/horizontal_margin"
     android:background="@drawable/item_list_background"
     android:paddingVertical="8dp">
 

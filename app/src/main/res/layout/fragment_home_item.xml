@@ -13,21 +13,21 @@
         android:layout_height="0dp"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
-        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginHorizontal="@dimen/horizontal_margin"
+        android:layout_marginTop="@dimen/vertical_margin"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHeight_percent="0.4"
-        app:srcCompat="@drawable/ic_editors_makecode"
+        app:srcCompat="@drawable/welcome"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginHorizontal="@dimen/horizontal_margin"
+        android:layout_marginTop="@dimen/vertical_margin"
         android:gravity="center_horizontal"
-        android:text="@string/title_make_code"
+        android:text="@string/title_welcome"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@+id/icon_image_view" />
@@ -35,7 +35,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/vertical_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_text_view">
 
@@ -43,9 +43,9 @@
             android:id="@+id/info_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_marginHorizontal="@dimen/horizontal_margin"
             android:gravity="fill_horizontal|top"
-            android:text="@string/info_make_code"
+            android:text="@string/info_welcome"
             android:textSize="16sp"/>
     </ScrollView>
 

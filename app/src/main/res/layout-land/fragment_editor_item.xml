@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/basic_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,15 +11,15 @@
         android:id="@+id/title_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/horizontal_margin"
         android:layout_marginTop="@dimen/vertical_margin"
+        android:layout_marginHorizontal="@dimen/horizontal_margin"
         android:gravity="center"
-        android:text="@string/title_scripts"
+        android:text="@string/title_make_code"
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
         android:id="@+id/icon_image_view"
@@ -28,43 +29,23 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/double_constraint_layout"
+        app:layout_constraintEnd_toStartOf="@+id/info_text_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_text_view"
-        app:srcCompat="@drawable/ic_board"
+        app:srcCompat="@drawable/ic_editors_makecode"
         tools:ignore="ContentDescription" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/double_constraint_layout"
+    <TextView
+        android:id="@+id/info_text_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/horizontal_margin"
         android:layout_marginVertical="@dimen/vertical_margin"
+        android:text="@string/info_make_code"
+        android:textSize="16sp"
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_text_view" >
+        app:layout_constraintTop_toBottomOf="@+id/title_text_view" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/scripts_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"/>
-
-        <TextView
-            android:id="@+id/info_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/horizontal_margin"
-            android:text="@string/info_scripts"
-            android:textSize="16sp"
-            android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

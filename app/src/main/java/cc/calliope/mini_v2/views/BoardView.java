@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import java.lang.annotation.Retention;
