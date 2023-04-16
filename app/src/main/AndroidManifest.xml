@@ -61,7 +61,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="cc.calliope.mini_v2.file_provider"
+            android:authorities="cc.calliope.file_provider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
