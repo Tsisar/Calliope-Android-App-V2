@@ -20,6 +20,8 @@ import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.utils.Utils;
 
 public class MainActivity extends ScannerActivity {
+    private static final int FAB_SIZE_NORMAL = 64;
+    private static final int FAB_SIZE_MINI = 52;
     private ActivityMainBinding binding;
     private Boolean isFullScreen = false;
     private int createdFob = 0;
@@ -86,7 +88,9 @@ public class MainActivity extends ScannerActivity {
         int x = Math.round(view.getX());
         int y = Math.round(view.getY());
         int color = ContextCompat.getColor(activity, R.color.white);
-        int marginTopDp = y < screenHeight / 2 ? 64 + 52 * createdFob : -52 * (createdFob + 1);
+        int marginTopDp = y < screenHeight / 2 ?
+                FAB_SIZE_NORMAL + FAB_SIZE_MINI * createdFob :
+                -FAB_SIZE_MINI * (createdFob + 1);
         int marginTop = Utils.convertDpToPixel(marginTopDp, activity);
         int marginStart = Utils.convertDpToPixel(6, activity);
         ColorStateList tint = ColorStateList.valueOf(color);
