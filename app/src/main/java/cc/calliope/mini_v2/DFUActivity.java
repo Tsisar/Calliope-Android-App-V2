@@ -220,6 +220,7 @@ public class DFUActivity extends AppCompatActivity {
                 .setDeviceName(pattern)
                 //TODO Modify HexInputStream
                 .setMbrSize(0x18000)
+                .setPrepareDataObjectDelay(300L)
                 .setNumberOfRetries(NUMBER_OF_RETRIES)
                 .setRebootTime(REBOOT_TIME)
                 .setKeepBond(false);

@@ -145,7 +145,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         bluetoothEnableResultLauncher.launch(enableBtIntent);
     }
 
-    private void onFabClick(View view) {
+    public void onFabClick(View view) {
         view.startAnimation(new AlphaAnimation(1F, 0.75F));
 
         if (isFlashingProcess) {

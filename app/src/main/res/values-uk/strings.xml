@@ -2,7 +2,7 @@
     <string name="app_name">Calliope mini v.2 (BETA)</string>
     <string name="title_home">Головна</string>
     <string name="title_editors">Редактори</string>
-    <string name="title_help">Допоможга</string>
+    <string name="title_help">Допомога</string>
 
     <string name="title_location_permission">ПОТРІБЕН ДОЗВІЛ НА ВИКОРИСТАННЯ ГЕОЛОКАЦІЇ</string>
     <string name="title_bluetooth_permission">ПОТРІБЕН ДОЗВІЛ НА ВИКОРИСТАННЯ BLUETOOTH</string>
