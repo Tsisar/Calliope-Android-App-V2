@@ -37,6 +37,7 @@ import cc.calliope.mini_v2.ui.editors.Editor;
 import cc.calliope.mini_v2.ui.home.Home;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
+import cc.calliope.mini_v2.views.SimpleDividerItemDecoration;
 
 
 public class ScriptsFragment extends Fragment {

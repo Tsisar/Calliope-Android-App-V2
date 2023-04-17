@@ -1,10 +1,11 @@
 package cc.calliope.mini_v2;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 
@@ -21,6 +22,7 @@ import cc.calliope.mini_v2.utils.Utils;
 public class MainActivity extends ScannerActivity {
     private ActivityMainBinding binding;
     private Boolean isFullScreen = false;
+    private int createdFob = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +78,30 @@ public class MainActivity extends ScannerActivity {
     private FloatingActionButton addFab(View view) {
         Activity activity = this;
 
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+
+        int x = Math.round(view.getX());
+        int y = Math.round(view.getY());
         int color = ContextCompat.getColor(activity, R.color.white);
-        int margin = Utils.convertDpToPixel(-8, activity);
+        int marginTopDp = y < screenHeight / 2 ? 64 + 52 * createdFob : -52 * (createdFob + 1);
+        int marginTop = Utils.convertDpToPixel(marginTopDp, activity);
+        int marginStart = Utils.convertDpToPixel(6, activity);
         ColorStateList tint = ColorStateList.valueOf(color);
 
-        ViewGroup.LayoutParams params = view.getLayoutParams();
-//        params.setMarginEnd(margin);
+        createdFob++;
+
+        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        params.startToStart = binding.getRoot().getId();
+        params.topToTop = binding.getRoot().getId();
+
+        params.setMargins(x + marginStart, y + marginTop, 0, 0);
 
         FloatingActionButton fab = new FloatingActionButton(activity);
         fab.setImageResource(R.drawable.ic_edit_24);
@@ -95,10 +115,11 @@ public class MainActivity extends ScannerActivity {
 
     private void removeFab(View view) {
         binding.getRoot().removeView(view);
+        createdFob--;
     }
 
     @Override
-    public void onFabClick(View view){
+    public void onFabClick(View view) {
         addFab(view).setOnClickListener(this::removeFab);
     }
 }

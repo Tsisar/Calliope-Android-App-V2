@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.scripts;
+package cc.calliope.mini_v2.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
