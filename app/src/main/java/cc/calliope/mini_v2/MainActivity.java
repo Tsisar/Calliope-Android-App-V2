@@ -118,6 +118,13 @@ public class MainActivity extends ScannerActivity {
         createdFob--;
     }
 
+    private void removeAllFab(View... views) {
+        for (View view : views) {
+            binding.getRoot().removeView(view);
+        }
+        createdFob = 0;
+    }
+
     @Override
     public void onFabClick(View view) {
         addFab(view).setOnClickListener(this::removeFab);
