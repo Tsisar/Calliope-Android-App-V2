@@ -6,9 +6,11 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.ViewCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
@@ -85,19 +87,49 @@ public class MainActivity extends ScannerActivity {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    @Override
-    public void onFabClick(View view) {
-//        addFab(view).setOnClickListener(this::removeFab);
-        addFabMenuItem(view).setOnItemClickListener(this::removeView);
-        addFabMenuItem(view).setOnItemClickListener(this::removeView);
-        addFabMenuItem(view).setOnItemClickListener(this::removeView);
+    private void switchFullScreenMode(View view){
+        if(isFullScreen){
+            disableFullScreenMode();
+        }else {
+            enableFullScreenMode(view);
+        }
     }
 
-    private FabMenuItemView addFabMenuItem(View view) {
+    @Override
+    public void onFabClick(View fab) {
+        if(createdFob == 0) {
+            ViewCompat.animate(binding.patternFab).rotation(45.0F).withLayer().setDuration(300).setInterpolator(new OvershootInterpolator(10.0F)).start();
+            FabMenuItemView connect = addFabMenuItem(fab, R.drawable.ic_connect, "Connect");
+            FabMenuItemView scripts = addFabMenuItem(fab, R.drawable.ic_home_black_24dp, "Scripts");
+            FabMenuItemView fullScreen = addFabMenuItem(fab, isFullScreen ? R.drawable.ic_disable_full_screen_24dp : R.drawable.ic_enable_full_screen_24dp, "Full screen");
+            connect.setOnItemClickListener(view -> {
+                MainActivity.super.onFabClick(fab);
+                removeView(connect, scripts, fullScreen);
+            });
+            scripts.setOnItemClickListener(new FabMenuItemView.OnItemClickListener() {
+                @Override
+                public void onItemClick(FabMenuItemView view) {
+                    removeView(connect, scripts, fullScreen);
+                }
+            });
+            fullScreen.setOnItemClickListener(view -> {
+                switchFullScreenMode(view);
+                removeView(connect, scripts, fullScreen);
+            });
+            //TODO loop?
+            fab.setOnClickListener(v -> {
+                v.setOnClickListener(this::onFabClick);
+                removeView(connect, scripts, fullScreen);
+            });
+        }
+    }
+
+    private FabMenuItemView addFabMenuItem(View view, int imageResource, String title) {
         FabMenuItemView itemView = new FabMenuItemView(this,
-                getHorizontalGravity(view) == GRAVITY_START ? FabMenuItemView.TYPE_LEFT : FabMenuItemView.TYPE_RIGHT);
-        itemView.setImageResource(R.drawable.ic_edit_24);
-        itemView.setTitle("test title");
+                getHorizontalGravity(view) == GRAVITY_START ? FabMenuItemView.TYPE_LEFT : FabMenuItemView.TYPE_RIGHT,
+                imageResource,
+                title
+        );
         itemView.setLayoutParams(getParams(view));
         binding.getRoot().addView(itemView);
         createdFob++;
@@ -105,6 +137,7 @@ public class MainActivity extends ScannerActivity {
     }
 
     private void removeView(View... views) {
+        ViewCompat.animate(binding.patternFab).rotation(0.0F).withLayer().setDuration(300).setInterpolator(new OvershootInterpolator(10.0F)).start();
         for (View view : views) {
             binding.getRoot().removeView(view);
         }
@@ -171,7 +204,7 @@ public class MainActivity extends ScannerActivity {
         Log.v("PARAMS", "mainWidth: " + mainWidth);
         Log.v("PARAMS", "mainHeight: " + mainHeight);
         Log.v("PARAMS", "Margins left: " + params.leftMargin + "; top: " + params.topMargin + "; right: " + params.rightMargin + "; bottom:" + params.bottomMargin + ";");
-        Log.v("PARAMS", "--------------------------------------------------");
+        Log.v("PARAMS", "-----------------------------------------------");
         return params;
     }
 

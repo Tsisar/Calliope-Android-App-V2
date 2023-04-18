@@ -50,7 +50,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_baseline_zoom_out_map_24"
+            android:src="@drawable/ic_enable_full_screen_24dp"
             android:background="@color/transparent"/>
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
