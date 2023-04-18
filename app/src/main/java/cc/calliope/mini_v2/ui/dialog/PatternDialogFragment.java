@@ -30,6 +30,8 @@ import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 
 public class PatternDialogFragment extends DialogFragment {
+    private final static int DIALOG_WIDTH = 220; //dp
+    private final static int DIALOG_HEIGHT = 240; //dp
     private static final String FOB_PARAMS_PARCELABLE = "fob_params_parcelable";
     private DialogPatternBinding binding;
     private Float[] oldPattern = {0f, 0f, 0f, 0f, 0f};
@@ -204,8 +206,8 @@ public class PatternDialogFragment extends DialogFragment {
             int halfHeight = displayMetrics.heightPixels / 2;
             int fobX = fobParams.getCenterX();
             int fobY = fobParams.getCenterY();
-            int dialogWidth = Utils.convertDpToPixel(220, getActivity());
-            int dialogHeight = Utils.convertDpToPixel(240, getActivity());
+            int dialogWidth = Utils.convertDpToPixel(getActivity(), DIALOG_WIDTH);
+            int dialogHeight = Utils.convertDpToPixel(getActivity(), DIALOG_HEIGHT);
 
             if (fobX <= halfWidth && fobY <= halfHeight) {
                 return new Position(fobX, fobY);

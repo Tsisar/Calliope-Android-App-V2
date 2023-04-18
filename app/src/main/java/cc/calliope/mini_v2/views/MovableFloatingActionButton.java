@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,7 +116,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int strokeWidth = Utils.convertDpToPixel(4, getContext());
+        int strokeWidth = Utils.convertDpToPixel(getContext(),4);
         int width = getWidth();
         int height = getHeight();
         int sweepAngle = (int) (360 * (progress / 100.f));

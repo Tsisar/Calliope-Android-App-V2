@@ -101,9 +101,9 @@ public class EditorsItemFragment extends Fragment {
     }
 
     private void addEditFab(Activity activity) {
-        int maxImageSize = Utils.convertDpToPixel(32, activity);
+        int maxImageSize = Utils.convertDpToPixel(activity,32);
         int color = ContextCompat.getColor(activity, R.color.white);
-        int margin = Utils.convertDpToPixel(-8, activity);
+        int margin = Utils.convertDpToPixel(activity, -8);
         ColorStateList tint = ColorStateList.valueOf(color);
 
         ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(

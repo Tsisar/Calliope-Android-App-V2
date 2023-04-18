@@ -104,7 +104,7 @@ public class Utils {
      * @param context Context to get resources and device specific display metrics
      * @return A int value to represent px equivalent to dp depending on device density
      */
-    public static int convertDpToPixel(int dp, Context context) {
+    public static int convertDpToPixel(Context context, int dp) {
         return dp * (context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 

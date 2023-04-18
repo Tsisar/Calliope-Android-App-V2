@@ -1,30 +1,32 @@
 package cc.calliope.mini_v2;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.utils.Utils;
+import cc.calliope.mini_v2.views.FabMenuItemView;
 
 public class MainActivity extends ScannerActivity {
-    private static final int FAB_SIZE_NORMAL = 64;
-    private static final int FAB_SIZE_MINI = 52;
+    public static final int GRAVITY_START = 0;
+    public static final int GRAVITY_END = 1;
+    public static final int GRAVITY_TOP = 3;
+    public static final int GRAVITY_BOTTOM = 4;
+    private static final int MARGIN = 4; //dp
     private ActivityMainBinding binding;
     private Boolean isFullScreen = false;
     private int createdFob = 0;
+    private int screenWidth;
+    private int screenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,12 @@ public class MainActivity extends ScannerActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
 
         setPatternFab(binding.patternFab);
 
@@ -77,60 +85,107 @@ public class MainActivity extends ScannerActivity {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    private FloatingActionButton addFab(View view) {
-        Activity activity = this;
+    @Override
+    public void onFabClick(View view) {
+//        addFab(view).setOnClickListener(this::removeFab);
+        addFabMenuItem(view).setOnItemClickListener(this::removeView);
+        addFabMenuItem(view).setOnItemClickListener(this::removeView);
+        addFabMenuItem(view).setOnItemClickListener(this::removeView);
+    }
 
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        int screenHeight = displayMetrics.heightPixels;
-
-        int x = Math.round(view.getX());
-        int y = Math.round(view.getY());
-        int color = ContextCompat.getColor(activity, R.color.white);
-        int marginTopDp = y < screenHeight / 2 ?
-                FAB_SIZE_NORMAL + FAB_SIZE_MINI * createdFob :
-                -FAB_SIZE_MINI * (createdFob + 1);
-        int marginTop = Utils.convertDpToPixel(marginTopDp, activity);
-        int marginStart = Utils.convertDpToPixel(6, activity);
-        ColorStateList tint = ColorStateList.valueOf(color);
-
+    private FabMenuItemView addFabMenuItem(View view) {
+        FabMenuItemView itemView = new FabMenuItemView(this,
+                getHorizontalGravity(view) == GRAVITY_START ? FabMenuItemView.TYPE_LEFT : FabMenuItemView.TYPE_RIGHT);
+        itemView.setImageResource(R.drawable.ic_edit_24);
+        itemView.setTitle("test title");
+        itemView.setLayoutParams(getParams(view));
+        binding.getRoot().addView(itemView);
         createdFob++;
-
-        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-        );
-
-        params.startToStart = binding.getRoot().getId();
-        params.topToTop = binding.getRoot().getId();
-
-        params.setMargins(x + marginStart, y + marginTop, 0, 0);
-
-        FloatingActionButton fab = new FloatingActionButton(activity);
-        fab.setImageResource(R.drawable.ic_edit_24);
-        fab.setSize(FloatingActionButton.SIZE_MINI);
-        fab.setImageTintList(tint);
-        fab.setLayoutParams(params);
-        binding.getRoot().addView(fab);
-        return fab;
+        return itemView;
     }
 
-
-    private void removeFab(View view) {
-        binding.getRoot().removeView(view);
-        createdFob--;
-    }
-
-    private void removeAllFab(View... views) {
+    private void removeView(View... views) {
         for (View view : views) {
             binding.getRoot().removeView(view);
         }
         createdFob = 0;
     }
 
-    @Override
-    public void onFabClick(View view) {
-        addFab(view).setOnClickListener(this::removeFab);
+    private ConstraintLayout.LayoutParams getParams(View mainFab) {
+        int mainX = Math.round(mainFab.getX());
+        int mainY = Math.round(mainFab.getY());
+        int mainWidth = mainFab.getWidth();
+        int mainHeight = mainFab.getHeight();
+        int margin = Utils.convertDpToPixel(this, MARGIN);
+
+        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        // 1 | 2
+        // -----
+        // 3 | 4
+        if (getHorizontalGravity(mainFab) == GRAVITY_START && getVerticalGravity(mainFab) == GRAVITY_TOP) { // 1
+            params.startToStart = binding.getRoot().getId();
+            params.topToTop = binding.getRoot().getId();
+            params.setMargins(
+                    mainX + margin,
+                    mainY + mainHeight + (mainHeight - margin) * createdFob,
+                    0,
+                    0
+            );
+        } else if (getHorizontalGravity(mainFab) == GRAVITY_END && getVerticalGravity(mainFab) == GRAVITY_TOP) { // 2
+            params.endToEnd = binding.getRoot().getId();
+            params.topToTop = binding.getRoot().getId();
+            params.setMargins(
+                    0,
+                    mainY + mainHeight + (mainHeight - margin) * createdFob,
+                    screenWidth - mainX - mainWidth + margin,
+                    0
+            );
+        } else if (getHorizontalGravity(mainFab) == GRAVITY_START) { // 3
+            params.startToStart = binding.getRoot().getId();
+            params.bottomToBottom = binding.getRoot().getId();
+            params.setMargins(
+                    mainX + margin,
+                    0,
+                    0,
+                    screenHeight - mainY + (mainHeight - margin) * createdFob
+            );
+        } else { // 4
+            params.endToEnd = binding.getRoot().getId();
+            params.bottomToBottom = binding.getRoot().getId();
+            params.setMargins(
+                    0,
+                    0,
+                    screenWidth - mainX - mainWidth + margin,
+                    screenHeight - mainY + (mainHeight - margin) * createdFob
+            );
+        }
+
+        Log.v("PARAMS", "screenWidth: " + screenWidth);
+        Log.v("PARAMS", "screenHeight: " + screenHeight);
+        Log.v("PARAMS", "mainX: " + mainX);
+        Log.v("PARAMS", "mainY: " + mainY);
+        Log.v("PARAMS", "mainWidth: " + mainWidth);
+        Log.v("PARAMS", "mainHeight: " + mainHeight);
+        Log.v("PARAMS", "Margins left: " + params.leftMargin + "; top: " + params.topMargin + "; right: " + params.rightMargin + "; bottom:" + params.bottomMargin + ";");
+        Log.v("PARAMS", "--------------------------------------------------");
+        return params;
+    }
+
+    private int getHorizontalGravity(View view) {
+        if (Math.round(view.getX()) <= screenWidth / 2) {
+            return GRAVITY_START;
+        }
+        return GRAVITY_END;
+    }
+
+    private int getVerticalGravity(View view) {
+        if (Math.round(view.getY()) <= screenHeight / 2) {
+            return GRAVITY_TOP;
+        }
+        return GRAVITY_BOTTOM;
     }
 }
