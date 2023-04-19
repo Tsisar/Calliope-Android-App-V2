@@ -11,10 +11,13 @@ import android.widget.ImageButton;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
+import cc.calliope.mini_v2.ui.scripts.ScriptsFragment;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.views.FabMenuItemView;
 
@@ -109,6 +112,12 @@ public class MainActivity extends ScannerActivity {
             scripts.setOnItemClickListener(new FabMenuItemView.OnItemClickListener() {
                 @Override
                 public void onItemClick(FabMenuItemView view) {
+//                    FragmentManager fragmentManager = getSupportFragmentManager();
+//                    ScriptsFragment scriptsFragment = new ScriptsFragment();
+//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                    fragmentTransaction.add(R.id.navigation_host_fragment, scriptsFragment);
+//                    fragmentTransaction.commit();
+
                     removeView(connect, scripts, fullScreen);
                 }
             });
