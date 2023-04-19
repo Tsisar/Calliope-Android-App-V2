@@ -21,6 +21,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private Paint paint;
     private RectF rectF;
     private int progress = 0;
+    private boolean isFabMenuOpen = false;
 
     public MovableFloatingActionButton(Context context) {
         super(context);
@@ -45,6 +46,9 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent){
+        if(isFabMenuOpen){
+            return false;
+        }
 
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)view.getLayoutParams();
 
@@ -128,5 +132,13 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         canvas.drawArc (rectF, 270, sweepAngle, false, paint);
 
         super.onDraw(canvas);
+    }
+
+    public boolean isFabMenuOpen() {
+        return isFabMenuOpen;
+    }
+
+    public void setFabMenuOpen(boolean fabMenuOpen) {
+        isFabMenuOpen = fabMenuOpen;
     }
 }

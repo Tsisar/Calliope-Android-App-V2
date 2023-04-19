@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -14,25 +13,21 @@ import java.lang.annotation.RetentionPolicy;
 import androidx.annotation.IntDef;
 import cc.calliope.mini_v2.R;
 
-public class FabMenuItemView extends LinearLayout implements View.OnClickListener {
-
+public class FabMenuView extends LinearLayout implements View.OnClickListener {
     public static final int TYPE_LEFT = 0;
     public static final int TYPE_RIGHT = 1;
-
     @IntDef({TYPE_LEFT, TYPE_RIGHT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FabMenuType {
     }
-
+    FloatingActionButton fullScreenFab;
     private OnItemClickListener onItemClickListener;
-    private TextView title;
-    private FloatingActionButton fab;
 
     public interface OnItemClickListener {
-        void onItemClick(FabMenuItemView view);
+        void onItemClick(View view);
     }
 
-    public FabMenuItemView(Context context, AttributeSet attrs, int defStyle) {
+    public FabMenuView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         if (context instanceof OnItemClickListener) {
             this.onItemClickListener = (OnItemClickListener) context;
@@ -40,7 +35,7 @@ public class FabMenuItemView extends LinearLayout implements View.OnClickListene
         initView(TYPE_RIGHT);
     }
 
-    public FabMenuItemView(Context context, AttributeSet attrs) {
+    public FabMenuView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (context instanceof OnItemClickListener) {
             this.onItemClickListener = (OnItemClickListener) context;
@@ -48,7 +43,7 @@ public class FabMenuItemView extends LinearLayout implements View.OnClickListene
         initView(TYPE_RIGHT);
     }
 
-    public FabMenuItemView(Context context) {
+    public FabMenuView(Context context) {
         super(context);
         if (context instanceof OnItemClickListener) {
             this.onItemClickListener = (OnItemClickListener) context;
@@ -56,49 +51,37 @@ public class FabMenuItemView extends LinearLayout implements View.OnClickListene
         initView(TYPE_RIGHT);
     }
 
-    public FabMenuItemView(Context context, @FabMenuType int type) {
+    public FabMenuView(Context context, @FabMenuType int type) {
         super(context);
         if (context instanceof OnItemClickListener) {
             this.onItemClickListener = (OnItemClickListener) context;
         }
         initView(type);
-    }
-
-    public FabMenuItemView(Context context, @FabMenuType int type, int imageResource, String title) {
-        super(context);
-        if (context instanceof OnItemClickListener) {
-            this.onItemClickListener = (OnItemClickListener) context;
-        }
-        initView(type, imageResource, title);
-    }
-
-    private void initView(@FabMenuType int type, int imageResource, String title) {
-        initView(type);
-        setImageResource(imageResource);
-        setTitle(title);
     }
 
     private void initView(@FabMenuType int type) {
-        View view = inflate(getContext(), type == TYPE_LEFT ? R.layout.item_fab_menu_left : R.layout.item_fab_menu_right, null);
-        title = view.findViewById(R.id.titleTextView);
-        fab = view.findViewById(R.id.floatingActionButton);
-        fab.setOnClickListener(this);
+        setId(R.id.menuFab);
+        View view = inflate(getContext(), type == TYPE_LEFT ? R.layout.menu_fab_left : R.layout.menu_fab_right, null);
+        FloatingActionButton connectFab = view.findViewById(R.id.fabConnect);
+        FloatingActionButton scriptsFab = view.findViewById(R.id.fabScripts);
+        fullScreenFab = view.findViewById(R.id.fabFullScreen);
+
+        connectFab.setOnClickListener(this);
+        scriptsFab.setOnClickListener(this);
+        fullScreenFab.setOnClickListener(this);
+
         addView(view);
     }
 
-    public void setTitle(String title) {
-        this.title.setText(title);
-    }
-
     @Override
-    public void onClick(View v) {
+    public void onClick(View view) {
         if (onItemClickListener != null) {
-            onItemClickListener.onItemClick(this);
+            onItemClickListener.onItemClick(view);
         }
     }
 
-    public void setImageResource(int imageResource) {
-        fab.setImageResource(imageResource);
+    public void setFullScreenImageResource(int imageResource) {
+        fullScreenFab.setImageResource(imageResource);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

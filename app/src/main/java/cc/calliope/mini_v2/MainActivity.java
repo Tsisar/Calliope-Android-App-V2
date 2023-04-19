@@ -4,32 +4,33 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
-import cc.calliope.mini_v2.ui.scripts.ScriptsFragment;
-import cc.calliope.mini_v2.utils.Utils;
-import cc.calliope.mini_v2.views.FabMenuItemView;
+import cc.calliope.mini_v2.views.DimView;
+import cc.calliope.mini_v2.views.FabMenuView;
 
 public class MainActivity extends ScannerActivity {
     public static final int GRAVITY_START = 0;
     public static final int GRAVITY_END = 1;
     public static final int GRAVITY_TOP = 3;
     public static final int GRAVITY_BOTTOM = 4;
-    private static final int MARGIN = 4; //dp
     private ActivityMainBinding binding;
     private Boolean isFullScreen = false;
-    private int createdFob = 0;
     private int screenWidth;
     private int screenHeight;
 
@@ -49,12 +50,12 @@ public class MainActivity extends ScannerActivity {
         setPatternFab(binding.patternFab);
 
         NavController navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if(binding.patternFab.isFabMenuOpen()){
+                collapseFabMenu();
+            }
+        });
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
-
-        ImageButton fullScreenButton = binding.fullscreenButton;
-        if (fullScreenButton != null) {
-            fullScreenButton.setOnClickListener(this::enableFullScreenMode);
-        }
     }
 
     @Override
@@ -78,7 +79,7 @@ public class MainActivity extends ScannerActivity {
         binding = null;
     }
 
-    private void enableFullScreenMode(View view) {
+    private void enableFullScreenMode() {
         isFullScreen = true;
         binding.bottomNavigation.setVisibility(View.GONE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -90,75 +91,82 @@ public class MainActivity extends ScannerActivity {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    private void switchFullScreenMode(View view){
-        if(isFullScreen){
-            disableFullScreenMode();
-        }else {
-            enableFullScreenMode(view);
-        }
-    }
-
     @Override
-    public void onFabClick(View fab) {
-        if(createdFob == 0) {
-            ViewCompat.animate(binding.patternFab).rotation(45.0F).withLayer().setDuration(300).setInterpolator(new OvershootInterpolator(10.0F)).start();
-            FabMenuItemView connect = addFabMenuItem(fab, R.drawable.ic_connect, "Connect");
-            FabMenuItemView scripts = addFabMenuItem(fab, R.drawable.ic_home_black_24dp, "Scripts");
-            FabMenuItemView fullScreen = addFabMenuItem(fab, isFullScreen ? R.drawable.ic_disable_full_screen_24dp : R.drawable.ic_enable_full_screen_24dp, "Full screen");
-            connect.setOnItemClickListener(view -> {
-                MainActivity.super.onFabClick(fab);
-                removeView(connect, scripts, fullScreen);
-            });
-            scripts.setOnItemClickListener(new FabMenuItemView.OnItemClickListener() {
-                @Override
-                public void onItemClick(FabMenuItemView view) {
-//                    FragmentManager fragmentManager = getSupportFragmentManager();
-//                    ScriptsFragment scriptsFragment = new ScriptsFragment();
-//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                    fragmentTransaction.add(R.id.navigation_host_fragment, scriptsFragment);
-//                    fragmentTransaction.commit();
-
-                    removeView(connect, scripts, fullScreen);
-                }
-            });
-            fullScreen.setOnItemClickListener(view -> {
-                switchFullScreenMode(view);
-                removeView(connect, scripts, fullScreen);
-            });
-            //TODO loop?
-            fab.setOnClickListener(v -> {
-                v.setOnClickListener(this::onFabClick);
-                removeView(connect, scripts, fullScreen);
-            });
+    public void onFabClick(View view){
+        if(binding.patternFab.isFabMenuOpen()) {
+            collapseFabMenu();
+        }else {
+            expandFabMenu();
         }
     }
 
-    private FabMenuItemView addFabMenuItem(View view, int imageResource, String title) {
-        FabMenuItemView itemView = new FabMenuItemView(this,
-                getHorizontalGravity(view) == GRAVITY_START ? FabMenuItemView.TYPE_LEFT : FabMenuItemView.TYPE_RIGHT,
-                imageResource,
-                title
-        );
-        itemView.setLayoutParams(getParams(view));
-        binding.getRoot().addView(itemView);
-        createdFob++;
-        return itemView;
-    }
-
-    private void removeView(View... views) {
-        ViewCompat.animate(binding.patternFab).rotation(0.0F).withLayer().setDuration(300).setInterpolator(new OvershootInterpolator(10.0F)).start();
-        for (View view : views) {
-            binding.getRoot().removeView(view);
+    private  void onItemFabMenuClicked(View view){
+        if (view.getId() == R.id.fabConnect) {
+            super.onFabClick(binding.patternFab);
+        } else if (view.getId() == R.id.fabScripts) {
+            Log.v("PARAMS", "Scripts clicked");
+        } else if (view.getId() == R.id.fabFullScreen) {
+            if(isFullScreen){
+                disableFullScreenMode();
+            }else {
+                enableFullScreenMode();
+            }
         }
-        createdFob = 0;
+        Log.v("PARAMS", "itemId: " + view.getId());
+        Log.v("PARAMS", "-----------------------------------------------");
+        collapseFabMenu();
     }
 
-    private ConstraintLayout.LayoutParams getParams(View mainFab) {
-        int mainX = Math.round(mainFab.getX());
-        int mainY = Math.round(mainFab.getY());
-        int mainWidth = mainFab.getWidth();
-        int mainHeight = mainFab.getHeight();
-        int margin = Utils.convertDpToPixel(this, MARGIN);
+    private void expandFabMenu() {
+        FloatingActionButton fab = binding.patternFab;
+
+        DimView dimView = new DimView(this);
+        dimView.setOnClickListener((View.OnClickListener) v -> collapseFabMenu());
+        binding.getRoot().addView(dimView);
+
+        ViewCompat.animate(fab)
+                .rotation(45.0F)
+                .withLayer().setDuration(300)
+                .setInterpolator(new OvershootInterpolator(10.0F))
+                .start();
+        FabMenuView famMenuView = new FabMenuView(this, getHorizontalGravity(fab) == GRAVITY_START ?
+                FabMenuView.TYPE_LEFT :
+                FabMenuView.TYPE_RIGHT);
+        famMenuView.setFullScreenImageResource(isFullScreen ?
+                R.drawable.ic_disable_full_screen_24dp :
+                R.drawable.ic_enable_full_screen_24dp);
+        famMenuView.setOnItemClickListener(this::onItemFabMenuClicked);
+        famMenuView.setLayoutParams(getParams(fab));
+        fab.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                Log.w("PARAMS", "itemId: " + v.getId() + " hasFocus: " + hasFocus);
+            }
+        });
+
+        binding.getRoot().addView(famMenuView);
+        binding.patternFab.setFabMenuOpen(true);
+    }
+
+    private void collapseFabMenu() {
+        View dimView = binding.getRoot().getViewById(R.id.dimView);
+        binding.getRoot().removeView(dimView);
+
+        ViewCompat.animate(binding.patternFab)
+                .rotation(0.0F)
+                .withLayer().setDuration(300)
+                .setInterpolator(new OvershootInterpolator(10.0F))
+                .start();
+        View famMenuView = binding.getRoot().getViewById(R.id.menuFab);
+        binding.getRoot().removeView(famMenuView);
+        binding.patternFab.setFabMenuOpen(false);
+    }
+
+    private ConstraintLayout.LayoutParams getParams(View view) {
+        int x = Math.round(view.getX());
+        int y = Math.round(view.getY());
+        int width = view.getWidth();
+        int height = view.getHeight();
 
         ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
@@ -168,32 +176,32 @@ public class MainActivity extends ScannerActivity {
         // 1 | 2
         // -----
         // 3 | 4
-        if (getHorizontalGravity(mainFab) == GRAVITY_START && getVerticalGravity(mainFab) == GRAVITY_TOP) { // 1
+        if (getHorizontalGravity(view) == GRAVITY_START && getVerticalGravity(view) == GRAVITY_TOP) { // 1
             params.startToStart = binding.getRoot().getId();
             params.topToTop = binding.getRoot().getId();
             params.setMargins(
-                    mainX + margin,
-                    mainY + mainHeight + (mainHeight - margin) * createdFob,
+                    x,
+                    y + height,
                     0,
                     0
             );
-        } else if (getHorizontalGravity(mainFab) == GRAVITY_END && getVerticalGravity(mainFab) == GRAVITY_TOP) { // 2
+        } else if (getHorizontalGravity(view) == GRAVITY_END && getVerticalGravity(view) == GRAVITY_TOP) { // 2
             params.endToEnd = binding.getRoot().getId();
             params.topToTop = binding.getRoot().getId();
             params.setMargins(
                     0,
-                    mainY + mainHeight + (mainHeight - margin) * createdFob,
-                    screenWidth - mainX - mainWidth + margin,
+                    y + height,
+                    screenWidth - x - width,
                     0
             );
-        } else if (getHorizontalGravity(mainFab) == GRAVITY_START) { // 3
+        } else if (getHorizontalGravity(view) == GRAVITY_START) { // 3
             params.startToStart = binding.getRoot().getId();
             params.bottomToBottom = binding.getRoot().getId();
             params.setMargins(
-                    mainX + margin,
+                    x,
                     0,
                     0,
-                    screenHeight - mainY + (mainHeight - margin) * createdFob
+                    screenHeight - y
             );
         } else { // 4
             params.endToEnd = binding.getRoot().getId();
@@ -201,17 +209,17 @@ public class MainActivity extends ScannerActivity {
             params.setMargins(
                     0,
                     0,
-                    screenWidth - mainX - mainWidth + margin,
-                    screenHeight - mainY + (mainHeight - margin) * createdFob
+                    screenWidth - x - width,
+                    screenHeight - y
             );
         }
 
         Log.v("PARAMS", "screenWidth: " + screenWidth);
         Log.v("PARAMS", "screenHeight: " + screenHeight);
-        Log.v("PARAMS", "mainX: " + mainX);
-        Log.v("PARAMS", "mainY: " + mainY);
-        Log.v("PARAMS", "mainWidth: " + mainWidth);
-        Log.v("PARAMS", "mainHeight: " + mainHeight);
+        Log.v("PARAMS", "mainX: " + x);
+        Log.v("PARAMS", "mainY: " + y);
+        Log.v("PARAMS", "mainWidth: " + width);
+        Log.v("PARAMS", "mainHeight: " + height);
         Log.v("PARAMS", "Margins left: " + params.leftMargin + "; top: " + params.topMargin + "; right: " + params.rightMargin + "; bottom:" + params.bottomMargin + ";");
         Log.v("PARAMS", "-----------------------------------------------");
         return params;

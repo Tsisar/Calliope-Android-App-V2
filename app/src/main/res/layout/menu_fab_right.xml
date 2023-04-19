@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/menuFab"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="end"
+    android:padding="4dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_grey_transparent"
+            android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
+            android:paddingVertical="@dimen/fab_title_vertical_padding"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="Connect"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabConnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            app:maxImageSize="24dp"
+            app:srcCompat="@drawable/ic_connect"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_grey_transparent"
+            android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
+            android:paddingVertical="@dimen/fab_title_vertical_padding"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="Scripts"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabScripts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            app:maxImageSize="24dp"
+            app:srcCompat="@drawable/ic_stat_notify_dfu"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_grey_transparent"
+            android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
+            android:paddingVertical="@dimen/fab_title_vertical_padding"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="Full screen"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabFullScreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            app:maxImageSize="24dp"
+            app:srcCompat="@drawable/ic_enable_full_screen_24dp"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+</LinearLayout>
