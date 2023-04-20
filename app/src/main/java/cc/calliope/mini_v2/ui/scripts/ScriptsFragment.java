@@ -34,7 +34,6 @@ import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentScriptsBinding;
 import cc.calliope.mini_v2.ui.editors.Editor;
-import cc.calliope.mini_v2.ui.home.Home;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 import cc.calliope.mini_v2.views.SimpleDividerItemDecoration;
@@ -69,7 +68,6 @@ public class ScriptsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         binding.titleTextView.setText(R.string.title_scripts);
-        binding.iconImageView.setImageResource(R.drawable.ic_board);
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 
