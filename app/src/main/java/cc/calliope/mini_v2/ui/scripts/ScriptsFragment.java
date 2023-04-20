@@ -68,8 +68,8 @@ public class ScriptsFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        binding.titleTextView.setText(Home.SCRIPTS.getTitleResId());
-        binding.iconImageView.setImageResource(Home.SCRIPTS.getIconResId());
+        binding.titleTextView.setText(R.string.title_scripts);
+        binding.iconImageView.setImageResource(R.drawable.ic_board);
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 

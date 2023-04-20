@@ -110,4 +110,5 @@
     <string name="flashing_connection_fail">Connection fail</string>
     <string name="flashing_status">Status: %d</string>
     <string name="points" translatable="false">…</string>
+    <string name="title_web">WEB</string>
 </resources>

@@ -13,11 +13,7 @@ public class HomeAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if(position == 3){
-            return new ScriptsFragment();
-        }else {
-            return HomeItemFragment.newInstance(position);
-        }
+        return HomeItemFragment.newInstance(position);
     }
 
     @Override

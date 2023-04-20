@@ -12,6 +12,8 @@ import android.widget.ImageButton;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Objects;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -23,6 +25,7 @@ import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
 import cc.calliope.mini_v2.views.DimView;
 import cc.calliope.mini_v2.views.FabMenuView;
+import cc.calliope.mini_v2.views.MovableFloatingActionButton;
 
 public class MainActivity extends ScannerActivity {
     public static final int GRAVITY_START = 0;
@@ -33,6 +36,7 @@ public class MainActivity extends ScannerActivity {
     private Boolean isFullScreen = false;
     private int screenWidth;
     private int screenHeight;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +53,13 @@ public class MainActivity extends ScannerActivity {
 
         setPatternFab(binding.patternFab);
 
-        NavController navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
+        navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if(destination.getId() == R.id.navigation_scripts){
+                binding.bottomNavigation.setVisibility(View.GONE);
+            }else{
+                binding.bottomNavigation.setVisibility(View.VISIBLE);
+            }
             if(binding.patternFab.isFabMenuOpen()){
                 collapseFabMenu();
             }
@@ -104,7 +113,7 @@ public class MainActivity extends ScannerActivity {
         if (view.getId() == R.id.fabConnect) {
             super.onFabClick(binding.patternFab);
         } else if (view.getId() == R.id.fabScripts) {
-            Log.v("PARAMS", "Scripts clicked");
+            navController.navigate(R.id.navigation_scripts);
         } else if (view.getId() == R.id.fabFullScreen) {
             if(isFullScreen){
                 disableFullScreenMode();
@@ -118,8 +127,10 @@ public class MainActivity extends ScannerActivity {
     }
 
     private void expandFabMenu() {
-        FloatingActionButton fab = binding.patternFab;
+        MovableFloatingActionButton fab = binding.patternFab;
+        int currentFragmentId = Objects.requireNonNull(navController.getCurrentDestination()).getId();
 
+        fab.setFabMenuOpen(true);
         DimView dimView = new DimView(this);
         dimView.setOnClickListener((View.OnClickListener) v -> collapseFabMenu());
         binding.getRoot().addView(dimView);
@@ -132,34 +143,31 @@ public class MainActivity extends ScannerActivity {
         FabMenuView famMenuView = new FabMenuView(this, getHorizontalGravity(fab) == GRAVITY_START ?
                 FabMenuView.TYPE_LEFT :
                 FabMenuView.TYPE_RIGHT);
+        if(currentFragmentId == R.id.navigation_scripts){
+            famMenuView.setScriptsVisibility(View.GONE);
+        }
         famMenuView.setFullScreenImageResource(isFullScreen ?
                 R.drawable.ic_disable_full_screen_24dp :
                 R.drawable.ic_enable_full_screen_24dp);
         famMenuView.setOnItemClickListener(this::onItemFabMenuClicked);
         famMenuView.setLayoutParams(getParams(fab));
-        fab.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                Log.w("PARAMS", "itemId: " + v.getId() + " hasFocus: " + hasFocus);
-            }
-        });
-
         binding.getRoot().addView(famMenuView);
-        binding.patternFab.setFabMenuOpen(true);
     }
 
     private void collapseFabMenu() {
-        View dimView = binding.getRoot().getViewById(R.id.dimView);
-        binding.getRoot().removeView(dimView);
+        if (binding.patternFab.isFabMenuOpen()) {
+            binding.patternFab.setFabMenuOpen(false);
+            View dimView = binding.getRoot().getViewById(R.id.dimView);
+            binding.getRoot().removeView(dimView);
 
-        ViewCompat.animate(binding.patternFab)
-                .rotation(0.0F)
-                .withLayer().setDuration(300)
-                .setInterpolator(new OvershootInterpolator(10.0F))
-                .start();
-        View famMenuView = binding.getRoot().getViewById(R.id.menuFab);
-        binding.getRoot().removeView(famMenuView);
-        binding.patternFab.setFabMenuOpen(false);
+            ViewCompat.animate(binding.patternFab)
+                    .rotation(0.0F)
+                    .withLayer().setDuration(300)
+                    .setInterpolator(new OvershootInterpolator(10.0F))
+                    .start();
+            View famMenuView = binding.getRoot().getViewById(R.id.menuFab);
+            binding.getRoot().removeView(famMenuView);
+        }
     }
 
     private ConstraintLayout.LayoutParams getParams(View view) {

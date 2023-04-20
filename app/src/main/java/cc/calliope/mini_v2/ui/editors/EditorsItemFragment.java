@@ -96,7 +96,7 @@ public class EditorsItemFragment extends Fragment {
                 .beginTransaction()
                 .replace(R.id.frameLayout, webFragment)
                 .setReorderingAllowed(true)
-                .addToBackStack("WEB")
+                .addToBackStack(getString(R.string.title_web))
                 .commit();
     }
 
