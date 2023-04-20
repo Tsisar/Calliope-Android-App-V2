@@ -6,15 +6,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import cc.calliope.mini_v2.utils.Utils;
 
 public class MovableFloatingActionButton extends FloatingActionButton implements View.OnTouchListener {
 
+    private final static int INT_MAX = 2147483647;
     private final static float CLICK_DRAG_TOLERANCE = 10; // Often, there will be a slight, unintentional, drag when the user taps the FAB, so we need to account for this.
     private float downRawX, downRawY;
     private float dX, dY;
@@ -42,15 +45,16 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         setOnTouchListener(this);
         paint = new Paint();
         rectF = new RectF();
+        setOnSystemUiVisibilityChangeListener(this::onFullscreenStateChanged);
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent motionEvent){
-        if(isFabMenuOpen){
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (isFabMenuOpen) {
             return false;
         }
 
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)view.getLayoutParams();
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
         int action = motionEvent.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
@@ -62,13 +66,12 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
             return true; // Consumed
 
-        }
-        else if (action == MotionEvent.ACTION_MOVE) {
+        } else if (action == MotionEvent.ACTION_MOVE) {
 
             int viewWidth = view.getWidth();
             int viewHeight = view.getHeight();
 
-            View viewParent = (View)view.getParent();
+            View viewParent = (View) view.getParent();
             int parentWidth = viewParent.getWidth();
             int parentHeight = viewParent.getHeight();
 
@@ -88,8 +91,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
             return true; // Consumed
 
-        }
-        else if (action == MotionEvent.ACTION_UP) {
+        } else if (action == MotionEvent.ACTION_UP) {
 
             float upRawX = motionEvent.getRawX();
             float upRawY = motionEvent.getRawY();
@@ -99,37 +101,35 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
             if (Math.abs(upDX) < CLICK_DRAG_TOLERANCE && Math.abs(upDY) < CLICK_DRAG_TOLERANCE) { // A click
                 return performClick();
-            }
-            else { // A drag
+            } else { // A drag
                 return true; // Consumed
             }
 
-        }
-        else {
+        } else {
             return super.onTouchEvent(motionEvent);
         }
 
     }
 
-    public void setProgress(int progress){
+    public void setProgress(int progress) {
         this.progress = Math.max(progress, 0);
         invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int strokeWidth = Utils.convertDpToPixel(getContext(),4);
+        int strokeWidth = Utils.convertDpToPixel(getContext(), 4);
         int width = getWidth();
         int height = getHeight();
         int sweepAngle = (int) (360 * (progress / 100.f));
 
-        rectF.set(strokeWidth/2.f, strokeWidth/2.f, width-strokeWidth/2.f, height-strokeWidth/2.f);
+        rectF.set(strokeWidth / 2.f, strokeWidth / 2.f, width - strokeWidth / 2.f, height - strokeWidth / 2.f);
 
         paint.setColor(Color.WHITE);
         paint.setStrokeWidth(strokeWidth);
         paint.setStyle(Paint.Style.STROKE);
 
-        canvas.drawArc (rectF, 270, sweepAngle, false, paint);
+        canvas.drawArc(rectF, 270, sweepAngle, false, paint);
 
         super.onDraw(canvas);
     }
@@ -140,5 +140,34 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     public void setFabMenuOpen(boolean fabMenuOpen) {
         isFabMenuOpen = fabMenuOpen;
+    }
+
+    private void onFullscreenStateChanged(int visibility) {
+        boolean fullScreen = (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0;
+        if (!fullScreen) {
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) getLayoutParams();
+            View viewParent = (View) getParent();
+            int parentWidth = viewParent.getWidth();
+            int parentHeight = viewParent.getHeight();
+            int weight = getWidth();
+            int height = getHeight();
+            int x = Math.round(getX());
+            int y = Math.round(getY());
+
+            if (x + weight > parentWidth) {
+                animate()
+                        .x(parentWidth - weight - layoutParams.rightMargin)
+                        .y(y)
+                        .setDuration(0)
+                        .start();
+            }
+            if (y + height > parentHeight) {
+                animate()
+                        .x(x)
+                        .y(parentHeight - height - layoutParams.bottomMargin)
+                        .setDuration(0)
+                        .start();
+            }
+        }
     }
 }
