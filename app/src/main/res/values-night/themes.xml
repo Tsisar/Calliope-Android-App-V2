@@ -17,6 +17,8 @@
         <item name="snackbarStyle">@style/SnackBarStyle</item>
         <item name="snackbarButtonStyle">@style/SnackbarButton</item>
         <item name="snackbarTextViewStyle">@style/SnackbarTextView</item>
+
+        <item name="bottomSheetDialogTheme">@style/ModalBottomSheetDialog</item>
     </style>
 
     <!-- snackbar style in res/values -->
@@ -31,5 +33,13 @@
 
     <style name="SnackbarTextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="ModalBottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <!-- Apply attributes here -->
+    </style>
+
+    <style name="ModalBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalBottomSheet</item>
     </style>
 </resources>

@@ -4,25 +4,19 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageButton;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
+import cc.calliope.mini_v2.ui.scripts.ScriptsFragment;
 import cc.calliope.mini_v2.views.DimView;
 import cc.calliope.mini_v2.views.FabMenuView;
 import cc.calliope.mini_v2.views.MovableFloatingActionButton;
@@ -113,7 +107,9 @@ public class MainActivity extends ScannerActivity {
         if (view.getId() == R.id.fabConnect) {
             super.onFabClick(binding.patternFab);
         } else if (view.getId() == R.id.fabScripts) {
-            navController.navigate(R.id.navigation_scripts);
+            ScriptsFragment scriptsFragment = new ScriptsFragment();
+            scriptsFragment.show(getSupportFragmentManager(), "Bottom Sheet Dialog Fragment");
+//            navController.navigate(R.id.navigation_scripts);
         } else if (view.getId() == R.id.fabFullScreen) {
             if(isFullScreen){
                 disableFullScreenMode();

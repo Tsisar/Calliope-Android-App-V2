@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -21,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -39,7 +40,7 @@ import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 import cc.calliope.mini_v2.views.SimpleDividerItemDecoration;
 
 
-public class ScriptsFragment extends Fragment {
+public class ScriptsFragment extends BottomSheetDialogFragment {
     private static final String FILE_EXTENSION = ".hex";
     private FragmentScriptsBinding binding;
     private FragmentActivity activity;
@@ -67,8 +68,6 @@ public class ScriptsFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        binding.titleTextView.setText(R.string.title_scripts);
-
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 
         filesList.addAll(getFiles(Editor.MAKECODE));
@@ -78,7 +77,10 @@ public class ScriptsFragment extends Fragment {
         final TextView infoTextView = binding.infoTextView;
         final RecyclerView recyclerView = binding.scriptsRecyclerView;
 
-        if (!filesList.isEmpty()) {
+        if (filesList.isEmpty()) {
+            infoTextView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.INVISIBLE);
+        } else {
             infoTextView.setVisibility(View.INVISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -88,9 +90,6 @@ public class ScriptsFragment extends Fragment {
             scriptsRecyclerAdapter.setOnItemLongClickListener(this::openPopupMenu);
             recyclerView.setAdapter(scriptsRecyclerAdapter);
             recyclerView.addItemDecoration(new SimpleDividerItemDecoration(activity));
-        } else {
-            infoTextView.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.INVISIBLE);
         }
     }
 
