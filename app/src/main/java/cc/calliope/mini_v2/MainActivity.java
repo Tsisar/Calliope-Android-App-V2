@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 
-import java.util.Objects;
-
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
 import androidx.navigation.NavController;
@@ -30,7 +28,6 @@ public class MainActivity extends ScannerActivity {
     private Boolean isFullScreen = false;
     private int screenWidth;
     private int screenHeight;
-    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +44,7 @@ public class MainActivity extends ScannerActivity {
 
         setPatternFab(binding.patternFab);
 
-        navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
+        NavController navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if(binding.patternFab.isFabMenuOpen()){
                 collapseFabMenu();
@@ -119,7 +116,6 @@ public class MainActivity extends ScannerActivity {
 
     private void expandFabMenu() {
         MovableFloatingActionButton fab = binding.patternFab;
-        int currentFragmentId = Objects.requireNonNull(navController.getCurrentDestination()).getId();
 
         fab.setFabMenuOpen(true);
         DimView dimView = new DimView(this);
