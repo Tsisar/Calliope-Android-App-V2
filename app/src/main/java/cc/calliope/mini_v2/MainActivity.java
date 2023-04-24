@@ -49,11 +49,6 @@ public class MainActivity extends ScannerActivity {
 
         navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            if(destination.getId() == R.id.navigation_scripts){
-                binding.bottomNavigation.setVisibility(View.GONE);
-            }else{
-                binding.bottomNavigation.setVisibility(View.VISIBLE);
-            }
             if(binding.patternFab.isFabMenuOpen()){
                 collapseFabMenu();
             }
