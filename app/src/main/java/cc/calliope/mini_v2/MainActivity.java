@@ -134,9 +134,6 @@ public class MainActivity extends ScannerActivity {
         FabMenuView famMenuView = new FabMenuView(this, getHorizontalGravity(fab) == GRAVITY_START ?
                 FabMenuView.TYPE_LEFT :
                 FabMenuView.TYPE_RIGHT);
-        if(currentFragmentId == R.id.navigation_scripts){
-            famMenuView.setScriptsVisibility(View.GONE);
-        }
         famMenuView.setFullScreenImageResource(isFullScreen ?
                 R.drawable.ic_disable_full_screen_24dp :
                 R.drawable.ic_enable_full_screen_24dp);
