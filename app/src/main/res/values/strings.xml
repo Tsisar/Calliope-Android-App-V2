@@ -82,7 +82,7 @@
     <string name="title_rename">Rename</string>
     <string name="title_share">Share</string>
     <string name="title_delete">Delete</string>
-    <string name="title_save">Save</string>
+    <string name="button_save">Save</string>
 
     <string name="title_dialog_rename">Rename file</string>
     <string name="title_dialog_delete">Delete file</string>

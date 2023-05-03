@@ -25,17 +25,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/horizontal_margin"
-            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginVertical="@dimen/margin_half"
             android:gravity="center_horizontal"
             android:text="@string/title_scripts"
             android:textSize="@dimen/text_size_title"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/grey_200" />
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginVertical="@dimen/vertical_margin">
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginBottom="@dimen/vertical_margin">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/scripts_recycler_view"

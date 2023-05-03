@@ -129,7 +129,7 @@ public class EditorsItemFragment extends Fragment {
         EditText editText = view.findViewById(R.id.editField);
         editText.setText(readCustomLink(activity));
 
-        ((Button) view.findViewById(R.id.buttonYes)).setText(R.string.title_save);
+        ((Button) view.findViewById(R.id.buttonYes)).setText(R.string.button_save);
         ((Button) view.findViewById(R.id.buttonNo)).setText(R.string.button_cancel);
         final AlertDialog alertDialog = builder.create();
         view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {

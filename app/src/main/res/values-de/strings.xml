@@ -104,7 +104,7 @@
     <string name="flashing_connection_fail">Verbindung fehlgeschlagen</string>
     <string name="flashing_status">Zustand: %d</string>
     <string name="title_dialog_edit_link">Link bearbeiten</string>
-    <string name="title_save">Sparen</string>
+    <string name="button_save">Speichern</string>
     <string name="menu_fab_connect">Verbindung</string>
     <string name="menu_fab_scripts">Skripte</string>
     <string name="menu_fab_full_screen">Vollbild</string>
