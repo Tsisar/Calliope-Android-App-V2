@@ -1,5 +1,6 @@
 package cc.calliope.mini_v2.ui.scripts;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -9,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.apache.commons.io.FilenameUtils;
@@ -47,6 +51,35 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
 
     private ScriptsRecyclerAdapter scriptsRecyclerAdapter;
     private ExtendedBluetoothDevice device;
+    private FrameLayout bottomSheet;
+
+    private int state = BottomSheetBehavior.STATE_COLLAPSED;
+
+    private final BottomSheetBehavior.BottomSheetCallback bottomSheetCallback =
+            new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    state = newState;
+                }
+
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                }
+            };
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+        dialog.setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                BottomSheetBehavior.from(bottomSheet).addBottomSheetCallback(bottomSheetCallback);
+            }
+        });
+        return dialog;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -63,6 +96,7 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        BottomSheetBehavior.from(bottomSheet).removeBottomSheetCallback(bottomSheetCallback);
         binding = null;
     }
 
@@ -116,7 +150,12 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
             intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);
         } else {
+            if(state == BottomSheetBehavior.STATE_EXPANDED){
+                BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
             Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_connected)).show();
+
         }
     }
 
