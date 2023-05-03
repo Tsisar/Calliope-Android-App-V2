@@ -16,46 +16,56 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/scrollView"
+        app:layout_constraintEnd_toStartOf="@+id/doubleConstraintLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/welcome"
         tools:ignore="ContentDescription" />
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/doubleConstraintLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.5">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:id="@+id/title_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/horizontal_margin"
-                android:gravity="center"
-                android:text="@string/title_welcome"
-                android:textSize="@dimen/text_size_title"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/info_text_view"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/horizontal_margin"
-                android:layout_marginTop="@dimen/vertical_margin"
-                android:gravity="fill_horizontal|top"
-                android:text="@string/info_welcome"
-                android:textSize="@dimen/text_size_default" />
+                android:orientation="vertical">
 
-        </LinearLayout>
-    </ScrollView>
+                <TextView
+                    android:id="@+id/title_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/horizontal_margin"
+                    android:gravity="center"
+                    android:text="@string/title_welcome"
+                    android:textSize="@dimen/text_size_title"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/info_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/horizontal_margin"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:gravity="fill_horizontal|top"
+                    android:text="@string/info_welcome"
+                    android:textSize="@dimen/text_size_default" />
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

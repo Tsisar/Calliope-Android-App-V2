@@ -106,8 +106,8 @@ public class EditorsItemFragment extends Fragment {
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
         );
-        params.endToEnd = binding.scrollView.getId();
-        params.bottomToBottom = binding.scrollView.getId();
+        params.endToEnd = binding.doubleConstraintLayout.getId();
+        params.bottomToBottom = binding.doubleConstraintLayout.getId();
         params.setMarginEnd(margin);
 
         FloatingActionButton fab = new FloatingActionButton(activity);
