@@ -33,6 +33,7 @@ public class EditorsItemFragment extends Fragment {
     private static final String KEY_CUSTOM_LINK = "custom_link";
     private FragmentItemBinding binding;
     private final AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.75F);
+    private Editor editor;
 
     public static EditorsItemFragment newInstance(int position) {
         EditorsItemFragment fragment = new EditorsItemFragment();
@@ -64,7 +65,7 @@ public class EditorsItemFragment extends Fragment {
             return;
 
         int position = args.getInt(ARG_POSITION);
-        Editor editor = Editor.values()[position];
+        editor = Editor.values()[position];
 
 
         binding.titleTextView.setText(editor.getTitleResId());
@@ -72,21 +73,11 @@ public class EditorsItemFragment extends Fragment {
         binding.infoTextView.setText(editor.getInfoResId());
 
         if (editor == Editor.CUSTOM) {
-            addEditFab(activity);
+            addEditFab();
         }
 
-        view.setOnClickListener(v -> {
-            v.startAnimation(buttonClick);
-            if (Utils.isNetworkConnected(activity)) {
-                String url = editor.getUrl();
-                if (editor == Editor.CUSTOM) {
-                    url = readCustomLink(activity);
-                }
-                showWebFragment(url, editor.toString());
-            } else {
-                Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_internet)).show();
-            }
-        });
+        binding.infoTextView.setOnClickListener(this::openEditor);
+        view.setOnClickListener(this::openEditor);
     }
 
     private void showWebFragment(String url, String editorName) {
@@ -100,7 +91,12 @@ public class EditorsItemFragment extends Fragment {
                 .commit();
     }
 
-    private void addEditFab(Activity activity) {
+    private void addEditFab() {
+        Activity activity = getActivity();
+        if (activity == null){
+            return;
+        }
+
         int maxImageSize = Utils.convertDpToPixel(activity, 32);
         int color = ContextCompat.getColor(activity, R.color.white);
         int margin = activity.getResources().getDimensionPixelSize(R.dimen.fab_margin);
@@ -155,5 +151,23 @@ public class EditorsItemFragment extends Fragment {
     private String readCustomLink(Activity activity) {
         SharedPreferences sharedPreferences = activity.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_CUSTOM_LINK, Editor.CUSTOM.getUrl());
+    }
+
+    private void openEditor(View view){
+        Activity activity = getActivity();
+        if (activity == null){
+            return;
+        }
+
+        view.startAnimation(buttonClick);
+        if (Utils.isNetworkConnected(activity)) {
+            String url = editor.getUrl();
+            if (editor == Editor.CUSTOM) {
+                url = readCustomLink(activity);
+            }
+            showWebFragment(url, editor.toString());
+        } else {
+            Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_internet)).show();
+        }
     }
 }

@@ -5,13 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/basic_constraint_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingVertical="@dimen/padding">
 
     <ImageView
         android:id="@+id/icon_image_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/margin"
+        android:layout_marginHorizontal="@dimen/horizontal_margin"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -25,7 +26,6 @@
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/vertical_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -41,7 +41,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/horizontal_margin"
-                android:layout_marginTop="@dimen/vertical_margin"
                 android:gravity="center"
                 android:text="@string/title_welcome"
                 android:textSize="@dimen/text_size_title"
@@ -52,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/horizontal_margin"
-                android:layout_marginVertical="@dimen/vertical_margin"
+                android:layout_marginTop="@dimen/vertical_margin"
                 android:gravity="fill_horizontal|top"
                 android:text="@string/info_welcome"
                 android:textSize="@dimen/text_size_default" />

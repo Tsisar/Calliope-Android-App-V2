@@ -20,7 +20,7 @@
             android:background="@drawable/dialog_warning_background"
             android:padding="10dp"
             android:textColor="@color/white"
-            android:textSize="@dimen/text_size_title"
+            android:textSize="@dimen/text_size_default"
             android:textStyle="bold"
             android:text="@string/title_dialog_delete"
             app:layout_constraintTop_toTopOf="parent"/>
