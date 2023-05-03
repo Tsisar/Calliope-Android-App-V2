@@ -3,7 +3,7 @@
     <dimen name="horizontal_margin">16dp</dimen>
     <dimen name="vertical_margin">16dp</dimen>
     <dimen name="margin">16dp</dimen>
-    <dimen name="fab_margin">8dp</dimen>
+    <dimen name="margin_half">8dp</dimen>
     <dimen name="list_item_spacing">16dp</dimen>
     <dimen name="list_item_spacing_half">8dp</dimen>
     <dimen name="padding">16dp</dimen>

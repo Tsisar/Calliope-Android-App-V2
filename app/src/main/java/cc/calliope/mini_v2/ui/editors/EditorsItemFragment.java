@@ -99,7 +99,7 @@ public class EditorsItemFragment extends Fragment {
 
         int maxImageSize = Utils.convertDpToPixel(activity, 32);
         int color = ContextCompat.getColor(activity, R.color.white);
-        int margin = activity.getResources().getDimensionPixelSize(R.dimen.fab_margin);
+        int margin = activity.getResources().getDimensionPixelSize(R.dimen.margin_half);
         ColorStateList tint = ColorStateList.valueOf(color);
 
         ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(

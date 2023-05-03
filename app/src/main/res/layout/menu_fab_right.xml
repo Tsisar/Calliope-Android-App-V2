@@ -21,7 +21,7 @@
             android:background="@drawable/btn_grey_transparent"
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
-            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginEnd="@dimen/margin_half"
             android:text="@string/menu_fab_connect"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_button"/>
@@ -49,7 +49,7 @@
             android:background="@drawable/btn_grey_transparent"
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
-            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginEnd="@dimen/margin_half"
             android:text="@string/menu_fab_scripts"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_button"/>
@@ -76,7 +76,7 @@
             android:background="@drawable/btn_grey_transparent"
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
-            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginEnd="@dimen/margin_half"
             android:text="@string/menu_fab_full_screen"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_button"/>
