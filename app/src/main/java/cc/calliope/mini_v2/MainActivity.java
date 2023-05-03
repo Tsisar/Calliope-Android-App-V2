@@ -6,6 +6,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -28,6 +30,8 @@ public class MainActivity extends ScannerActivity {
     private Boolean isFullScreen = false;
     private int screenWidth;
     private int screenHeight;
+    private Animation fabOpenAnimation;
+    private Animation fabCloseAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +46,14 @@ public class MainActivity extends ScannerActivity {
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
 
+        fabOpenAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_open);
+        fabCloseAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_close);
+
         setPatternFab(binding.patternFab);
 
         NavController navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            if(binding.patternFab.isFabMenuOpen()){
+            if (binding.patternFab.isFabMenuOpen()) {
                 collapseFabMenu();
             }
         });
@@ -57,6 +64,8 @@ public class MainActivity extends ScannerActivity {
     public void onBackPressed() {
         if (isFullScreen) {
             disableFullScreenMode();
+        } else if (binding.patternFab.isFabMenuOpen()) {
+            collapseFabMenu();
         } else {
             super.onBackPressed();
         }
@@ -87,15 +96,15 @@ public class MainActivity extends ScannerActivity {
     }
 
     @Override
-    public void onFabClick(View view){
-        if(binding.patternFab.isFabMenuOpen()) {
+    public void onFabClick(View view) {
+        if (binding.patternFab.isFabMenuOpen()) {
             collapseFabMenu();
-        }else {
+        } else {
             expandFabMenu();
         }
     }
 
-    private  void onItemFabMenuClicked(View view){
+    private void onItemFabMenuClicked(View view) {
         if (view.getId() == R.id.fabConnect) {
             super.onFabClick(binding.patternFab);
         } else if (view.getId() == R.id.fabScripts) {
@@ -103,9 +112,9 @@ public class MainActivity extends ScannerActivity {
             scriptsFragment.show(getSupportFragmentManager(), "Bottom Sheet Dialog Fragment");
 //            navController.navigate(R.id.navigation_scripts);
         } else if (view.getId() == R.id.fabFullScreen) {
-            if(isFullScreen){
+            if (isFullScreen) {
                 disableFullScreenMode();
-            }else {
+            } else {
                 enableFullScreenMode();
             }
         }
@@ -135,6 +144,7 @@ public class MainActivity extends ScannerActivity {
                 R.drawable.ic_enable_full_screen_24dp);
         famMenuView.setOnItemClickListener(this::onItemFabMenuClicked);
         famMenuView.setLayoutParams(getParams(fab));
+        famMenuView.startAnimation(fabOpenAnimation);
         binding.getRoot().addView(famMenuView);
     }
 
@@ -150,6 +160,7 @@ public class MainActivity extends ScannerActivity {
                     .setInterpolator(new OvershootInterpolator(10.0F))
                     .start();
             View famMenuView = binding.getRoot().getViewById(R.id.menuFab);
+            famMenuView.startAnimation(fabCloseAnimation);
             binding.getRoot().removeView(famMenuView);
         }
     }

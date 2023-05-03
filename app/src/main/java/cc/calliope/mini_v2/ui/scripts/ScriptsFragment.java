@@ -76,6 +76,7 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
             bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
             if (bottomSheet != null) {
                 BottomSheetBehavior.from(bottomSheet).addBottomSheetCallback(bottomSheetCallback);
+                bottomSheet.setBackgroundColor(android.graphics.Color.TRANSPARENT);
             }
         });
         return dialog;
