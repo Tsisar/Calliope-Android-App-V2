@@ -21,10 +21,10 @@
             android:background="@drawable/btn_grey_transparent"
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
-            android:layout_marginEnd="@dimen/margin"
-            android:text="Connect"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:text="@string/menu_fab_connect"
             android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:textSize="@dimen/text_size_button"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabConnect"
@@ -49,10 +49,10 @@
             android:background="@drawable/btn_grey_transparent"
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
-            android:layout_marginEnd="@dimen/margin"
-            android:text="Scripts"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:text="@string/menu_fab_scripts"
             android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:textSize="@dimen/text_size_button"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabScripts"
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             app:fabSize="mini"
             app:maxImageSize="24dp"
-            app:srcCompat="@drawable/ic_stat_notify_dfu"
+            app:srcCompat="@drawable/ic_coding_black_24dp"
             app:tint="@color/white" />
     </LinearLayout>
 
@@ -76,10 +76,10 @@
             android:background="@drawable/btn_grey_transparent"
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
-            android:layout_marginEnd="@dimen/margin"
-            android:text="Full screen"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:text="@string/menu_fab_full_screen"
             android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:textSize="@dimen/text_size_button"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabFullScreen"

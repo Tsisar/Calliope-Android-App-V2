@@ -39,7 +39,8 @@
                 android:layout_marginTop="24dp"
                 android:textAlignment="textStart"
                 android:textIsSelectable="true"
-                android:textSize="16sp"/>
+                android:textSize="@dimen/text_size_default"
+                android:text="@string/info_app_text"/>
 
         </LinearLayout>
 

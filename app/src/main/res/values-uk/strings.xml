@@ -105,4 +105,7 @@
     <string name="flashing_status">Статус: %d</string>
     <string name="title_dialog_edit_link">Редагувати посилання</string>
     <string name="title_save">Зберегти</string>
+    <string name="menu_fab_connect">Підключення</string>
+    <string name="menu_fab_scripts">Скрипти</string>
+    <string name="menu_fab_full_screen">На весь екран</string>
 </resources>

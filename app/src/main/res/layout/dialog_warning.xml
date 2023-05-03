@@ -20,8 +20,9 @@
             android:background="@drawable/dialog_warning_background"
             android:padding="10dp"
             android:textColor="@color/white"
-            android:textSize="17sp"
+            android:textSize="@dimen/text_size_title"
             android:textStyle="bold"
+            android:text="@string/title_dialog_delete"
             app:layout_constraintTop_toTopOf="parent"/>
         <TextView
             android:layout_width="match_parent"
@@ -32,7 +33,8 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="40dp"
             android:textColor="@color/ic_fill_primary"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_size_default"
+            android:text="@string/info_dialog_delete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textTitle"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -44,7 +46,8 @@
         android:layout_marginEnd="10dp"
         android:background="@drawable/btn_grey"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="@dimen/text_size_button"
+        android:text="@string/button_cancel"
         app:layout_constraintBottom_toBottomOf="@id/layoutDialog"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/buttonYes"
@@ -57,7 +60,8 @@
         android:layout_marginEnd="40dp"
         android:background="@drawable/btn_yellow"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="@dimen/text_size_button"
+        android:text="@string/button_continue"
         app:layout_constraintBottom_toBottomOf="@id/layoutDialog"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/buttonNo"

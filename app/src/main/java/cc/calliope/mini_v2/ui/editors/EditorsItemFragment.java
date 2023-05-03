@@ -23,7 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.databinding.FragmentEditorItemBinding;
+import cc.calliope.mini_v2.databinding.FragmentItemBinding;
 import cc.calliope.mini_v2.ui.web.WebFragment;
 import cc.calliope.mini_v2.utils.Utils;
 
@@ -31,7 +31,7 @@ public class EditorsItemFragment extends Fragment {
     private static final String ARG_POSITION = "arg_position";
     private static final String SHARED_PREFERENCES_NAME = "cc.calliope.mini_v2.preferences";
     private static final String KEY_CUSTOM_LINK = "custom_link";
-    private FragmentEditorItemBinding binding;
+    private FragmentItemBinding binding;
     private final AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.75F);
 
     public static EditorsItemFragment newInstance(int position) {
@@ -46,7 +46,7 @@ public class EditorsItemFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentEditorItemBinding.inflate(inflater, container, false);
+        binding = FragmentItemBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -79,7 +79,7 @@ public class EditorsItemFragment extends Fragment {
             v.startAnimation(buttonClick);
             if (Utils.isNetworkConnected(activity)) {
                 String url = editor.getUrl();
-                if(editor == Editor.CUSTOM) {
+                if (editor == Editor.CUSTOM) {
                     url = readCustomLink(activity);
                 }
                 showWebFragment(url, editor.toString());
@@ -101,17 +101,17 @@ public class EditorsItemFragment extends Fragment {
     }
 
     private void addEditFab(Activity activity) {
-        int maxImageSize = Utils.convertDpToPixel(activity,32);
+        int maxImageSize = Utils.convertDpToPixel(activity, 32);
         int color = ContextCompat.getColor(activity, R.color.white);
-        int margin = Utils.convertDpToPixel(activity, -8);
+        int margin = activity.getResources().getDimensionPixelSize(R.dimen.fab_margin);
         ColorStateList tint = ColorStateList.valueOf(color);
 
         ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
         );
-        params.endToEnd = binding.infoTextView.getId();
-        params.bottomToBottom = binding.infoTextView.getId();
+        params.endToEnd = binding.scrollView.getId();
+        params.bottomToBottom = binding.scrollView.getId();
         params.setMarginEnd(margin);
 
         FloatingActionButton fab = new FloatingActionButton(activity);

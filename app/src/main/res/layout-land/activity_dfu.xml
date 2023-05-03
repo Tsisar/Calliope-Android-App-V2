@@ -16,7 +16,7 @@
         android:gravity="center|top"
         android:text="@string/flashing_device_connecting"
         android:textColor="@color/ic_fill_primary"
-        android:textSize="18sp"
+        android:textSize="@dimen/text_size_default"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -30,7 +30,7 @@
         android:keepScreenOn="true"
         android:text="@string/points"
         android:textColor="@color/aqua_200"
-        android:textSize="40sp"
+        android:textSize="@dimen/text_size_status"
         app:layout_constraintBottom_toTopOf="@+id/timer_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

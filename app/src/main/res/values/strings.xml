@@ -65,6 +65,18 @@
     <br/>E-Mail: <a href="mailto:info@calliope.cc">info@calliope.cc</a>
     ]]></string>
 
+    <string name="info_app_text" translatable="false">
+    Hello and welcome to the Calliope mini app!
+    By using this app you can connect, code and flash programs to your Calliope mini via Bluetooth.
+    You can find inspiring and fun projects at the Calliope website at https://calliope.cc!
+    Have fun!
+    Calliope gGmbH
+    Raumerstrasse 11
+    10437 Berlin
+    Germany
+    E-Mail: info@calliope.cc
+    </string>
+
     <string name="welcome">welcome</string>
 
     <string name="title_rename">Rename</string>
@@ -110,5 +122,8 @@
     <string name="flashing_connection_fail">Connection fail</string>
     <string name="flashing_status">Status: %d</string>
     <string name="points" translatable="false">…</string>
-    <string name="title_web">WEB</string>
+    <string name="title_web" translatable="false">WEB</string>
+    <string name="menu_fab_connect">Connection</string>
+    <string name="menu_fab_scripts">Scripts</string>
+    <string name="menu_fab_full_screen">Full screen</string>
 </resources>
