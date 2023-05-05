@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.web;
+package cc.calliope.mini_v2.fragment.web;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import cc.calliope.mini_v2.DFUActivity;
+import cc.calliope.mini_v2.activity.DFUActivity;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
@@ -222,7 +222,7 @@ public class WebFragment extends Fragment implements DownloadListener {
             return;
         }
 
-        String name = FileUtils.getFileNameFromPrefix(url);
+        String name = FileUtils.getFileName(url);
         File file = FileUtils.getFile(context, editorName, name);
         boolean result = false;
 

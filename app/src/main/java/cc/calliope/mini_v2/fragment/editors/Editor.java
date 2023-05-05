@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.editors;
+package cc.calliope.mini_v2.fragment.editors;
 
 import cc.calliope.mini_v2.R;
 

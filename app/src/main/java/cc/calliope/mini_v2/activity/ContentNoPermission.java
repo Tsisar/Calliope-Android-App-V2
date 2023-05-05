@@ -1,5 +1,6 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.activity;
 
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.Permission;
 
 public enum ContentNoPermission {

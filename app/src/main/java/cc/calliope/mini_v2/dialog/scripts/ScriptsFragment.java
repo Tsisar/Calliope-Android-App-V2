@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.scripts;
+package cc.calliope.mini_v2.dialog.scripts;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -32,13 +32,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import cc.calliope.mini_v2.DFUActivity;
-import cc.calliope.mini_v2.FileWrapper;
+import cc.calliope.mini_v2.activity.DFUActivity;
+import cc.calliope.mini_v2.adapter.FileWrapper;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentScriptsBinding;
-import cc.calliope.mini_v2.ui.editors.Editor;
+import cc.calliope.mini_v2.fragment.editors.Editor;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 import cc.calliope.mini_v2.views.SimpleDividerItemDecoration;

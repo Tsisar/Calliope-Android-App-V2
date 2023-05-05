@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.dialog;
+package cc.calliope.mini_v2.dialog.pattern;
 
 import android.app.Activity;
 import android.app.Dialog;

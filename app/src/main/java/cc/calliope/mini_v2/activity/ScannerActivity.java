@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.activity;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
@@ -19,8 +19,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
-import cc.calliope.mini_v2.ui.dialog.PatternDialogFragment;
+import cc.calliope.mini_v2.dialog.pattern.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Permission;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;

@@ -1,7 +1,8 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.ActivityNoPermissionBinding;
 import cc.calliope.mini_v2.utils.Permission;
 import cc.calliope.mini_v2.utils.Version;

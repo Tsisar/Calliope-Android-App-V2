@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -16,9 +16,10 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityHexBinding;
-import cc.calliope.mini_v2.ui.editors.Editor;
+import cc.calliope.mini_v2.fragment.editors.Editor;
 import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.utils.Utils;

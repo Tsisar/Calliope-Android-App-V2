@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="cc.calliope.mini_v2.ui.home.HomeFragment"
+        android:name="cc.calliope.mini_v2.fragment.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_editors"
-        android:name="cc.calliope.mini_v2.ui.editors.EditorsFragment"
+        android:name="cc.calliope.mini_v2.fragment.editors.EditorsFragment"
         android:label="@string/title_scripts"
         tools:layout="@layout/fragment_editors" />
 
     <fragment
         android:id="@+id/navigation_help"
-        android:name="cc.calliope.mini_v2.ui.help.HelpFragment"
+        android:name="cc.calliope.mini_v2.fragment.help.HelpFragment"
         android:label="@string/title_help"
         tools:layout="@layout/fragment_help" />
 

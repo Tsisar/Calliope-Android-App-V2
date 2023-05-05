@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/horizontal_margin"
-    tools:context=".DFUActivity">
+    tools:context=".activity.DFUActivity">
 
     <TextView
         android:id="@+id/timer_text_view"

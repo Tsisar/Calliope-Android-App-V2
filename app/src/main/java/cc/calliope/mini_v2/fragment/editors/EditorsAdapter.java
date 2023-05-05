@@ -1,23 +1,22 @@
-package cc.calliope.mini_v2.ui.home;
+package cc.calliope.mini_v2.fragment.editors;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import cc.calliope.mini_v2.ui.scripts.ScriptsFragment;
 
-public class HomeAdapter extends FragmentStateAdapter {
-    public HomeAdapter(Fragment fragment) {
+public class EditorsAdapter extends FragmentStateAdapter {
+    public EditorsAdapter(Fragment fragment) {
         super(fragment);
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return HomeItemFragment.newInstance(position);
+        return EditorsItemFragment.newInstance(position);
     }
 
     @Override
     public int getItemCount() {
-        return Home.values().length;
+        return Editor.values().length;
     }
 }

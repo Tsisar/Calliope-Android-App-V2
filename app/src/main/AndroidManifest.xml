@@ -72,7 +72,7 @@
         </provider>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -81,7 +81,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OpenHexActivity"
+            android:name=".activity.OpenHexActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -94,13 +94,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NotificationActivity"
+            android:name=".activity.NotificationActivity"
             android:exported="false" />
         <activity
-            android:name=".DFUActivity"
+            android:name=".activity.DFUActivity"
             android:exported="false" />
         <activity
-            android:name=".NoPermissionActivity"
+            android:name=".activity.NoPermissionActivity"
             android:exported="false" />
 
         <service

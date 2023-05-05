@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.scripts;
+package cc.calliope.mini_v2.dialog.scripts;
 
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -14,7 +14,7 @@ import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import cc.calliope.mini_v2.FileWrapper;
+import cc.calliope.mini_v2.adapter.FileWrapper;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.Utils;
 

@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.home;
+package cc.calliope.mini_v2.fragment.home;
 
 import cc.calliope.mini_v2.R;
 

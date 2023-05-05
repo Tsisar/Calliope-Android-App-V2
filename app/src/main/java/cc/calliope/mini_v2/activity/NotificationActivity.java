@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 

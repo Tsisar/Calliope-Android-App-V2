@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.editors;
+package cc.calliope.mini_v2.fragment.editors;
 
 import android.app.Activity;
 import android.content.Context;
@@ -24,7 +24,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.FragmentItemBinding;
-import cc.calliope.mini_v2.ui.web.WebFragment;
+import cc.calliope.mini_v2.fragment.web.WebFragment;
 import cc.calliope.mini_v2.utils.Utils;
 
 public class EditorsItemFragment extends Fragment {

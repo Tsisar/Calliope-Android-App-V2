@@ -31,9 +31,7 @@
 package cc.calliope.mini_v2.viewmodels;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
-import cc.calliope.mini_v2.ui.dialog.PatternEnum;
+import cc.calliope.mini_v2.dialog.pattern.PatternEnum;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 /**

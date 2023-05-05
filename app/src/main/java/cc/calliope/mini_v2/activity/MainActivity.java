@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.activity;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,8 +15,9 @@ import androidx.core.view.ViewCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.ActivityMainBinding;
-import cc.calliope.mini_v2.ui.scripts.ScriptsFragment;
+import cc.calliope.mini_v2.dialog.scripts.ScriptsFragment;
 import cc.calliope.mini_v2.views.DimView;
 import cc.calliope.mini_v2.views.FabMenuView;
 import cc.calliope.mini_v2.views.MovableFloatingActionButton;

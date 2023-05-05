@@ -1,4 +1,4 @@
-package cc.calliope.mini_v2.ui.help;
+package cc.calliope.mini_v2.fragment.help;
 
 import android.os.Bundle;
 import android.text.Html;

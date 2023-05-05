@@ -1,8 +1,8 @@
-package cc.calliope.mini_v2;
+package cc.calliope.mini_v2.adapter;
 
 import java.io.File;
 
-import cc.calliope.mini_v2.ui.editors.Editor;
+import cc.calliope.mini_v2.fragment.editors.Editor;
 
 public class FileWrapper {
     private final File file;

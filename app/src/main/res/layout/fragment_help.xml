@@ -6,7 +6,7 @@
     android:id="@+id/constraint_layout_help"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.help.HelpFragment">
+    tools:context=".fragment.help.HelpFragment">
 
     <ScrollView
         android:layout_width="match_parent"

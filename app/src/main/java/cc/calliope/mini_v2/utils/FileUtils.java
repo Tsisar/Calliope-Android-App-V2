@@ -2,7 +2,9 @@ package cc.calliope.mini_v2.utils;
 
 import android.content.Context;
 import android.util.Log;
+import android.webkit.URLUtil;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -43,19 +45,20 @@ public class FileUtils {
         return null;
     }
 
-    public static String getFileNameFromPrefix(String url) {
+    public static String getFileName(String url) {
         int start = url.indexOf("data:");
         int end = url.indexOf(".hex;");
-        String substring = "";
+        String name;
 
         if (start != -1 && end != -1) {
-            substring = url.substring(start, end); //this will give abc
-            substring = StringUtils.remove(substring, "data:");
-            substring = StringUtils.remove(substring, "mini-");
+            name = url.substring(start, end); //this will give abc
+            name = StringUtils.remove(name, "data:");
+            name = StringUtils.remove(name, "mini-");
+            return name;
+        } else if (URLUtil.isValidUrl(url) && url.endsWith(".hex")) {
+            return FilenameUtils.getBaseName(url);
+        } else {
+            return "firmware";
         }
-        if(substring.length() == 0){
-            return "test_firmware";
-        }
-        return substring;
     }
 }
