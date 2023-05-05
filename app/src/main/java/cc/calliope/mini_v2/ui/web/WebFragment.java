@@ -64,6 +64,55 @@ public class WebFragment extends Fragment implements DownloadListener {
     private WebView webView;
     private ExtendedBluetoothDevice device;
 
+    private class JavaScriptInterface {
+        private final Context context;
+
+        public JavaScriptInterface(Context context) {
+            this.context = context;
+        }
+
+        @JavascriptInterface
+        public void getBase64FromBlobData(String url, String name) {
+            Log.d(TAG, "base64Data: " + url);
+            Log.d(TAG, "name: " + name);
+
+            File file = FileUtils.getFile(context, editorName, name);
+            if (file == null) {
+                Utils.errorSnackbar(webView, getString(R.string.error_snackbar_save_file_error)).show();
+            } else {
+                if (createAndSaveFileFromBase64Url(url, file)) {
+                    startDFUActivity(file);
+                } else {
+                    Utils.errorSnackbar(webView, getString(R.string.error_snackbar_download_error)).show();
+                }
+            }
+        }
+
+        public static String getBase64StringFromBlobUrl(String blobUrl, String mimeType) {
+            if (blobUrl.startsWith("blob")) {
+                return "javascript: " +
+                        "var xhr = new XMLHttpRequest();" +
+                        "xhr.open('GET', '" + blobUrl + "', true);" +
+                        "xhr.setRequestHeader('Content-type','" + mimeType + ";charset=UTF-8');" +
+                        "xhr.responseType = 'blob';" +
+                        "xhr.onload = function(e) {" +
+                        "    if (this.status == 200) {" +
+                        "        var blobFile = this.response;" +
+                        "        var name = blobFile.name;" +
+                        "        var reader = new FileReader();" +
+                        "        reader.readAsDataURL(blobFile);" +
+                        "        reader.onloadend = function() {" +
+                        "            base64data = reader.result;" +
+                        "            Android.getBase64FromBlobData(base64data, name);" +
+                        "        }" +
+                        "    }" +
+                        "};" +
+                        "xhr.send();";
+            }
+            return "javascript: console.log('It is not a Blob URL');";
+        }
+    }
+
     public WebFragment() {
         // Required empty public constructor
     }
@@ -271,54 +320,5 @@ public class WebFragment extends Fragment implements DownloadListener {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         webView.saveState(outState);
-    }
-
-    private class JavaScriptInterface {
-        private final Context context;
-
-        public JavaScriptInterface(Context context) {
-            this.context = context;
-        }
-
-        @JavascriptInterface
-        public void getBase64FromBlobData(String url, String name) {
-            Log.d(TAG, "base64Data: " + url);
-            Log.d(TAG, "name: " + name);
-
-            File file = FileUtils.getFile(context, editorName, name);
-            if (file == null) {
-                Utils.errorSnackbar(webView, getString(R.string.error_snackbar_save_file_error)).show();
-            } else {
-                if (createAndSaveFileFromBase64Url(url, file)) {
-                    startDFUActivity(file);
-                } else {
-                    Utils.errorSnackbar(webView, getString(R.string.error_snackbar_download_error)).show();
-                }
-            }
-        }
-
-        public static String getBase64StringFromBlobUrl(String blobUrl, String mimeType) {
-            if (blobUrl.startsWith("blob")) {
-                return "javascript: " +
-                        "var xhr = new XMLHttpRequest();" +
-                        "xhr.open('GET', '" + blobUrl + "', true);" +
-                        "xhr.setRequestHeader('Content-type','" + mimeType + ";charset=UTF-8');" +
-                        "xhr.responseType = 'blob';" +
-                        "xhr.onload = function(e) {" +
-                        "    if (this.status == 200) {" +
-                        "        var blobFile = this.response;" +
-                        "        var name = blobFile.name;" +
-                        "        var reader = new FileReader();" +
-                        "        reader.readAsDataURL(blobFile);" +
-                        "        reader.onloadend = function() {" +
-                        "            base64data = reader.result;" +
-                        "            Android.getBase64FromBlobData(base64data, name);" +
-                        "        }" +
-                        "    }" +
-                        "};" +
-                        "xhr.send();";
-            }
-            return "javascript: console.log('It is not a Blob URL');";
-        }
     }
 }
