@@ -114,18 +114,4 @@ public class Utils {
 
         return DateFormat.format(OUTPUT_DATE_FORMAT, date.getTime()).toString();
     }
-
-    public static String getFileNameFromPrefix(String url) {
-        int start = url.indexOf("data:");
-        int end = url.indexOf(".hex;");
-        String substring = "";
-
-        if (start != -1 && end != -1) {
-            substring = url.substring(start, end); //this will give abc
-            substring = StringUtils.remove(substring, "data:");
-            substring = StringUtils.remove(substring, "mini-");
-        }
-
-        return substring;
-    }
 }

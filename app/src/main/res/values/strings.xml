@@ -104,6 +104,7 @@
     <string name="error_snackbar_location_disable">Location is disable</string>
     <string name="error_snackbar_no_internet">No internet available</string>
     <string name="error_snackbar_download_error">Download error</string>
+    <string name="error_snackbar_save_file_error">Save file error</string>
 
     <string name="open_hex_info">You are trying to open the \"%s\" file and flash it to your Calliope mini.
         \n\nIf you flash an incorrect or damaged file, you may have to connect your Calliope mini to the computer to reflash it.</string>

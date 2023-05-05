@@ -1,7 +1,7 @@
 package cc.calliope.mini_v2.ui.web;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.DownloadListener;
+import android.webkit.JavascriptInterface;
 import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -46,7 +47,6 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,9 +56,9 @@ import org.apache.commons.io.FilenameUtils;
 public class WebFragment extends Fragment implements DownloadListener {
 
     private static final String TAG = "WEB_VIEW";
+    private static final String UTF_8 = "UTF-8";
     private static final String TARGET_URL = "TARGET_URL";
     private static final String TARGET_NAME = "TARGET_NAME";
-    private static final String FILE_EXTENSION = ".hex";
     private String editorUrl;
     private String editorName;
     private WebView webView;
@@ -76,7 +76,8 @@ public class WebFragment extends Fragment implements DownloadListener {
      * @param url        Editor URL.
      * @return A new instance of fragment WebFragment.
      */
-    public static WebFragment newInstance(String url, String editorName) {
+
+    public static WebFragment newInstance(@NonNull String url, @NonNull String editorName) {
         WebFragment fragment = new WebFragment();
         Bundle args = new Bundle();
         args.putString(TARGET_URL, url);
@@ -119,7 +120,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         webSettings.setDatabaseEnabled(true);
         webSettings.setDefaultTextEncodingName("utf-8");
 
-//        webView.addJavascriptInterface(new JavaScriptInterface(getContext()), "Android");
+        webView.addJavascriptInterface(new JavaScriptInterface(getContext()), "Android");
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -145,120 +146,58 @@ public class WebFragment extends Fragment implements DownloadListener {
 
     @Override
     public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-        String decodedUrl = "";
+        Log.i(TAG, "editorName: " + editorName);
+        Log.i(TAG, "URL: " + url);
+        Log.i(TAG, "userAgent: " + userAgent);
+        Log.i(TAG, "contentDisposition: " + contentDisposition);
+        Log.i(TAG, "mimetype: " + mimetype);
+        Log.i(TAG, "contentLength: " + contentLength);
+
         try {
-            decodedUrl = URLDecoder.decode(url, "UTF-8");
+            String decodedUrl = URLDecoder.decode(url, UTF_8);
+            if (decodedUrl.startsWith("blob:")) {
+                String javaScript = JavaScriptInterface.getBase64StringFromBlobUrl(url, mimetype);
+                Log.v(TAG, "javaScript: " + javaScript);
+                webView.loadUrl(javaScript);
+            } else {
+                selectDownloadMethod(decodedUrl);
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        selectDownloadMethod(decodedUrl, mimetype);
     }
 
-    private void selectDownloadMethod(String url, String mimetype) {
-        Activity activity = getActivity();
-        if(activity == null) {
+    private void selectDownloadMethod(String url) {
+        Context context = getContext();
+        if (context == null) {
             return;
         }
 
+        String name = FileUtils.getFileNameFromPrefix(url);
+        File file = FileUtils.getFile(context, editorName, name);
         boolean result = false;
-        File file = null;
 
-        Log.w(TAG, "URL: " + url);
-        Log.w(TAG, "mimetype: " + mimetype);
-
-        if (url.startsWith("blob:")) {  // TODO: BLOB Download
-            Log.w(TAG, "BLOB");
-
-//            String javaScript = JavaScriptInterface.getBase64StringFromBlobUrl(url, mimetype);
-//            webView.loadUrl(javaScript);
-//            Log.v(TAG, "JS: " + javaScript);
-            return;
-        } else if (url.startsWith("data:text/hex")) {
-            Log.w(TAG, "HEX");
-
-            file = FileUtils.getFile(activity, editorName, "firmware", FILE_EXTENSION);
-            if (file != null) {
+        if (file == null) {
+            Utils.errorSnackbar(webView, getString(R.string.error_snackbar_save_file_error)).show();
+        } else {
+            if (url.startsWith("data:text/hex")) {
                 result = createAndSaveFileFromHexUrl(url, file);
-            }
-        } else if (url.startsWith("data:") && url.contains("base64")) {
-            Log.w(TAG, "BASE64");
-
-            String name = Utils.getFileNameFromPrefix(url);
-            file = FileUtils.getFile(activity, editorName, name, FILE_EXTENSION);
-            if (file != null) {
+            } else if (url.startsWith("data:") && url.contains("base64")) {
                 result = createAndSaveFileFromBase64Url(url, file);
-            }
-        } else if (URLUtil.isValidUrl(url) && url.endsWith(".hex")) {
-            Log.w(TAG, "DOWNLOAD");
-
-            String name = FilenameUtils.getBaseName(url);
-            String extension = "." + FilenameUtils.getExtension(url);
-
-            file = FileUtils.getFile(activity, editorName, name, extension);
-            if (file != null) {
+            } else if (URLUtil.isValidUrl(url) && url.endsWith(".hex")) {
                 result = downloadFileFromURL(url, file);
             }
+            if (result) {
+                startDFUActivity(file);
+            } else {
+                Utils.errorSnackbar(webView, getString(R.string.error_snackbar_download_error)).show();
+            }
         }
-
-        if (result) {
-            startDFUActivity(file);
-        } else if (file != null && !file.delete()) {
-            Log.w(TAG, "Delete Error, deleting: " + file);
-        } else {
-            Utils.errorSnackbar(webView, getString(R.string.error_snackbar_download_error)).show();
-        }
-    }
-
-//    private File getFile(String filename) {
-//        return getFile(filename, FILE_EXTENSION);
-//    }
-//
-//    //TODO db
-//    // String file absolute path
-//    // String editor name
-//    // boolean don't ask
-//    // boolean rewrite
-//    private File getFile(String filename, String extension) {
-//        Activity activity = getActivity();
-//        if (activity == null)
-//            return null;
-//
-//        File dir = new File(activity.getFilesDir().toString() + File.separator + editorName);
-//        if (!dir.exists() && !dir.mkdirs()) {
-//            return null;
-//        }
-//
-//        Log.w(TAG, "DIR: " + dir);
-//        File file = new File(dir.getAbsolutePath() + File.separator + filename + extension);
-//
-//        int i = 1;
-//        while (file.exists()) {
-//            String number = String.format("(%s)", ++i);
-//            file = new File(dir.getAbsolutePath() + File.separator + filename + number + extension);
-//        }
-//
-//        try {
-//            if (file.createNewFile()) {
-//                Log.w(TAG, "createNewFile: " + file);
-//                return file;
-//            } else {
-//                Log.w(TAG, "CreateFile Error, deleting: " + file);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
-//    }
-
-    private File createFile() {
-        return null;
     }
 
     public boolean createAndSaveFileFromHexUrl(String url, File file) {
         try {
             String hexEncodedString = url.substring(url.indexOf(",") + 1);
-//            String decodedHex = URLDecoder.decode(hexEncodedString, "utf-8");
             OutputStream outputStream = new FileOutputStream(file);
             try (Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
                 writer.write(hexEncodedString);
@@ -332,5 +271,54 @@ public class WebFragment extends Fragment implements DownloadListener {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         webView.saveState(outState);
+    }
+
+    private class JavaScriptInterface {
+        private final Context context;
+
+        public JavaScriptInterface(Context context) {
+            this.context = context;
+        }
+
+        @JavascriptInterface
+        public void getBase64FromBlobData(String url, String name) {
+            Log.d(TAG, "base64Data: " + url);
+            Log.d(TAG, "name: " + name);
+
+            File file = FileUtils.getFile(context, editorName, name);
+            if (file == null) {
+                Utils.errorSnackbar(webView, getString(R.string.error_snackbar_save_file_error)).show();
+            } else {
+                if (createAndSaveFileFromBase64Url(url, file)) {
+                    startDFUActivity(file);
+                } else {
+                    Utils.errorSnackbar(webView, getString(R.string.error_snackbar_download_error)).show();
+                }
+            }
+        }
+
+        public static String getBase64StringFromBlobUrl(String blobUrl, String mimeType) {
+            if (blobUrl.startsWith("blob")) {
+                return "javascript: " +
+                        "var xhr = new XMLHttpRequest();" +
+                        "xhr.open('GET', '" + blobUrl + "', true);" +
+                        "xhr.setRequestHeader('Content-type','" + mimeType + ";charset=UTF-8');" +
+                        "xhr.responseType = 'blob';" +
+                        "xhr.onload = function(e) {" +
+                        "    if (this.status == 200) {" +
+                        "        var blobFile = this.response;" +
+                        "        var name = blobFile.name;" +
+                        "        var reader = new FileReader();" +
+                        "        reader.readAsDataURL(blobFile);" +
+                        "        reader.onloadend = function() {" +
+                        "            base64data = reader.result;" +
+                        "            Android.getBase64FromBlobData(base64data, name);" +
+                        "        }" +
+                        "    }" +
+                        "};" +
+                        "xhr.send();";
+            }
+            return "javascript: console.log('It is not a Blob URL');";
+        }
     }
 }

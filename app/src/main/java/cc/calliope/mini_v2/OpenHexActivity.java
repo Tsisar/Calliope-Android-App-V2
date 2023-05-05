@@ -61,11 +61,6 @@ public class OpenHexActivity extends ScannerActivity {
             }
 
             String name = FilenameUtils.getBaseName(decodedUri);
-            String extension = "." + FilenameUtils.getExtension(uri.toString());
-
-//            if (Version.upperOreo) {
-//                binding.infoTextView.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
-//            }
 
             binding.infoTextView.setText(
                     String.format(getString(R.string.open_hex_info), name)
@@ -73,7 +68,7 @@ public class OpenHexActivity extends ScannerActivity {
 
             binding.flashButton.setOnClickListener(v -> {
                 try {
-                    File file = FileUtils.getFile(this, Editor.LIBRARY.toString(), name, extension);
+                    File file = FileUtils.getFile(this, Editor.LIBRARY.toString(), name);
                     if (file == null) {
                         return;
                     }

@@ -104,13 +104,11 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ArrayList<FileWrapper> filesList = new ArrayList<>();
-
-        filesList.addAll(getFiles(Editor.MAKECODE));
-        filesList.addAll(getFiles(Editor.ROBERTA));
-        filesList.addAll(getFiles(Editor.LIBRARY));
-
-        final TextView infoTextView = binding.infoTextView;
-        final RecyclerView recyclerView = binding.scriptsRecyclerView;
+        for(Editor editor : Editor.values()){
+            filesList.addAll(getFiles(editor));
+        }
+        TextView infoTextView = binding.infoTextView;
+        RecyclerView recyclerView = binding.scriptsRecyclerView;
 
         if (filesList.isEmpty()) {
             infoTextView.setVisibility(View.VISIBLE);

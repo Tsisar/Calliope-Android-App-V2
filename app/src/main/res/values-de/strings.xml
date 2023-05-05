@@ -108,4 +108,5 @@
     <string name="menu_fab_connect">Verbindung</string>
     <string name="menu_fab_scripts">Skripte</string>
     <string name="menu_fab_full_screen">Vollbild</string>
+    <string name="error_snackbar_save_file_error">Fehler beim Speichern der Datei</string>
 </resources>
