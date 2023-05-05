@@ -35,7 +35,7 @@ public class NoPermissionActivity extends AppCompatActivity implements View.OnCl
         super.onResume();
         requestType = getRequestType();
         deniedForever = Permission.isAccessDeniedForever(this, requestType);
-        if (requestType == Permission.NOT_DEFINED) {
+        if (requestType == Permission.UNDEFINED) {
             finish();
         } else {
             updateUi();
@@ -62,7 +62,7 @@ public class NoPermissionActivity extends AppCompatActivity implements View.OnCl
         } else if (!Version.upperSnowCone && !Permission.isAccessGranted(this, Permission.LOCATION)) {
             return Permission.LOCATION;
         }
-        return Permission.NOT_DEFINED;
+        return Permission.UNDEFINED;
     }
 
     private void updateUi() {

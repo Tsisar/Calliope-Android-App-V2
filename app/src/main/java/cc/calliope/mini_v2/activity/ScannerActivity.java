@@ -1,12 +1,18 @@
 package cc.calliope.mini_v2.activity;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -15,6 +21,8 @@ import java.util.List;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -28,22 +36,43 @@ import cc.calliope.mini_v2.utils.Version;
 import cc.calliope.mini_v2.viewmodels.ProgressViewModel;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
+import cc.calliope.mini_v2.views.DimView;
+import cc.calliope.mini_v2.views.FabMenuView;
 import cc.calliope.mini_v2.views.FobParams;
 import cc.calliope.mini_v2.views.MovableFloatingActionButton;
 
-public abstract class ScannerActivity extends AppCompatActivity implements DialogInterface.OnDismissListener{
+public abstract class ScannerActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
+    public static final int GRAVITY_START = 0;
+    public static final int GRAVITY_END = 1;
+    public static final int GRAVITY_TOP = 3;
+    public static final int GRAVITY_BOTTOM = 4;
     private static final int SNACKBAR_DURATION = 10000; // how long to display the snackbar message.
     private static boolean requestWasSent = false;
     private ScannerViewModel scannerViewModel;
     private MovableFloatingActionButton patternFab;
-    private View rootView;
-    private Boolean isFlashingProcess = false; //
+    private ConstraintLayout rootView;
+    private Boolean isFlashingProcess = false;
+    private Animation fabOpenAnimation;
+    private Animation fabCloseAnimation;
+    private int screenWidth;
+    private int screenHeight;
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {}
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+            }
     );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
+
+        fabOpenAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_open);
+        fabCloseAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_close);
 
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::scanResults);
@@ -66,13 +95,21 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     @Override
+    public void onBackPressed() {
+        if (patternFab.isFabMenuOpen()) {
+            collapseFabMenu();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void onDismiss(final DialogInterface dialog) {
         //Fragment dialog had been dismissed
 //        fab.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void setContentView(View view) {
+    public void setContentView(ConstraintLayout view) {
         super.setContentView(view);
         this.rootView = view;
     }
@@ -86,14 +123,14 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         boolean isBluetoothAccessGranted = Permission.isAccessGranted(this, Permission.BLUETOOTH);
         boolean isLocationAccessGranted = Version.upperSnowCone || Permission.isAccessGranted(this, Permission.LOCATION);
 
-        if(isBluetoothAccessGranted && isLocationAccessGranted){
+        if (isBluetoothAccessGranted && isLocationAccessGranted) {
             if (!Utils.isBluetoothEnabled()) {
                 showBluetoothDisabledWarning();
             } else if (!Version.upperSnowCone && !Utils.isLocationEnabled(this)) {
                 showLocationDisabledWarning();
             }
             scannerViewModel.startScan();
-        }else{
+        } else {
             startNoPermissionActivity();
         }
     }
@@ -147,19 +184,148 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     public void onFabClick(View view) {
-        view.startAnimation(new AlphaAnimation(1F, 0.75F));
-
-        if (isFlashingProcess) {
-            final Intent intent = new Intent(this, DFUActivity.class);
-            startActivity(intent);
+        if (patternFab.isFabMenuOpen()) {
+            collapseFabMenu();
         } else {
-            showPatternDialog(new FobParams(
-                    view.getWidth(),
-                    view.getHeight(),
-                    view.getX(),
-                    view.getY()
-            ));
+            expandFabMenu();
         }
+    }
+
+    public void onItemFabMenuClicked(View view) {
+        if (view.getId() == R.id.fabConnect) {
+            if (isFlashingProcess) {
+                final Intent intent = new Intent(this, DFUActivity.class);
+                startActivity(intent);
+            } else {
+                showPatternDialog(new FobParams(
+                        patternFab.getWidth(),
+                        patternFab.getHeight(),
+                        patternFab.getX(),
+                        patternFab.getY()
+                ));
+            }
+        }
+        Log.v("PARAMS", "itemId: " + view.getId());
+        Log.v("PARAMS", "-----------------------------------------------");
+        collapseFabMenu();
+    }
+
+    private void expandFabMenu() {
+        patternFab.setFabMenuOpen(true);
+        DimView dimView = new DimView(this);
+        dimView.setOnClickListener((View.OnClickListener) v -> collapseFabMenu());
+        rootView.addView(dimView);
+
+        ViewCompat.animate(patternFab)
+                .rotation(45.0F)
+                .withLayer().setDuration(300)
+                .setInterpolator(new OvershootInterpolator(10.0F))
+                .start();
+        FabMenuView famMenuView = new FabMenuView(this, getHorizontalGravity(patternFab) == GRAVITY_START ?
+                FabMenuView.TYPE_LEFT :
+                FabMenuView.TYPE_RIGHT);
+        customizeFabMenu(famMenuView);
+        famMenuView.setOnItemClickListener(this::onItemFabMenuClicked);
+        famMenuView.setLayoutParams(getParams(patternFab));
+        famMenuView.startAnimation(fabOpenAnimation);
+        rootView.addView(famMenuView);
+    }
+
+    public void customizeFabMenu(FabMenuView fabMenuView) {
+    }
+
+    public void collapseFabMenu() {
+        if (patternFab.isFabMenuOpen()) {
+            patternFab.setFabMenuOpen(false);
+            View dimView = rootView.getViewById(R.id.dimView);
+            rootView.removeView(dimView);
+
+            ViewCompat.animate(patternFab)
+                    .rotation(0.0F)
+                    .withLayer().setDuration(300)
+                    .setInterpolator(new OvershootInterpolator(10.0F))
+                    .start();
+            View famMenuView = rootView.getViewById(R.id.menuFab);
+            famMenuView.startAnimation(fabCloseAnimation);
+            rootView.removeView(famMenuView);
+        }
+    }
+
+    private ConstraintLayout.LayoutParams getParams(View view) {
+        int x = Math.round(view.getX());
+        int y = Math.round(view.getY());
+        int width = view.getWidth();
+        int height = view.getHeight();
+
+        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        // 1 | 2
+        // -----
+        // 3 | 4
+        if (getHorizontalGravity(view) == GRAVITY_START && getVerticalGravity(view) == GRAVITY_TOP) { // 1
+            params.startToStart = rootView.getId();
+            params.topToTop = rootView.getId();
+            params.setMargins(
+                    x,
+                    y + height,
+                    0,
+                    0
+            );
+        } else if (getHorizontalGravity(view) == GRAVITY_END && getVerticalGravity(view) == GRAVITY_TOP) { // 2
+            params.endToEnd = rootView.getId();
+            params.topToTop = rootView.getId();
+            params.setMargins(
+                    0,
+                    y + height,
+                    screenWidth - x - width,
+                    0
+            );
+        } else if (getHorizontalGravity(view) == GRAVITY_START) { // 3
+            params.startToStart = rootView.getId();
+            params.bottomToBottom = rootView.getId();
+            params.setMargins(
+                    x,
+                    0,
+                    0,
+                    screenHeight - y
+            );
+        } else { // 4
+            params.endToEnd = rootView.getId();
+            params.bottomToBottom = rootView.getId();
+            params.setMargins(
+                    0,
+                    0,
+                    screenWidth - x - width,
+                    screenHeight - y
+            );
+        }
+
+        Log.v("PARAMS", "screenWidth: " + screenWidth);
+        Log.v("PARAMS", "screenHeight: " + screenHeight);
+        Log.v("PARAMS", "mainX: " + x);
+        Log.v("PARAMS", "mainY: " + y);
+        Log.v("PARAMS", "mainWidth: " + width);
+        Log.v("PARAMS", "mainHeight: " + height);
+        Log.v("PARAMS", "Margins left: " + params.leftMargin + "; top: " + params.topMargin + "; right: " + params.rightMargin + "; bottom:" + params.bottomMargin + ";");
+        Log.v("PARAMS", "-----------------------------------------------");
+        return params;
+    }
+
+    private int getHorizontalGravity(View view) {
+        if (Math.round(view.getX()) <= screenWidth / 2) {
+            return GRAVITY_START;
+        }
+        return GRAVITY_END;
+    }
+
+    private int getVerticalGravity(View view) {
+        if (Math.round(view.getY()) <= screenHeight / 2) {
+            return GRAVITY_TOP;
+        }
+        return GRAVITY_BOTTOM;
     }
 
     private boolean hasOpenedDialogs() {
@@ -171,6 +337,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         }
         return false;
     }
+
     private void setProgress(Integer progress) {
         isFlashingProcess = progress > 0;
         patternFab.setProgress(progress);
@@ -182,6 +349,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
             );
         }
     }
+
     private int getColorWrapper(int id) {
         if (Version.upperMarshmallow) {
             return getColor(id);

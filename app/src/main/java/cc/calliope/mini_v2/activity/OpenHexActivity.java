@@ -24,12 +24,12 @@ import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
+import cc.calliope.mini_v2.views.FabMenuView;
 
 
 public class OpenHexActivity extends ScannerActivity {
     private ActivityHexBinding binding;
     private ExtendedBluetoothDevice device;
-    private View rootView;
     private boolean isStartFlashing;
 
     @Override
@@ -37,8 +37,7 @@ public class OpenHexActivity extends ScannerActivity {
         super.onCreate(savedInstanceState);
 
         binding = ActivityHexBinding.inflate(getLayoutInflater());
-        rootView = binding.getRoot();
-        setContentView(rootView);
+        setContentView(binding.getRoot());
 
         setPatternFab(binding.patternFab);
 
@@ -127,7 +126,7 @@ public class OpenHexActivity extends ScannerActivity {
             intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);
         } else {
-            Utils.errorSnackbar(rootView, getString(R.string.error_snackbar_no_connected)).show();
+            Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_connected)).show();
         }
     }
 }

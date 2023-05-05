@@ -24,6 +24,7 @@ public class FabMenuView extends LinearLayout implements View.OnClickListener {
     FloatingActionButton fullScreenFab;
     private OnItemClickListener onItemClickListener;
     private LinearLayout scriptsLinerLayout;
+    private LinearLayout fullScreenLinerLayout;
 
     public interface OnItemClickListener {
         void onItemClick(View view);
@@ -65,6 +66,7 @@ public class FabMenuView extends LinearLayout implements View.OnClickListener {
         setId(R.id.menuFab);
         View view = inflate(getContext(), type == TYPE_LEFT ? R.layout.menu_fab_left : R.layout.menu_fab_right, null);
         scriptsLinerLayout = view.findViewById(R.id.itemScripts);
+        fullScreenLinerLayout = view.findViewById(R.id.itemFullScreen);
 
         FloatingActionButton connectFab = view.findViewById(R.id.fabConnect);
         FloatingActionButton scriptsFab = view.findViewById(R.id.fabScripts);
@@ -95,5 +97,9 @@ public class FabMenuView extends LinearLayout implements View.OnClickListener {
 
     public void setScriptsVisibility(int visibility) {
         scriptsLinerLayout.setVisibility(visibility);
+    }
+
+    public void setFullScreenVisibility(int visibility) {
+        fullScreenLinerLayout.setVisibility(visibility);
     }
 }

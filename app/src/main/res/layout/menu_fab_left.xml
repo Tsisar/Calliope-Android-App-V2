@@ -31,7 +31,7 @@
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
             android:layout_marginStart="@dimen/margin_half"
-            android:text="Connect"
+            android:text="@string/menu_fab_connect"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_button"/>
     </LinearLayout>
@@ -40,6 +40,7 @@
         android:id="@+id/itemScripts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -59,15 +60,17 @@
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
             android:layout_marginStart="@dimen/margin_half"
-            android:text="Scripts"
+            android:text="@string/menu_fab_scripts"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_button"/>
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/itemFullScreen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -87,7 +90,7 @@
             android:paddingHorizontal="@dimen/fab_title_horizontal_padding"
             android:paddingVertical="@dimen/fab_title_vertical_padding"
             android:layout_marginStart="@dimen/margin_half"
-            android:text="Full screen"
+            android:text="@string/menu_fab_full_screen"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_button"/>
 
