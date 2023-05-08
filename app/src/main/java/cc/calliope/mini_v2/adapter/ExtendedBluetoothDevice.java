@@ -81,28 +81,6 @@ public class ExtendedBluetoothDevice implements Parcelable {
 		return pattern;
 	}
 
-	public int getDevicePattern(int characterPosition) {
-
-		try {
-			char character = pattern.charAt(characterPosition);
-
-			if ("ZU".contains(String.valueOf(character)))
-				return R.drawable.pattern1;
-			if ("VO".contains(String.valueOf(character)))
-				return R.drawable.pattern2;
-			if ("GI".contains(String.valueOf(character)))
-				return R.drawable.pattern3;
-			if ("PE".contains(String.valueOf(character)))
-				return R.drawable.pattern4;
-			if ("TA".contains(String.valueOf(character)))
-				return R.drawable.pattern5;
-			else
-				return R.drawable.pattern0;
-		} catch (Exception e) {
-			return R.drawable.pattern0;
-		}
-	}
-
 	public void setName(final String name) {
 		this.name = name;
 	}

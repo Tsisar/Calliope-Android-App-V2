@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -23,10 +22,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import cc.calliope.mini_v2.InfoManager;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.dialog.pattern.PatternDialogFragment;
@@ -56,6 +55,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     private Animation fabCloseAnimation;
     private int screenWidth;
     private int screenHeight;
+    private String address;
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
             }
@@ -84,6 +84,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     @Override
     public void onResume() {
         super.onResume();
+        address = "";
         requestWasSent = false;
         checkPermission();
     }
@@ -136,7 +137,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     protected void scanResults(final ScannerLiveData state) {
-        if (hasOpenedDialogs() || isFlashingProcess)
+        if (hasOpenedPatternDialog() || isFlashingProcess)
             return;
 
         if (!state.isBluetoothEnabled() && !requestWasSent) {
@@ -150,6 +151,10 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
                         : R.color.orange
         );
         patternFab.setBackgroundTintList(ColorStateList.valueOf(color));
+
+        if(device != null && device.isRelevant() && !device.getAddress().equals(address)){
+            readInfo(device);
+        }
     }
 
     private void showPatternDialog(FobParams params) {
@@ -205,8 +210,6 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
                 ));
             }
         }
-        Log.v("PARAMS", "itemId: " + view.getId());
-        Log.v("PARAMS", "-----------------------------------------------");
         collapseFabMenu();
     }
 
@@ -303,14 +306,6 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
             );
         }
 
-        Log.v("PARAMS", "screenWidth: " + screenWidth);
-        Log.v("PARAMS", "screenHeight: " + screenHeight);
-        Log.v("PARAMS", "mainX: " + x);
-        Log.v("PARAMS", "mainY: " + y);
-        Log.v("PARAMS", "mainWidth: " + width);
-        Log.v("PARAMS", "mainHeight: " + height);
-        Log.v("PARAMS", "Margins left: " + params.leftMargin + "; top: " + params.topMargin + "; right: " + params.rightMargin + "; bottom:" + params.bottomMargin + ";");
-        Log.v("PARAMS", "-----------------------------------------------");
         return params;
     }
 
@@ -328,10 +323,10 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         return GRAVITY_BOTTOM;
     }
 
-    private boolean hasOpenedDialogs() {
+    private boolean hasOpenedPatternDialog() {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
-            if (fragment instanceof DialogFragment) {
+            if (fragment instanceof PatternDialogFragment) {
                 return true;
             }
         }
@@ -357,5 +352,16 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
             //noinspection deprecation
             return getResources().getColor(id);
         }
+    }
+
+    private void readInfo(ExtendedBluetoothDevice extendedDevice) {
+        scannerViewModel.stopScan();
+        address = extendedDevice.getAddress();
+        InfoManager infoManager = new InfoManager(this);
+        infoManager.connect(extendedDevice.getDevice()).enqueue();
+        infoManager.setOnDisconnectListener(() -> {
+            infoManager.close();
+            scannerViewModel.startScan();
+        });
     }
 }

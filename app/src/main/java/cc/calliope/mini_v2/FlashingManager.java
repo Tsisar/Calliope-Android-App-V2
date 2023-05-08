@@ -1,5 +1,6 @@
 package cc.calliope.mini_v2;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -10,16 +11,26 @@ import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import no.nordicsemi.android.ble.BleManager;
-import no.nordicsemi.android.ble.WriteRequest;
 
 public class FlashingManager extends BleManager {
     private static final String TAG = "FlashingManager";
-    private static final UUID MINI_FLASH_SERVICE_UUID = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
-    private static final UUID MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID DFU_CONTROL_SERVICE_UUID = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID DFU_CONTROL_CHARACTERISTIC_UUID = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
     private BluetoothGattCharacteristic flashServiceCharacteristic;
+    private OnDisconnectListener onDisconnectListener;
+    public interface OnDisconnectListener {
+        void onDisconnect();
+    }
 
     public FlashingManager(@NonNull final Context context) {
         super(context);
+        if (context instanceof OnDisconnectListener) {
+            this.onDisconnectListener = (OnDisconnectListener) context;
+        }
+    }
+
+    public void setOnDisconnectListener(OnDisconnectListener onDisconnectListener){
+        this.onDisconnectListener = onDisconnectListener;
     }
 
     @Override
@@ -47,15 +58,15 @@ public class FlashingManager extends BleManager {
 
             // Here get instances of your characteristics.
             // Return false if a required service has not been discovered.
-            BluetoothGattService flashService = gatt.getService(MINI_FLASH_SERVICE_UUID);
+            BluetoothGattService flashService = gatt.getService(DFU_CONTROL_SERVICE_UUID);
             if (flashService == null) {
-                log(Log.WARN, "Can't find MINI_FLASH_SERVICE_UUID");
+                log(Log.WARN, "Can't find DFU_CONTROL_SERVICE_UUID");
                 return false;
             }
 
-            flashServiceCharacteristic = flashService.getCharacteristic(MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID);
+            flashServiceCharacteristic = flashService.getCharacteristic(DFU_CONTROL_CHARACTERISTIC_UUID);
             if (flashServiceCharacteristic == null) {
-                log(Log.WARN, "Can't find MINI_FLASH_SERVICE_CONTROL_CHARACTERISTIC_UUID");
+                log(Log.WARN, "Can't find DFU_CONTROL_CHARACTERISTIC_UUID");
                 return false;
             }
 
@@ -65,12 +76,17 @@ public class FlashingManager extends BleManager {
         @Override
         protected void initialize() {
             log(Log.DEBUG, "Initialize...");
-            // Initialize your device.
-            // This means e.g. enabling notifications, setting notification callbacks,
-            // sometimes writing something to some Control Point.
-            // Kotlin projects should not use suspend methods here, which require a scope.
+            byte[] data = {0x01};
+            requestMtu(23)
+                    .enqueue();
 
-            requestMtu(23).enqueue();
+            log(Log.DEBUG, "Writing flash command...");
+            //Writing 0x01 initiates rebooting the Mini into the Nordic Semiconductor bootloader
+            writeCharacteristic(flashServiceCharacteristic, data, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
+                    .done(this::done)
+                    .fail(this::fail)
+                    .enqueue();
+
         }
 
         @Override
@@ -80,12 +96,18 @@ public class FlashingManager extends BleManager {
             // disconnects.
             // References to characteristics should be nullified here.
             flashServiceCharacteristic = null;
+
+            if (onDisconnectListener != null) {
+                onDisconnectListener.onDisconnect();
+            }
+        }
+
+        private void done(BluetoothDevice device) {
+            log(Log.DEBUG, "Done");
+        }
+
+        private void fail(BluetoothDevice device, int status) {
+            log(Log.ERROR, "Fail, status " + status);
         }
     }
-
-	public WriteRequest writeCharacteristic() {
-        byte[] data = {1};
-        log(Log.DEBUG, "Writing flash command...");
-        return writeCharacteristic(flashServiceCharacteristic, data, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-	}
 }
