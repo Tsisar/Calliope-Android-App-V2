@@ -2,7 +2,10 @@ package cc.calliope.mini_v2.activity;
 
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -10,13 +13,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cc.calliope.mini_v2.FlashingManager;
+import cc.calliope.mini_v2.PartialFlashingManager;
 import cc.calliope.mini_v2.PartialFlashingService;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityDfuBinding;
 import cc.calliope.mini_v2.service.DfuService;
 import cc.calliope.mini_v2.utils.StaticExtra;
+import cc.calliope.mini_v2.viewmodels.ProgressViewModel;
 import cc.calliope.mini_v2.views.BoardProgressBar;
 import no.nordicsemi.android.ble.PhyRequest;
 import no.nordicsemi.android.dfu.DfuBaseService;
@@ -38,6 +44,45 @@ public class DFUActivity extends AppCompatActivity {
     private BoardProgressBar progressBar;
     private final Handler timerHandler = new Handler();
     private final Runnable deferredFinish = this::finish;
+
+    public static final String BROADCAST_PROGRESS = "org.microbit.android.partialflashing.broadcast.BROADCAST_PROGRESS";
+    public static final String BROADCAST_START = "org.microbit.android.partialflashing.broadcast.BROADCAST_START";
+    public static final String BROADCAST_COMPLETE = "org.microbit.android.partialflashing.broadcast.BROADCAST_COMPLETE";
+    public static final String EXTRA_PROGRESS = "org.microbit.android.partialflashing.extra.EXTRA_PROGRESS";
+    public static final String BROADCAST_PF_FAILED = "org.microbit.android.partialflashing.broadcast.BROADCAST_PF_FAILED";
+
+    public static final String BROADCAST_PF_ATTEMPT_DFU = "org.microbit.android.partialflashing.broadcast.BROADCAST_PF_ATTEMPT_DFU";
+
+    private PFResultReceiver pfResultReceiver;
+
+        private class PFResultReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            log(Log.WARN, "Action: " + intent.getAction());
+            if (intent.getAction().equals(BROADCAST_PF_ATTEMPT_DFU)) {
+//                startDFU();
+            }else if (intent.getAction().equals(BROADCAST_PROGRESS)) {
+                int percent = intent.getIntExtra(EXTRA_PROGRESS, 0);
+                statusTextView.setText(String.format(getString(R.string.flashing_percent), percent));
+                timerTextView.setText("Partial flashing...");
+                progressBar.setProgress(percent);
+            }else if (intent.getAction().equals(BROADCAST_COMPLETE) || intent.getAction().equals(BROADCAST_PF_FAILED)){
+                timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
+            }
+        }
+    }
+
+    private void registerCallbacksForFlashing() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BROADCAST_PROGRESS);
+        filter.addAction(BROADCAST_START);
+        filter.addAction(BROADCAST_COMPLETE);
+        filter.addAction(EXTRA_PROGRESS);
+        filter.addAction(BROADCAST_PF_FAILED);
+        filter.addAction(BROADCAST_PF_ATTEMPT_DFU);
+
+        LocalBroadcastManager.getInstance(getApplication()).registerReceiver(pfResultReceiver, filter);
+    }
 
     public void log(int priority, @NonNull String message) {
         // Log from here.
@@ -131,12 +176,16 @@ public class DFUActivity extends AppCompatActivity {
 
 //        flashingManager = new FlashingManager(this);
 
+        pfResultReceiver = new PFResultReceiver();
+        registerCallbacksForFlashing();
+
         initFlashing();
     }
 
     @Override
     protected void onDestroy() {
 //        flashingManager.close();
+        LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(pfResultReceiver);
         binding = null;
         super.onDestroy();
     }
@@ -164,8 +213,41 @@ public class DFUActivity extends AppCompatActivity {
         log(Log.INFO, "device: " + extendedDevice.getAddress() + " " + extendedDevice.getName());
         log(Log.INFO, "Init flashing...");
 
-        initPartialFlashingService(extendedDevice);
-        //initBootloader(extendedDevice);
+        initPFManager(extendedDevice);
+//        initPartialFlashingService(extendedDevice);
+//        initBootloader(extendedDevice);
+//        startFlashing(extendedDevice);
+    }
+    private void initPFManager(ExtendedBluetoothDevice extendedDevice) {
+        Bundle extras = getIntent().getExtras();
+        String filePath = extras.getString(StaticExtra.EXTRA_FILE_PATH);
+
+        log(Log.INFO, "Init PFManager...");
+        PartialFlashingManager flashingManager = new PartialFlashingManager(this, filePath);
+        flashingManager.connect(extendedDevice.getDevice())
+                // Automatic retries are supported, in case of 133 error.
+                .retry(NUMBER_OF_RETRIES, INTERVAL_OF_RETRIES)
+                .timeout(CONNECTION_TIMEOUT)
+                .usePreferredPhy(PhyRequest.PHY_LE_1M_MASK | PhyRequest.PHY_LE_2M_MASK)
+//                .done(this::startFlashing)
+                .fail(this::connectionFail)
+                .enqueue();
+        flashingManager.setOnDisconnectListener(new PartialFlashingManager.OnDisconnectListener() {
+            @Override
+            public void onDisconnect() {
+                flashingManager.close();
+            }
+
+            @Override
+            public void onStartDFUService() {
+                startFlashing(extendedDevice);
+            }
+
+            @Override
+            public void onStartPartialFlashingService() {
+                initPartialFlashingService(extendedDevice);
+            }
+        });
     }
 
     private void initPartialFlashingService(ExtendedBluetoothDevice extendedDevice){
@@ -193,11 +275,20 @@ public class DFUActivity extends AppCompatActivity {
                 .fail(this::connectionFail)
                 .enqueue();
         flashingManager.setOnDisconnectListener(() -> {
-            flashingManager.close();
+            //flashingManager.close();
             startFlashing(extendedDevice);
         });
     }
 
+    private void startDFU() {
+        Intent intent = getIntent();
+        ExtendedBluetoothDevice extendedDevice = intent.getParcelableExtra(StaticExtra.EXTRA_DEVICE);
+
+        if (extendedDevice == null) {
+            return;
+        }
+        startFlashing(extendedDevice);
+    }
     @SuppressWarnings("deprecation")
     private void startFlashing(ExtendedBluetoothDevice extendedDevice) {
         log(Log.INFO, "Starting flashing...");
