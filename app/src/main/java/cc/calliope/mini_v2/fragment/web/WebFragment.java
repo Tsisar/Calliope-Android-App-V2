@@ -184,7 +184,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         webView.setDownloadListener(this);
 
         if (savedInstanceState != null) {
-            webView.restoreState(savedInstanceState);
+            webView.restoreState(savedInstanceState.getBundle("webViewState"));
         } else {
             webView.loadUrl(editorUrl);
         }
@@ -319,6 +319,14 @@ public class WebFragment extends Fragment implements DownloadListener {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        webView.saveState(outState);
+        Bundle bundle = new Bundle();
+        webView.saveState(bundle);
+        outState.putBundle("webViewState", bundle);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        webView.restoreState(savedInstanceState);
     }
 }

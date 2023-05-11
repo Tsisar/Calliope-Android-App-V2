@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -149,6 +150,10 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         }
 
         ExtendedBluetoothDevice device = state.getCurrentDevice();
+        if(device!=null){
+            Log.e("scanResults: ", state.getCurrentDevice().getAddress());
+        }
+
         int color = getColorWrapper(
                 device != null && device.isRelevant()
                         ? R.color.green

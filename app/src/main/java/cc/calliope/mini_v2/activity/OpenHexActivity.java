@@ -1,6 +1,8 @@
 package cc.calliope.mini_v2.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +17,9 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityHexBinding;
@@ -26,6 +31,7 @@ import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 
 
 public class OpenHexActivity extends ScannerActivity {
+    private static final int REQUEST_CODE_PERMISSIONS = 123;
     private ActivityHexBinding binding;
     private ExtendedBluetoothDevice device;
     private boolean isStartFlashing;
@@ -36,6 +42,11 @@ public class OpenHexActivity extends ScannerActivity {
 
         binding = ActivityHexBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // Запитуємо дозвіл на читання зовнішнього сховища
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSIONS);
+        }
 
         setPatternFab(binding.patternFab);
 
@@ -100,6 +111,18 @@ public class OpenHexActivity extends ScannerActivity {
     protected void scanResults(final ScannerLiveData state) {
         super.scanResults(state);
         device = state.getCurrentDevice();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE_PERMISSIONS && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Дозвіл на читання зовнішнього сховища отримано
+            Log.w("HexActivity", "Дозвіл на читання зовнішнього сховища отримано");
+        }else{
+            finish();
+        }
     }
 
     public void copyFile(Uri uri, File destFile) throws IOException {
