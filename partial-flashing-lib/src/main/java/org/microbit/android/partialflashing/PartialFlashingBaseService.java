@@ -41,8 +41,8 @@ public abstract class PartialFlashingBaseService extends IntentService implement
     private static final UUID MICROBIT_SECURE_DFU_CHARACTERISTIC = UUID.fromString("8ec90004-f315-4f60-9fb8-838830daea50");
 
     private static final byte PACKET_STATE_WAITING = 0;
-    private static final byte PACKET_STATE_SENT = (byte)0xFF;
-    private static final byte PACKET_STATE_RETRANSMIT = (byte)0xAA;
+    private static final byte PACKET_STATE_SENT = (byte) 0xFF;
+    private static final byte PACKET_STATE_RETRANSMIT = (byte) 0xAA;
     private static final byte PACKET_STATE_COMPLETE_FLASH = (byte) 0xCF;
 
     // Partial Flashing Intent Action Values
@@ -58,9 +58,9 @@ public abstract class PartialFlashingBaseService extends IntentService implement
 
     private final static String TAG = PartialFlashingBaseService.class.getSimpleName();
 
-    PartialFlashingBLEManager aBLEManager;
+    PartialFlashingBLEManager partialFlashingBLEManager;
 
-    public static final Object mObject = new Object();
+    static final Object mObject = new Object();
 
     @Override
     public void onCreate() {
@@ -68,10 +68,10 @@ public abstract class PartialFlashingBaseService extends IntentService implement
 
         // Create intent filter and add to Local Broadcast Manager so that we can use an Intent to 
         // start the Partial Flashing Service
-        
-        final IntentFilter intentFilter = new IntentFilter();                           
-        intentFilter.addAction(PartialFlashingBaseService.BROADCAST_ACTION);                       
-        
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(PartialFlashingBaseService.BROADCAST_ACTION);
+
         final LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
         manager.registerReceiver(broadcastReceiver, intentFilter);
 
@@ -92,40 +92,38 @@ public abstract class PartialFlashingBaseService extends IntentService implement
         Log.v(TAG, "Connect to: " + device.toString());
         partialFlashingBLEManager.connect(device).enqueue();
 
-            synchronized (mObject) {
-                try {
-                    mObject.wait(10000);
-                    Log.v(TAG, "End of wait()");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        synchronized (mObject) {
+            try {
+                mObject.wait(10000);
+                Log.v(TAG, "End of wait()");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+        }
 
-            int ret = attemptPartialFlash(filepath);
-            Log.v(TAG, "attemptPartialFlash: " + ret);
+        int ret = attemptPartialFlash(filepath);
+        Log.v(TAG, "attemptPartialFlash: " + ret);
 
-            synchronized (mObject) {
-                try {
-                    mObject.wait(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        synchronized (mObject) {
+            try {
+                mObject.wait(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+        }
 
-            if(ret == PF_ATTEMPT_DFU) {
-                partialFlashingBLEManager.enterDFU();
-                partialFlashingBLEManager.disconnect().enqueue();
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(BROADCAST_PF_ATTEMPT_DFU));
+        if (ret == PF_ATTEMPT_DFU) {
+            partialFlashingBLEManager.enterDFU();
+            partialFlashingBLEManager.disconnect().enqueue();
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(BROADCAST_PF_ATTEMPT_DFU));
 
-            } else if(ret == PF_FAILED) {
-                partialFlashingBLEManager.disconnect();
-                Intent intent = new Intent(BROADCAST_PF_FAILED);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-            }
+        } else if (ret == PF_FAILED) {
+            partialFlashingBLEManager.disconnect();
+            Intent intent = new Intent(BROADCAST_PF_FAILED);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        }
 
     }
-
-
 
     protected void onHandleIntent(@Nullable Intent intent) {
 
@@ -135,7 +133,7 @@ public abstract class PartialFlashingBaseService extends IntentService implement
         final boolean pf = intent.getBooleanExtra("pf", true);
 
         BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
-        if(pf) {
+        if (pf) {
             connect(device, filePath);
         }
 
@@ -144,7 +142,7 @@ public abstract class PartialFlashingBaseService extends IntentService implement
 
     public int attemptPartialFlash(String filePath) {
         String dalHash = PartialFlashingBLEManager.getDalHash();
-        if(dalHash == null) return PF_ATTEMPT_DFU;
+        if (dalHash == null) return PF_ATTEMPT_DFU;
 
         Log.v(TAG, "Flashing: " + filePath);
         long startTime = SystemClock.elapsedRealtime();
@@ -172,6 +170,10 @@ public abstract class PartialFlashingBaseService extends IntentService implement
             if (magicIndex > -1) {
 
                 Log.v(TAG, "Found magic");
+
+                if (dalHash == null) {
+                    Log.v(TAG, "DAL HASH IS NULL");
+                }
 
                 // Find DAL hash
                 if (python) magicIndex = magicIndex - 3;
@@ -253,7 +255,7 @@ public abstract class PartialFlashingBaseService extends IntentService implement
                         Log.v(TAG, "/Wait for notification");
 
                     } else {
-                        Thread.sleep(10);
+                        Thread.sleep(9);
                     }
 
                     // If notification is retransmit -> retransmit last block.
@@ -349,7 +351,7 @@ public abstract class PartialFlashingBaseService extends IntentService implement
         final LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
         manager.unregisterReceiver(broadcastReceiver);
     }
-    
+
     protected abstract Class<? extends Activity> getNotificationTarget();
 }
 

@@ -32,6 +32,7 @@ import cc.calliope.mini_v2.dialog.pattern.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Permission;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
+import cc.calliope.mini_v2.viewmodels.ProgressLiveData;
 import cc.calliope.mini_v2.viewmodels.ProgressViewModel;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
@@ -48,6 +49,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     private static final int SNACKBAR_DURATION = 10000; // how long to display the snackbar message.
     private static boolean requestWasSent = false;
     private ScannerViewModel scannerViewModel;
+    private ProgressViewModel progressViewModel;
     private MovableFloatingActionButton patternFab;
     private ConstraintLayout rootView;
     private Boolean isFlashingProcess = false;
@@ -77,8 +79,8 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::scanResults);
 
-        ProgressViewModel progressViewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
-        progressViewModel.getProgress().observe(this, this::setProgress);
+        progressViewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
+        progressViewModel.getProgress().observe(this, this::setFlashingProcess);
     }
 
     @Override
@@ -87,12 +89,14 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         address = "";
         requestWasSent = false;
         checkPermission();
+        progressViewModel.registerBroadcastReceiver();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         scannerViewModel.stopScan();
+        progressViewModel.unregisterBroadcastReceiver();
     }
 
     @Override
@@ -199,7 +203,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     public void onItemFabMenuClicked(View view) {
         if (view.getId() == R.id.fabConnect) {
             if (isFlashingProcess) {
-                final Intent intent = new Intent(this, DFUActivity.class);
+                final Intent intent = new Intent(this, FlashingActivity.class);
                 startActivity(intent);
             } else {
                 showPatternDialog(new FobParams(
@@ -333,9 +337,9 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         return false;
     }
 
-    private void setProgress(Integer progress) {
-        isFlashingProcess = progress > 0;
-        patternFab.setProgress(progress);
+    private void setFlashingProcess(ProgressLiveData progress) {
+        isFlashingProcess = progress.getProgress() > 0;
+        patternFab.setProgress(progress.getProgress());
         if (isFlashingProcess) {
             patternFab.setBackgroundTintList(
                     ColorStateList.valueOf(

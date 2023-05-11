@@ -97,10 +97,10 @@
     <string name="flashing_enabling_dfu_mode">Увімкнення режиму DFU…</string>
     <string name="flashing_firmware_validating">Перевірка прошивки…</string>
     <string name="flashing_device_disconnecting">Від\'єднання пристрою…</string>
-    <string name="flashing_dfu_completed">DFU завершено</string>
-    <string name="flashing_dfu_aborted">DFU скасовано</string>
+    <string name="flashing_completed">Прошивку завершено</string>
+    <string name="flashing_aborted">Прошивку скасовано</string>
     <string name="flashing_uploading">Завантаження…</string>
-    <string name="flashing_error">Помилка</string>
+    <string name="flashing_error">Помилка: %d</string>
     <string name="flashing_connection_fail">Помилка з\'єднання</string>
     <string name="flashing_status">Статус: %d</string>
     <string name="title_dialog_edit_link">Редагувати посилання</string>

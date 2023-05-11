@@ -97,7 +97,7 @@
             android:name=".activity.NotificationActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.DFUActivity"
+            android:name=".activity.FlashingActivity"
             android:exported="false" />
         <activity
             android:name=".activity.NoPermissionActivity"

@@ -221,8 +221,10 @@ public class PartialFlashingBLEManager extends BleManager {
 
             });
 
+            // Get hash when connecting
             byte[] payload = {0x00, (byte) 0x01};
             writeCharacteristic(partialFlashingCharacteristic, payload).enqueue();
+
         }
 
         @Override
@@ -235,8 +237,8 @@ public class PartialFlashingBLEManager extends BleManager {
             v2DFUCharacteristic = null;
 
             if (fullDfuFlag) {
-//                Intent intent = new Intent(BROADCAST_PF_ATTEMPT_DFU);
-//                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+                Intent intent = new Intent(BROADCAST_PF_ATTEMPT_DFU);
+                LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
 
                 fullDfuFlag = false;
             }

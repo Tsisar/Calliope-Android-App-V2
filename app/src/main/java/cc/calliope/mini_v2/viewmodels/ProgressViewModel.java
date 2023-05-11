@@ -7,60 +7,113 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import org.microbit.android.partialflashing.PartialFlashingBaseService;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cc.calliope.mini_v2.service.DfuService;
 import no.nordicsemi.android.dfu.DfuBaseService;
+import no.nordicsemi.android.error.GattError;
+
 
 public class ProgressViewModel extends AndroidViewModel {
-
     private static final String TAG = "ProgressViewModel";
-    private final BroadcastReceiver dfuResultReceiver;
-    private final MutableLiveData<Integer> progress;
+    public static final int PROGRESS_ERROR = -100;
+    private BroadcastReceiver broadcastReceiver;
+    private final ProgressLiveData progress;
+    private final Application application;
+
+    public void log(int priority, @NonNull String message) {
+        // Log from here.
+        String hash = "";
+        if (broadcastReceiver != null) {
+            hash = Integer.toHexString(broadcastReceiver.hashCode());
+        }
+
+        Log.println(priority, TAG, "### " + Thread.currentThread().getId() + " # " + hash + " # " + message);
+    }
 
     public ProgressViewModel(@NonNull Application application) {
         super(application);
-
-        Log.i(TAG, "register");
-        progress = new MutableLiveData<>();
-        progress.setValue(0);
-        dfuResultReceiver = new DFUResultReceiver();
-        registerCallbacksForFlashing();
+        this.application = application;
+        progress = new ProgressLiveData();
     }
 
     @Override
-    protected void onCleared() {
-        LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(dfuResultReceiver);
-        Log.i(TAG, "onCleared");
+    public void onCleared() {
+        unregisterBroadcastReceiver();
     }
 
-    private void registerCallbacksForFlashing() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(DfuService.BROADCAST_PROGRESS);
-        filter.addAction(DfuService.BROADCAST_ERROR);
+    public void registerBroadcastReceiver() {
+        if (broadcastReceiver == null) {
+            broadcastReceiver = new FlashingResultReceiver();
+            log(Log.WARN, "register Broadcast Receiver");
+            IntentFilter filter = new IntentFilter();
 
-        LocalBroadcastManager.getInstance(getApplication()).registerReceiver(dfuResultReceiver, filter);
+            //DfuService
+            filter.addAction(DfuService.BROADCAST_PROGRESS);
+            filter.addAction(DfuService.BROADCAST_ERROR);
+
+            //PartialFlashing
+            filter.addAction(PartialFlashingBaseService.BROADCAST_PROGRESS);
+            filter.addAction(PartialFlashingBaseService.BROADCAST_START);
+            filter.addAction(PartialFlashingBaseService.BROADCAST_COMPLETE);
+            filter.addAction(PartialFlashingBaseService.BROADCAST_PF_FAILED);
+            filter.addAction(PartialFlashingBaseService.BROADCAST_PF_ATTEMPT_DFU);
+
+//          application.registerReceiver(broadcastReceiver, filter);
+            LocalBroadcastManager.getInstance(application).registerReceiver(broadcastReceiver, filter);
+        }
     }
 
-    public LiveData<Integer> getProgress() {
+    public void unregisterBroadcastReceiver() {
+        if (broadcastReceiver != null) {
+            log(Log.WARN, "unregister Broadcast Receiver");
+//          application.unregisterReceiver(broadcastReceiver);
+            LocalBroadcastManager.getInstance(application).unregisterReceiver(broadcastReceiver);
+            broadcastReceiver = null;
+        }
+    }
+
+    public ProgressLiveData getProgress() {
         return progress;
     }
 
-    private class DFUResultReceiver extends BroadcastReceiver {
+    private class FlashingResultReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case DfuService.BROADCAST_PROGRESS -> {
+                    int value = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
+                    progress.setProgress(value);
+                }
+                case DfuService.BROADCAST_ERROR -> {
+                    int errorCode = intent.getIntExtra(DfuBaseService.EXTRA_DATA, 0);
+                    int errorType = intent.getIntExtra(DfuBaseService.EXTRA_ERROR_TYPE, 0);
+                    String errorMessage = switch (errorType) {
+                        case DfuBaseService.ERROR_TYPE_COMMUNICATION_STATE ->
+                                GattError.parseConnectionError(errorCode);
+                        case DfuBaseService.ERROR_TYPE_DFU_REMOTE ->
+                                GattError.parseDfuRemoteError(errorCode);
+                        default -> GattError.parse(errorCode);
+                    };
 
-            if (intent.getAction().equals(DfuService.BROADCAST_ERROR)) {
-                int error = intent.getIntExtra(DfuBaseService.EXTRA_DATA, 0);
-                int errorType = intent.getIntExtra(DfuBaseService.EXTRA_ERROR_TYPE, 0);
-                Log.e(TAG, "ERROR: " + error + ", errorType: " + errorType);
-            } else if (intent.getAction().equals(DfuService.BROADCAST_PROGRESS)) {
-                int state = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
-                progress.setValue(state);
+                    progress.setProgress(PROGRESS_ERROR);
+                    progress.setError(errorCode, errorMessage);
+                    log(Log.ERROR, "ERROR: " + errorCode + ", " + errorMessage);
+                }
+                case PartialFlashingBaseService.BROADCAST_PROGRESS -> {
+                    int value = intent.getIntExtra(PartialFlashingBaseService.EXTRA_PROGRESS, 0);
+                    progress.setProgress(value);
+                }
+                case PartialFlashingBaseService.BROADCAST_START ->
+                        progress.setProgress(DfuBaseService.PROGRESS_STARTING);
+                case PartialFlashingBaseService.BROADCAST_COMPLETE ->
+                        progress.setProgress(DfuBaseService.PROGRESS_COMPLETED);
+                case PartialFlashingBaseService.BROADCAST_PF_FAILED ->
+                        progress.setProgress(DfuBaseService.PROGRESS_ABORTED);
             }
         }
     }

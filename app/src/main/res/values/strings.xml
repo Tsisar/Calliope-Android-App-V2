@@ -115,11 +115,11 @@
     <string name="flashing_enabling_dfu_mode">Enabling DFU mode…</string>
     <string name="flashing_firmware_validating">Firmware validating…</string>
     <string name="flashing_device_disconnecting">Device disconnecting…</string>
-    <string name="flashing_dfu_completed">DFU completed</string>
-    <string name="flashing_dfu_aborted">DFU aborted</string>
+    <string name="flashing_completed">Flashing completed</string>
+    <string name="flashing_aborted">Flashing aborted</string>
     <string name="flashing_uploading">Uploading…</string>
     <string name="flashing_percent" translatable="false">%d%%</string>
-    <string name="flashing_error">Error</string>
+    <string name="flashing_error">Error: %d</string>
     <string name="flashing_connection_fail">Connection fail</string>
     <string name="flashing_status">Status: %d</string>
     <string name="points" translatable="false">…</string>

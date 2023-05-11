@@ -32,7 +32,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import cc.calliope.mini_v2.activity.DFUActivity;
+import cc.calliope.mini_v2.activity.FlashingActivity;
 import cc.calliope.mini_v2.adapter.FileWrapper;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.StaticExtra;
@@ -144,7 +144,7 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
 
     private void openDFUActivity(FileWrapper file) {
         if (device != null && device.isRelevant()) {
-            final Intent intent = new Intent(activity, DFUActivity.class);
+            final Intent intent = new Intent(activity, FlashingActivity.class);
             intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
             intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);

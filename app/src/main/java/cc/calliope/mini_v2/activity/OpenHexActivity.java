@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -24,7 +23,6 @@ import cc.calliope.mini_v2.utils.FileUtils;
 import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
-import cc.calliope.mini_v2.views.FabMenuView;
 
 
 public class OpenHexActivity extends ScannerActivity {
@@ -121,7 +119,7 @@ public class OpenHexActivity extends ScannerActivity {
 
     private void startDFUActivity(File file) {
         if (device != null && device.isRelevant()) {
-            final Intent intent = new Intent(this, DFUActivity.class);
+            final Intent intent = new Intent(this, FlashingActivity.class);
             intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
             intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);

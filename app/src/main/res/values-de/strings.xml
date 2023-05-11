@@ -97,10 +97,10 @@
     <string name="flashing_enabling_dfu_mode">Aktivieren des DFU-Modus…</string>
     <string name="flashing_firmware_validating">Validierung der Firmware…</string>
     <string name="flashing_device_disconnecting">Gerät trennt die Verbindung…</string>
-    <string name="flashing_dfu_completed">DFU abgeschlossen</string>
-    <string name="flashing_dfu_aborted">DFU abgebrochen</string>
+    <string name="flashing_completed">Flashen abgeschlossen</string>
+    <string name="flashing_aborted">Flashen abgebrochen</string>
     <string name="flashing_uploading">Hochladen…</string>
-    <string name="flashing_error">Fehler</string>
+    <string name="flashing_error">Fehler: %d</string>
     <string name="flashing_connection_fail">Verbindung fehlgeschlagen</string>
     <string name="flashing_status">Zustand: %d</string>
     <string name="title_dialog_edit_link">Link bearbeiten</string>

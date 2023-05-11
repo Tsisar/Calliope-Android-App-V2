@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import cc.calliope.mini_v2.activity.DFUActivity;
+import cc.calliope.mini_v2.activity.FlashingActivity;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
@@ -307,7 +307,7 @@ public class WebFragment extends Fragment implements DownloadListener {
     private void startDFUActivity(File file) {
         if (device != null && device.isRelevant()) {
             Log.e(TAG, "start DFU Activity");
-            final Intent intent = new Intent(getActivity(), DFUActivity.class);
+            final Intent intent = new Intent(getActivity(), FlashingActivity.class);
             intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
             intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);
