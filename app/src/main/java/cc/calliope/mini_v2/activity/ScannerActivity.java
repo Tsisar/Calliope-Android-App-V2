@@ -68,12 +68,6 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        screenWidth = displayMetrics.widthPixels;
-        screenHeight = displayMetrics.heightPixels;
-
         fabOpenAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_open);
         fabCloseAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_close);
 
@@ -82,6 +76,14 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
 
         progressViewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
         progressViewModel.getProgress().observe(this, this::setFlashingProcess);
+    }
+
+    private void readDisplayMetrics() {
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
     }
 
     @Override
@@ -102,7 +104,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
 
     @Override
     public void onBackPressed() {
-        if (patternFab.isFabMenuOpen()) {
+        if (patternFab != null && patternFab.isFabMenuOpen()) {
             collapseFabMenu();
         } else {
             super.onBackPressed();
@@ -141,27 +143,30 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         }
     }
 
-    protected void scanResults(final ScannerLiveData state) {
-        if (hasOpenedPatternDialog() || isFlashingProcess)
+    protected void scanResults(ScannerLiveData state) {
+        if (hasOpenedPatternDialog() || isFlashingProcess) {
             return;
+        }
 
         if (!state.isBluetoothEnabled() && !requestWasSent) {
             showBluetoothDisabledWarning();
         }
 
-        ExtendedBluetoothDevice device = state.getCurrentDevice();
-        if(device!=null){
-            Log.e("scanResults: ", state.getCurrentDevice().getAddress());
-        }
+        setDevice(state.getCurrentDevice());
+    }
 
+    protected void setDevice(ExtendedBluetoothDevice device) {
         int color = getColorWrapper(
                 device != null && device.isRelevant()
                         ? R.color.green
                         : R.color.orange
         );
-        patternFab.setBackgroundTintList(ColorStateList.valueOf(color));
 
-        if(device != null && device.isRelevant() && !device.getAddress().equals(address)){
+        if(patternFab != null) {
+            patternFab.setBackgroundTintList(ColorStateList.valueOf(color));
+        }
+
+        if (device != null && device.isRelevant() && !device.getAddress().equals(address)) {
             readInfo(device);
         }
     }
@@ -223,6 +228,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     private void expandFabMenu() {
+        readDisplayMetrics();
         patternFab.setFabMenuOpen(true);
         DimView dimView = new DimView(this);
         dimView.setOnClickListener((View.OnClickListener) v -> collapseFabMenu());
@@ -343,14 +349,16 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     private void setFlashingProcess(ProgressLiveData progress) {
-        isFlashingProcess = progress.getProgress() > 0;
-        patternFab.setProgress(progress.getProgress());
-        if (isFlashingProcess) {
-            patternFab.setBackgroundTintList(
-                    ColorStateList.valueOf(
-                            getColorWrapper(R.color.green)
-                    )
-            );
+        if(patternFab != null) {
+            isFlashingProcess = progress.getProgress() > 0;
+            patternFab.setProgress(progress.getProgress());
+            if (isFlashingProcess) {
+                patternFab.setBackgroundTintList(
+                        ColorStateList.valueOf(
+                                getColorWrapper(R.color.green)
+                        )
+                );
+            }
         }
     }
 

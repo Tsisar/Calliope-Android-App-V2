@@ -2,6 +2,7 @@ package cc.calliope.mini_v2.fragment.editors;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
@@ -23,8 +24,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.activity.WebActivity;
 import cc.calliope.mini_v2.databinding.FragmentItemBinding;
-import cc.calliope.mini_v2.fragment.web.WebFragment;
+import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.utils.Utils;
 
 public class EditorsItemFragment extends Fragment {
@@ -80,15 +82,19 @@ public class EditorsItemFragment extends Fragment {
         view.setOnClickListener(this::openEditor);
     }
 
-    private void showWebFragment(String url, String editorName) {
-        Fragment webFragment = WebFragment.newInstance(url, editorName);
-
-        getParentFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frameLayout, webFragment)
-                .setReorderingAllowed(true)
-                .addToBackStack(getString(R.string.title_web))
-                .commit();
+    private void startWebActivity(String url, String editorName) {
+        final Intent intent = new Intent(getActivity(), WebActivity.class);
+        intent.putExtra(StaticExtra.EXTRA_URL, url);
+        intent.putExtra(StaticExtra.EXTRA_EDITOR_NAME, editorName);
+        startActivity(intent);
+//        Fragment webFragment = WebFragment.newInstance(url, editorName);
+//
+//        getParentFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.frameLayout, webFragment)
+//                .setReorderingAllowed(true)
+//                .addToBackStack(getString(R.string.title_web))
+//                .commit();
     }
 
     private void addEditFab() {
@@ -165,7 +171,7 @@ public class EditorsItemFragment extends Fragment {
             if (editor == Editor.CUSTOM) {
                 url = readCustomLink(activity);
             }
-            showWebFragment(url, editor.toString());
+            startWebActivity(url, editor.toString());
         } else {
             Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_internet)).show();
         }
