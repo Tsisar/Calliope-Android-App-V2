@@ -57,6 +57,7 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
     private boolean scanningStarted;
     private boolean bluetoothEnabled;
     private boolean locationEnabled;
+    private boolean flashing;
 
     /* package */ ScannerLiveData(final boolean bluetoothEnabled, final boolean locationEnabled) {
         this.scanningStarted = false;
@@ -93,6 +94,15 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
 
     /* package */ void setLocationEnabled(final boolean enabled) {
         locationEnabled = enabled;
+        postValue(this);
+    }
+
+    public boolean isFlashing() {
+        return flashing;
+    }
+
+    public void setFlashing(boolean flashing) {
+        this.flashing = flashing;
         postValue(this);
     }
 

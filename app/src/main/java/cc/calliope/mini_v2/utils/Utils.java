@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+
 public class Utils {
     private static final String TAG = "UTILS";
 
@@ -113,5 +115,10 @@ public class Utils {
         Date date = new Date(lastModified);
 
         return DateFormat.format(OUTPUT_DATE_FORMAT, date.getTime()).toString();
+    }
+
+    public static void log(int priority, @NonNull String TAG, @NonNull String message) {
+        // Log from here.
+        Log.println(priority, TAG, "### " + android.os.Process.myTid() + " # " + message);
     }
 }

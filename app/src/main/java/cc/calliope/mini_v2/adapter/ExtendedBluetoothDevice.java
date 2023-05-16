@@ -47,10 +47,19 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.utils.Version;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 public class ExtendedBluetoothDevice implements Parcelable {
-    private static final long RELEVANT_LIMIT = 8000; //the time during which the device is relevant in ms
+
+    private static final long RELEVANT_LIMIT; //the time during which the device is relevant in ms
+    static {
+        if (Version.upperOreo) {
+            RELEVANT_LIMIT = 5000;
+        } else {
+            RELEVANT_LIMIT = 10000;
+        }
+    }
 	private final BluetoothDevice device;
 	private String name;
 	private String pattern;

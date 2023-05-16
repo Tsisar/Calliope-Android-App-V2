@@ -36,8 +36,6 @@ import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.NonNull;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.activity.FlashingActivity;
-import cc.calliope.mini_v2.activity.ScannerActivity;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityWebBinding;
 import cc.calliope.mini_v2.dialog.scripts.ScriptsFragment;
@@ -46,7 +44,6 @@ import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
 import cc.calliope.mini_v2.views.FabMenuView;
-
 
 public class WebActivity extends ScannerActivity implements DownloadListener {
     private static final String TAG = "WebActivity";
@@ -65,7 +62,6 @@ public class WebActivity extends ScannerActivity implements DownloadListener {
 
     private class JavaScriptInterface {
         private final Context context;
-
         public JavaScriptInterface(Context context) {
             this.context = context;
         }
@@ -219,7 +215,7 @@ public class WebActivity extends ScannerActivity implements DownloadListener {
             String decodedUrl = URLDecoder.decode(url, UTF_8);
             if (decodedUrl.startsWith("blob:")) {
                 String javaScript = JavaScriptInterface.getBase64StringFromBlobUrl(url, mimetype);
-                Log.v(TAG, "javaScript: " + javaScript);
+                log(Log.DEBUG, "javaScript: " + javaScript);
                 webView.loadUrl(javaScript);
             } else {
                 selectDownloadMethod(decodedUrl);

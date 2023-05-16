@@ -38,18 +38,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import cc.calliope.mini_v2.StateService;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
@@ -64,6 +63,7 @@ public class ScannerViewModel extends AndroidViewModel {
     // If there is no one device in the bluetooth visibility range callback not working.
     private Timer timer;
     private static final int REFRESH_PERIOD = 3000;
+    private FlashingReceiver flashingReceiver;
 
     /**
      * MutableLiveData containing the scanner state to notify MainActivity.
@@ -80,16 +80,20 @@ public class ScannerViewModel extends AndroidViewModel {
         mScannerLiveData = new ScannerLiveData(Utils.isBluetoothEnabled(),
                 Utils.isLocationEnabled(application) || Version.upperSnowCone);
         registerBroadcastReceivers(application);
+        registerFlashingBroadcastReceiver(application);
         loadPattern();
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        getApplication().unregisterReceiver(mBluetoothStateBroadcastReceiver);
+        Application application = getApplication();
+
+        unregisterFlashingBroadcastReceiver(application);
+        application.unregisterReceiver(mBluetoothStateBroadcastReceiver);
 
         if (Version.upperMarshmallow) {
-            getApplication().unregisterReceiver(mLocationProviderChangedReceiver);
+            application.unregisterReceiver(mLocationProviderChangedReceiver);
         }
     }
 
@@ -102,7 +106,7 @@ public class ScannerViewModel extends AndroidViewModel {
      */
     public void startScan() {
         Log.e("SCANNER", "### " + Thread.currentThread().getId() + " # " + "startScan()");
-        if (mScannerLiveData.isScanning() || !mScannerLiveData.isBluetoothEnabled()) {
+        if (mScannerLiveData.isScanning() || !mScannerLiveData.isBluetoothEnabled() || mScannerLiveData.isFlashing()) {
             return;
         }
 
@@ -216,6 +220,37 @@ public class ScannerViewModel extends AndroidViewModel {
             }
         }
     };
+    public void registerFlashingBroadcastReceiver(Application application) {
+        if (flashingReceiver == null) {
+            flashingReceiver = new FlashingReceiver();
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(StateService.BROADCAST_FLASHING);
+            application.registerReceiver(flashingReceiver, filter);
+        }
+    }
+
+    public void unregisterFlashingBroadcastReceiver(Application application) {
+        if (flashingReceiver != null) {
+            application.unregisterReceiver(flashingReceiver);
+            flashingReceiver = null;
+        }
+    }
+
+    private class FlashingReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(StateService.BROADCAST_FLASHING)) {
+                boolean flashing = intent.getBooleanExtra(StateService.EXTRA_FLASHING, false);
+                mScannerLiveData.setFlashing(flashing);
+                if (flashing) {
+                    stopScan();
+                } else {
+                    startScan();
+                }
+            }
+        }
+    }
 
     public void savePattern() {
         Float[] currentPattern = mScannerLiveData.getCurrentPattern();

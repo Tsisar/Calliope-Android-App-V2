@@ -1,6 +1,10 @@
 package cc.calliope.mini_v2.views;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,11 +17,13 @@ import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.StateService;
 import cc.calliope.mini_v2.utils.Utils;
+import cc.calliope.mini_v2.utils.Version;
 
 public class MovableFloatingActionButton extends FloatingActionButton implements View.OnTouchListener {
-
-    private final static int INT_MAX = 2147483647;
+    private final static String TAG = "MovableFloatingActionButton";
     private final static float CLICK_DRAG_TOLERANCE = 10; // Often, there will be a slight, unintentional, drag when the user taps the FAB, so we need to account for this.
     private float downRawX, downRawY;
     private float dX, dY;
@@ -25,27 +31,44 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private RectF rectF;
     private int progress = 0;
     private boolean isFabMenuOpen = false;
+    private Context context;
+    private ProgressReceiver broadcastReceiver;
+
+    private boolean flashing;
 
     public MovableFloatingActionButton(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public MovableFloatingActionButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public MovableFloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
-    private void init() {
+    private void init(Context context) {
+        this.context = context;
         setOnTouchListener(this);
         paint = new Paint();
         rectF = new RectF();
         setOnSystemUiVisibilityChangeListener(this::onFullscreenStateChanged);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        registerBroadcastReceiver();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        unregisterBroadcastReceiver();
     }
 
     @Override
@@ -116,6 +139,16 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         invalidate();
     }
 
+    public void setColor(int resId) {
+        int color;
+        if (Version.upperMarshmallow) {
+            color = context.getColor(resId);
+        } else {
+            color = getResources().getColor(resId);
+        }
+        setBackgroundTintList(ColorStateList.valueOf(color));
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         int strokeWidth = Utils.convertDpToPixel(getContext(), 4);
@@ -132,6 +165,10 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         canvas.drawArc(rectF, 270, sweepAngle, false, paint);
 
         super.onDraw(canvas);
+    }
+
+    public boolean isFlashing() {
+        return flashing;
     }
 
     public boolean isFabMenuOpen() {
@@ -167,6 +204,48 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
                         .y(parentHeight - height - layoutParams.bottomMargin)
                         .setDuration(0)
                         .start();
+            }
+        }
+    }
+
+    public void registerBroadcastReceiver() {
+        if (broadcastReceiver == null) {
+            broadcastReceiver = new ProgressReceiver();
+            Utils.log(Log.WARN, TAG, "register Progress Receiver");
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(StateService.BROADCAST_PROGRESS);
+            filter.addAction(StateService.BROADCAST_FLASHING);
+            context.registerReceiver(broadcastReceiver, filter);
+        }
+    }
+
+    public void unregisterBroadcastReceiver() {
+        if (broadcastReceiver != null) {
+            Utils.log(Log.WARN, TAG, "unregister Progress Receiver");
+            context.unregisterReceiver(broadcastReceiver);
+            broadcastReceiver = null;
+        }
+    }
+
+    private class ProgressReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action){
+                case StateService.BROADCAST_FLASHING -> {
+                    flashing = intent.getBooleanExtra(StateService.EXTRA_FLASHING, false);
+                    if(flashing){
+                        setColor(R.color.green);
+                    }
+                }
+                case StateService.BROADCAST_PROGRESS -> {
+                    int progress = intent.getIntExtra(StateService.EXTRA_PROGRESS, 0);
+                    setProgress(progress);
+                    if(progress > 0 && !flashing){
+                        flashing = true;
+                        setColor(R.color.green);
+                    }
+                }
             }
         }
     }

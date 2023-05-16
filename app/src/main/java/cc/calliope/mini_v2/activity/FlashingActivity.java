@@ -1,7 +1,10 @@
 package cc.calliope.mini_v2.activity;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -9,16 +12,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.FlashingManager;
 import cc.calliope.mini_v2.PartialFlashingService;
 import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.StateService;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityDfuBinding;
 import cc.calliope.mini_v2.service.DfuService;
 import cc.calliope.mini_v2.utils.StaticExtra;
-import cc.calliope.mini_v2.viewmodels.ProgressLiveData;
-import cc.calliope.mini_v2.viewmodels.ProgressViewModel;
+import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.views.BoardProgressBar;
 import no.nordicsemi.android.ble.PhyRequest;
 import no.nordicsemi.android.dfu.DfuBaseService;
@@ -37,8 +39,7 @@ public class FlashingActivity extends AppCompatActivity {
     private BoardProgressBar progressBar;
     private final Handler timerHandler = new Handler();
     private final Runnable deferredFinish = this::finish;
-    private ProgressViewModel progressViewModel;
-
+    private ProgressReceiver broadcastReceiver;
 
     public void log(int priority, @NonNull String message) {
         // Log from here.
@@ -58,9 +59,6 @@ public class FlashingActivity extends AppCompatActivity {
 
 //        flashingManager = new FlashingManager(this);
 
-        progressViewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
-        progressViewModel.getProgress().observe(this, this::setFlashingProcess);
-
         initFlashing();
     }
 
@@ -74,67 +72,106 @@ public class FlashingActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        progressViewModel.registerBroadcastReceiver();
+        registerBroadcastReceiver();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        progressViewModel.unregisterBroadcastReceiver();
+        unregisterBroadcastReceiver();
     }
 
-    private void setFlashingProcess(ProgressLiveData progress) {
-        switch (progress.getProgress()) {
-            case DfuBaseService.PROGRESS_CONNECTING ->
-                    timerTextView.setText(R.string.flashing_device_connecting);
-            case DfuBaseService.PROGRESS_STARTING ->
-                    timerTextView.setText(R.string.flashing_process_starting);
-            case DfuBaseService.PROGRESS_ENABLING_DFU_MODE ->
-                    timerTextView.setText(R.string.flashing_enabling_dfu_mode);
-            case DfuBaseService.PROGRESS_VALIDATING ->
-                    timerTextView.setText(R.string.flashing_firmware_validating);
-            case DfuBaseService.PROGRESS_DISCONNECTING ->
-                    timerTextView.setText(R.string.flashing_device_disconnecting);
-            case DfuBaseService.PROGRESS_COMPLETED -> {
-                statusTextView.setText(String.format(getString(R.string.flashing_percent), 100));
-                timerTextView.setText(R.string.flashing_completed);
-                timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
-                progressBar.setProgress(DfuService.PROGRESS_COMPLETED);
-            }
-            case DfuBaseService.PROGRESS_ABORTED -> {
-                timerTextView.setText(R.string.flashing_aborted);
-                timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
-            }
-            case ProgressViewModel.PROGRESS_ERROR ->{
-                statusTextView.setText(String.format(getString(R.string.flashing_error), progress.getErrorCode()));
-                timerTextView.setText(progress.getErrorMessage());
-                timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
-            }
-            default -> {
-                statusTextView.setText(String.format(getString(R.string.flashing_percent), progress.getProgress()));
-                timerTextView.setText(R.string.flashing_uploading);
-                progressBar.setProgress(progress.getProgress());
-            }
+    public void registerBroadcastReceiver() {
+        if (broadcastReceiver == null) {
+            broadcastReceiver = new ProgressReceiver();
+            Utils.log(Log.WARN, TAG, "register Progress Receiver");
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(StateService.BROADCAST_PROGRESS);
+            filter.addAction(StateService.BROADCAST_ERROR);
 
+            getApplication().registerReceiver(broadcastReceiver, filter);
+        }
+    }
+
+    public void unregisterBroadcastReceiver() {
+        if (broadcastReceiver != null) {
+            Utils.log(Log.WARN, TAG, "unregister Progress Receiver");
+            getApplication().unregisterReceiver(broadcastReceiver);
+            broadcastReceiver = null;
+        }
+    }
+
+    private class ProgressReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(StateService.BROADCAST_PROGRESS)) {
+                int progress = intent.getIntExtra(StateService.EXTRA_PROGRESS, StateService.PROGRESS_WAITING);
+                switch (progress) {
+                    case StateService.PROGRESS_CONNECTING ->
+                            timerTextView.setText(R.string.flashing_device_connecting);
+                    case StateService.PROGRESS_STARTING ->
+                            timerTextView.setText(R.string.flashing_process_starting);
+                    case StateService.PROGRESS_ENABLING_DFU_MODE ->
+                            timerTextView.setText(R.string.flashing_enabling_dfu_mode);
+                    case StateService.PROGRESS_VALIDATING ->
+                            timerTextView.setText(R.string.flashing_firmware_validating);
+                    case StateService.PROGRESS_DISCONNECTING ->
+                            timerTextView.setText(R.string.flashing_device_disconnecting);
+                    case StateService.PROGRESS_COMPLETED -> {
+                        statusTextView.setText(String.format(getString(R.string.flashing_percent), 100));
+                        timerTextView.setText(R.string.flashing_completed);
+                        timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
+                        progressBar.setProgress(DfuService.PROGRESS_COMPLETED);
+                    }
+                    case StateService.PROGRESS_ABORTED, StateService.PROGRESS_FAILED -> {
+                        timerTextView.setText(R.string.flashing_aborted);
+                        timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
+                    }
+                    default -> {
+                        if (progress >= 0 && progress <= 100) {
+                            statusTextView.setText(String.format(getString(R.string.flashing_percent), progress));
+                            timerTextView.setText(R.string.flashing_uploading);
+                            progressBar.setProgress(progress);
+                        }
+                    }
+                }
+            } else if (action.equals(StateService.BROADCAST_ERROR)) {
+                int code = intent.getIntExtra(StateService.EXTRA_ERROR, 0);
+                String message = intent.getStringExtra(StateService.EXTRA_MESSAGE);
+
+                statusTextView.setText(String.format(getString(R.string.flashing_error), code));
+                timerTextView.setText(message);
+                timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
+            }
         }
     }
 
     private void initFlashing() {
-        Intent intent = getIntent();
-        ExtendedBluetoothDevice extendedDevice = intent.getParcelableExtra(StaticExtra.EXTRA_DEVICE);
-        String filePath = intent.getExtras().getString(StaticExtra.EXTRA_FILE_PATH);
+        ExtendedBluetoothDevice extendedDevice;
+        String filePath;
 
-        if (extendedDevice == null) {
+        try {
+            Intent intent = getIntent();
+            extendedDevice = intent.getParcelableExtra(StaticExtra.EXTRA_DEVICE);
+            filePath = intent.getStringExtra(StaticExtra.EXTRA_FILE_PATH);
+        } catch (NullPointerException exception) {
+            log(Log.ERROR, "NullPointerException: " + exception.getMessage());
+            return;
+        }
+
+        if (extendedDevice == null || filePath == null) {
             return;
         }
 
         log(Log.INFO, "device: " + extendedDevice.getAddress() + " " + extendedDevice.getName());
         log(Log.INFO, "filePath: " + filePath);
 
-        initFlashing(extendedDevice, filePath);
+        //initFlashingManager(extendedDevice, filePath);
+        startDfuService(extendedDevice, filePath);
     }
 
-    private void initFlashing(ExtendedBluetoothDevice extendedDevice, String filePath) {
+    private void initFlashingManager(ExtendedBluetoothDevice extendedDevice, String filePath) {
         log(Log.INFO, "Init Flashing...");
         FlashingManager flashingManager = new FlashingManager(this, filePath);
         flashingManager.connect(extendedDevice.getDevice())
@@ -163,7 +200,7 @@ public class FlashingActivity extends AppCompatActivity {
         });
     }
 
-    private void startPartialFlashingService(ExtendedBluetoothDevice extendedDevice,  String filePath) {
+    private void startPartialFlashingService(ExtendedBluetoothDevice extendedDevice, String filePath) {
         log(Log.INFO, "Starting PartialFlashing Service...");
 
         Intent service = new Intent(this, PartialFlashingService.class);
@@ -174,13 +211,14 @@ public class FlashingActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("deprecation")
-    private void startDfuService(ExtendedBluetoothDevice extendedDevice,  String filePath) {
+    private void startDfuService(ExtendedBluetoothDevice extendedDevice, String filePath) {
         log(Log.INFO, "Starting DFU Service...");
 
         final DfuServiceInitiator starter = new DfuServiceInitiator(extendedDevice.getAddress())
                 .setDeviceName(extendedDevice.getPattern())
                 //TODO Modify HexInputStream
-                .setMbrSize(0x18000)
+                //.setMbrSize(0x18000)
+                .setMbrSize(0x27000)
                 .setPrepareDataObjectDelay(300L)
                 .setNumberOfRetries(NUMBER_OF_RETRIES)
                 .setRebootTime(REBOOT_TIME)

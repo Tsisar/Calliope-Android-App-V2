@@ -4,10 +4,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -26,6 +24,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import cc.calliope.mini_v2.StateService;
 import cc.calliope.mini_v2.InfoManager;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
@@ -33,8 +32,6 @@ import cc.calliope.mini_v2.dialog.pattern.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Permission;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
-import cc.calliope.mini_v2.viewmodels.ProgressLiveData;
-import cc.calliope.mini_v2.viewmodels.ProgressViewModel;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;
 import cc.calliope.mini_v2.viewmodels.ScannerViewModel;
 import cc.calliope.mini_v2.views.DimView;
@@ -50,15 +47,14 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     private static final int SNACKBAR_DURATION = 10000; // how long to display the snackbar message.
     private static boolean requestWasSent = false;
     private ScannerViewModel scannerViewModel;
-    private ProgressViewModel progressViewModel;
     private MovableFloatingActionButton patternFab;
     private ConstraintLayout rootView;
-    private Boolean isFlashingProcess = false;
     private Animation fabOpenAnimation;
     private Animation fabCloseAnimation;
     private int screenWidth;
     private int screenHeight;
-    private String address;
+    private String currentAddress;
+    private Intent stateService;
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
             }
@@ -74,8 +70,14 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::scanResults);
 
-        progressViewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
-        progressViewModel.getProgress().observe(this, this::setFlashingProcess);
+        stateService = new Intent(this, StateService.class);
+        startService(stateService);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(stateService);
     }
 
     private void readDisplayMetrics() {
@@ -89,17 +91,15 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     @Override
     public void onResume() {
         super.onResume();
-        address = "";
+        currentAddress = "";
         requestWasSent = false;
         checkPermission();
-        progressViewModel.registerBroadcastReceiver();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         scannerViewModel.stopScan();
-        progressViewModel.unregisterBroadcastReceiver();
     }
 
     @Override
@@ -144,7 +144,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     protected void scanResults(ScannerLiveData state) {
-        if (hasOpenedPatternDialog() || isFlashingProcess) {
+        if (hasOpenedPatternDialog()) {
             return;
         }
 
@@ -156,17 +156,12 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     protected void setDevice(ExtendedBluetoothDevice device) {
-        int color = getColorWrapper(
-                device != null && device.isRelevant()
-                        ? R.color.green
-                        : R.color.orange
-        );
-
-        if(patternFab != null) {
-            patternFab.setBackgroundTintList(ColorStateList.valueOf(color));
+        if (patternFab != null) {
+            int color = device != null && device.isRelevant() ? R.color.green : R.color.orange;
+            patternFab.setColor(color);
         }
 
-        if (device != null && device.isRelevant() && !device.getAddress().equals(address)) {
+        if (device != null && device.isRelevant() && !device.getAddress().equals(currentAddress)) {
             readInfo(device);
         }
     }
@@ -212,7 +207,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
 
     public void onItemFabMenuClicked(View view) {
         if (view.getId() == R.id.fabConnect) {
-            if (isFlashingProcess) {
+            if (patternFab.isFlashing()) {
                 final Intent intent = new Intent(this, FlashingActivity.class);
                 startActivity(intent);
             } else {
@@ -348,20 +343,6 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         return false;
     }
 
-    private void setFlashingProcess(ProgressLiveData progress) {
-        if(patternFab != null) {
-            isFlashingProcess = progress.getProgress() > 0;
-            patternFab.setProgress(progress.getProgress());
-            if (isFlashingProcess) {
-                patternFab.setBackgroundTintList(
-                        ColorStateList.valueOf(
-                                getColorWrapper(R.color.green)
-                        )
-                );
-            }
-        }
-    }
-
     private int getColorWrapper(int id) {
         if (Version.upperMarshmallow) {
             return getColor(id);
@@ -373,7 +354,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
 
     private void readInfo(ExtendedBluetoothDevice extendedDevice) {
         scannerViewModel.stopScan();
-        address = extendedDevice.getAddress();
+        currentAddress = extendedDevice.getAddress();
         InfoManager infoManager = new InfoManager(this);
         infoManager.connect(extendedDevice.getDevice()).enqueue();
         infoManager.setOnDisconnectListener(() -> {
