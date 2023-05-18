@@ -1,45 +1,47 @@
 package cc.calliope.mini_v2;
 
 import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.util.Log;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.UUID;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import no.nordicsemi.android.ble.BleManager;
 
 public class InfoManager extends BleManager {
     private static final String TAG = "DeviceInformation";
+    public static final UUID PARTIAL_FLASHING_SERVICE = UUID.fromString("E97DD91D-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID DFU_CONTROL_SERVICE = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID DFU_SECURE_CONTROL_SERVICE = UUID.fromString("0000FE59-0000-1000-8000-00805F9B34FB");
+    public static final int BOARD_UNIDENTIFIED = 0;
+    public static final int BOARD_V1 = 1;
+    public static final int BOARD_V2 = 2;
+    @IntDef({BOARD_UNIDENTIFIED, BOARD_V1, BOARD_V2})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface HardwareType {
+    }
+    private int hardwareType = BOARD_UNIDENTIFIED;
+    private boolean partialFlashingAvailable = false;
+    private GetInfoListener getInfoListener;
 
-    private static final UUID DEVICE_INFORMATION_SERVICE = UUID.fromString("0000180A-0000-1000-8000-00805F9B34FB");
-    private static final UUID MODEL_NUMBER_STRING_CHARACTERISTICS = UUID.fromString("00002A24-0000-1000-8000-00805F9B34FB");
-    private static final UUID SERIAL_NUMBER_STRING_CHARACTERISTICS = UUID.fromString("00002A25-0000-1000-8000-00805F9B34FB");
-    private static final UUID FIRMWARE_REVISION_STRING_CHARACTERISTICS = UUID.fromString("00002A26-0000-1000-8000-00805F9B34FB");
-    private static final UUID HARDWARE_REVISION_STRING_CHARACTERISTICS = UUID.fromString("00002A27-0000-1000-8000-00805F9B34FB");
-    private static final UUID MANUFACTURER_NAME_STRING_CHARACTERISTICS = UUID.fromString("00002A29-0000-1000-8000-00805F9B34FB");
-    private BluetoothGattCharacteristic modelNumberCharacteristic;
-    private BluetoothGattCharacteristic serialNumberCharacteristic;
-    private BluetoothGattCharacteristic firmwareRevisionCharacteristic;
-    private BluetoothGattCharacteristic hardwareRevisionCharacteristic;
-    private BluetoothGattCharacteristic manufacturerNameCharacteristic;
-    private DeviceInfo deviceInfo;
-    private OnDisconnectListener onDisconnectListener;
-    public interface OnDisconnectListener {
-        void onDisconnect();
+    public interface GetInfoListener {
+        void getInfo(int hardwareType, boolean partialFlashAvailable);
     }
 
     public InfoManager(@NonNull final Context context) {
         super(context);
-        if (context instanceof OnDisconnectListener) {
-            this.onDisconnectListener = (OnDisconnectListener) context;
+        if (context instanceof GetInfoListener) {
+            this.getInfoListener = (GetInfoListener) context;
         }
     }
 
-    public void setOnDisconnectListener(OnDisconnectListener onDisconnectListener){
-        this.onDisconnectListener = onDisconnectListener;
+    public void setOnInfoListener(GetInfoListener getInfoListener) {
+        this.getInfoListener = getInfoListener;
     }
 
     @Override
@@ -63,141 +65,42 @@ public class InfoManager extends BleManager {
     private class MyGattCallbackImpl extends BleManagerGattCallback {
         @Override
         protected boolean isRequiredServiceSupported(@NonNull BluetoothGatt gatt) {
-            log(Log.DEBUG, "Checking if the info service is supported...");
-
-            // Here get instances of your characteristics.
-            // Return false if a required service has not been discovered.
-            BluetoothGattService infoService = gatt.getService(DEVICE_INFORMATION_SERVICE);
-            if (infoService == null) {
-                log(Log.WARN, "Can't find DEVICE_INFORMATION_SERVICE");
-                return false;
+            BluetoothGattService dfuControlService = gatt.getService(DFU_CONTROL_SERVICE);
+            if (dfuControlService == null) {
+                log(Log.WARN, "Can't find DFU_CONTROL_SERVICE");
+            } else {
+                hardwareType = BOARD_V1;
             }
 
-            modelNumberCharacteristic = infoService.getCharacteristic(MODEL_NUMBER_STRING_CHARACTERISTICS);
-            if (modelNumberCharacteristic == null) {
-                log(Log.WARN, "Can't find MODEL_NUMBER_STRING_CHARACTERISTICS");
+            BluetoothGattService dfuSecureControlService = gatt.getService(DFU_SECURE_CONTROL_SERVICE);
+            if (dfuSecureControlService == null) {
+                log(Log.WARN, "Can't find DFU_SECURE_CONTROL_SERVICE");
+            } else {
+                hardwareType = BOARD_V2;
             }
 
-            serialNumberCharacteristic = infoService.getCharacteristic(SERIAL_NUMBER_STRING_CHARACTERISTICS);
-            if (serialNumberCharacteristic == null) {
-                log(Log.WARN, "Can't find SERIAL_NUMBER_STRING_CHARACTERISTICS");
+            BluetoothGattService partialFlashingService = gatt.getService(PARTIAL_FLASHING_SERVICE);
+            if (partialFlashingService == null) {
+                log(Log.WARN, "Can't find PARTIAL_FLASHING_SERVICE");
+            } else {
+                partialFlashingAvailable = true;
             }
 
-            firmwareRevisionCharacteristic = infoService.getCharacteristic(FIRMWARE_REVISION_STRING_CHARACTERISTICS);
-            if (firmwareRevisionCharacteristic == null) {
-                log(Log.WARN, "Can't find FIRMWARE_REVISION_STRING_CHARACTERISTICS");
-            }
-
-            hardwareRevisionCharacteristic = infoService.getCharacteristic(HARDWARE_REVISION_STRING_CHARACTERISTICS);
-            if (hardwareRevisionCharacteristic == null) {
-                log(Log.WARN, "Can't find HARDWARE_REVISION_STRING_CHARACTERISTICS");
-            }
-
-            manufacturerNameCharacteristic = infoService.getCharacteristic(MANUFACTURER_NAME_STRING_CHARACTERISTICS);
-            if (manufacturerNameCharacteristic == null) {
-                log(Log.WARN, "Can't find MANUFACTURER_NAME_STRING_CHARACTERISTICS");
-            }
-            return true;
+            return dfuControlService != null || dfuSecureControlService != null || partialFlashingService != null;
         }
 
         @Override
         protected void initialize() {
             log(Log.DEBUG, "Initialize...");
-            // Initialize your device.
-            // This means e.g. enabling notifications, setting notification callbacks,
-            // sometimes writing something to some Control Point.
-            // Kotlin projects should not use suspend methods here, which require a scope.
-
-            deviceInfo = new DeviceInfo();
-            requestMtu(23).enqueue();
-            readModelNumberCharacteristic();
+            if (getInfoListener != null) {
+                getInfoListener.getInfo(hardwareType, partialFlashingAvailable);
+            }
+            //disconnect().enqueue();
         }
 
         @Override
         protected void onServicesInvalidated() {
             log(Log.DEBUG, "Services invalidated...");
-            // This method is called when the services get invalidated, i.e. when the device
-            // disconnects.
-            // References to characteristics should be nullified here.
-            modelNumberCharacteristic = null;
-            serialNumberCharacteristic = null;
-            firmwareRevisionCharacteristic = null;
-            hardwareRevisionCharacteristic = null;
-            manufacturerNameCharacteristic = null;
-
-            if (onDisconnectListener != null) {
-                onDisconnectListener.onDisconnect();
-            }
-        }
-    }
-
-
-    private void readModelNumberCharacteristic() {
-        if (modelNumberCharacteristic != null) {
-            readCharacteristic(modelNumberCharacteristic)
-                    .done(r -> {
-                        deviceInfo.setModelNumber(modelNumberCharacteristic.getStringValue(0));
-                        readSerialNumberCharacteristic();
-                    })
-                    .enqueue();
-        } else {
-            readSerialNumberCharacteristic();
-        }
-    }
-
-    private void readSerialNumberCharacteristic() {
-        if (serialNumberCharacteristic != null) {
-            readCharacteristic(serialNumberCharacteristic)
-                    .done(r -> {
-                        deviceInfo.setSerialNumber(serialNumberCharacteristic.getStringValue(0));
-                        readFirmwareRevisionCharacteristic();
-                    })
-                    .enqueue();
-        } else {
-            readFirmwareRevisionCharacteristic();
-        }
-    }
-
-
-
-    private void readFirmwareRevisionCharacteristic() {
-        if (firmwareRevisionCharacteristic != null) {
-            readCharacteristic(firmwareRevisionCharacteristic)
-                    .done(r -> {
-                        deviceInfo.setFirmwareRevision(firmwareRevisionCharacteristic.getStringValue(0));
-                        readHardwareRevisionCharacteristic();
-                    })
-                    .enqueue();
-        } else {
-            readHardwareRevisionCharacteristic();
-        }
-    }
-
-    private void readHardwareRevisionCharacteristic() {
-        if (hardwareRevisionCharacteristic != null) {
-            readCharacteristic(hardwareRevisionCharacteristic)
-                    .done(r -> {
-                        deviceInfo.setHardwareRevision(hardwareRevisionCharacteristic.getStringValue(0));
-                        readManufacturerNameCharacteristic();
-                    })
-                    .enqueue();
-        } else {
-            readManufacturerNameCharacteristic();
-        }
-    }
-
-    private void readManufacturerNameCharacteristic() {
-        if (manufacturerNameCharacteristic != null) {
-            readCharacteristic(manufacturerNameCharacteristic)
-                    .done(r -> {
-                        deviceInfo.setManufacturerName(manufacturerNameCharacteristic.getStringValue(0));
-                        log(Log.WARN, deviceInfo.toString());
-                        disconnect().enqueue();
-                    })
-                    .enqueue();
-        } else {
-            log(Log.WARN, deviceInfo.toString());
-            disconnect().enqueue();
         }
     }
 }

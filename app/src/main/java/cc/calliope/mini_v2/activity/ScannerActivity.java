@@ -24,10 +24,9 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import cc.calliope.mini_v2.StateService;
-import cc.calliope.mini_v2.InfoManager;
+import cc.calliope.mini_v2.BroadcastAggregatorService;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.dialog.pattern.PatternDialogFragment;
 import cc.calliope.mini_v2.utils.Permission;
 import cc.calliope.mini_v2.utils.Utils;
@@ -70,7 +69,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::scanResults);
 
-        stateService = new Intent(this, StateService.class);
+        stateService = new Intent(this, BroadcastAggregatorService.class);
         startService(stateService);
     }
 
@@ -159,10 +158,6 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
         if (patternFab != null) {
             int color = device != null && device.isRelevant() ? R.color.green : R.color.orange;
             patternFab.setColor(color);
-        }
-
-        if (device != null && device.isRelevant() && !device.getAddress().equals(currentAddress)) {
-            readInfo(device);
         }
     }
 
@@ -341,25 +336,5 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
             }
         }
         return false;
-    }
-
-    private int getColorWrapper(int id) {
-        if (Version.upperMarshmallow) {
-            return getColor(id);
-        } else {
-            //noinspection deprecation
-            return getResources().getColor(id);
-        }
-    }
-
-    private void readInfo(ExtendedBluetoothDevice extendedDevice) {
-        scannerViewModel.stopScan();
-        currentAddress = extendedDevice.getAddress();
-        InfoManager infoManager = new InfoManager(this);
-        infoManager.connect(extendedDevice.getDevice()).enqueue();
-        infoManager.setOnDisconnectListener(() -> {
-            infoManager.close();
-            scannerViewModel.startScan();
-        });
     }
 }

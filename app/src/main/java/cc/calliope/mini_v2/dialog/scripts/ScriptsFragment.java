@@ -36,7 +36,7 @@ import cc.calliope.mini_v2.activity.FlashingActivity;
 import cc.calliope.mini_v2.adapter.FileWrapper;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.StaticExtra;
-import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentScriptsBinding;
 import cc.calliope.mini_v2.fragment.editors.Editor;
 import cc.calliope.mini_v2.utils.Utils;

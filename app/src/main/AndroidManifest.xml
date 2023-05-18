@@ -116,7 +116,7 @@
             android:name=".PartialFlashingService"
             android:enabled="true" />
         <service
-            android:name=".StateService"
+            android:name=".BroadcastAggregatorService"
             android:enabled="true" />
     </application>
 </manifest>

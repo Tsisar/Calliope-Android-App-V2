@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.dialog.pattern.PatternEnum;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 

@@ -61,4 +61,10 @@ public class FileUtils {
             return "firmware";
         }
     }
+
+    public static String getFileSize(String str) {
+        File file = new File(str);
+        return file.exists() ? Long.toString(file.length()) : "0";
+    }
+
 }

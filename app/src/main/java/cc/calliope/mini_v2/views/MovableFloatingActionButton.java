@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.StateService;
+import cc.calliope.mini_v2.BroadcastAggregatorService;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
 
@@ -213,8 +213,8 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
             broadcastReceiver = new ProgressReceiver();
             Utils.log(Log.WARN, TAG, "register Progress Receiver");
             IntentFilter filter = new IntentFilter();
-            filter.addAction(StateService.BROADCAST_PROGRESS);
-            filter.addAction(StateService.BROADCAST_FLASHING);
+            filter.addAction(BroadcastAggregatorService.BROADCAST_PROGRESS);
+            filter.addAction(BroadcastAggregatorService.BROADCAST_FLASHING);
             context.registerReceiver(broadcastReceiver, filter);
         }
     }
@@ -232,14 +232,14 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             switch (action){
-                case StateService.BROADCAST_FLASHING -> {
-                    flashing = intent.getBooleanExtra(StateService.EXTRA_FLASHING, false);
+                case BroadcastAggregatorService.BROADCAST_FLASHING -> {
+                    flashing = intent.getBooleanExtra(BroadcastAggregatorService.EXTRA_FLASHING, false);
                     if(flashing){
                         setColor(R.color.green);
                     }
                 }
-                case StateService.BROADCAST_PROGRESS -> {
-                    int progress = intent.getIntExtra(StateService.EXTRA_PROGRESS, 0);
+                case BroadcastAggregatorService.BROADCAST_PROGRESS -> {
+                    int progress = intent.getIntExtra(BroadcastAggregatorService.EXTRA_PROGRESS, 0);
                     setProgress(progress);
                     if(progress > 0 && !flashing){
                         flashing = true;

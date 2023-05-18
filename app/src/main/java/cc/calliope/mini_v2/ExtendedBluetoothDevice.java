@@ -35,24 +35,26 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package cc.calliope.mini_v2.adapter;
+package cc.calliope.mini_v2;
 
 import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 import java.util.Objects;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.Version;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 public class ExtendedBluetoothDevice implements Parcelable {
 
     private static final long RELEVANT_LIMIT; //the time during which the device is relevant in ms
+
     static {
         if (Version.upperOreo) {
             RELEVANT_LIMIT = 5000;
@@ -60,51 +62,52 @@ public class ExtendedBluetoothDevice implements Parcelable {
             RELEVANT_LIMIT = 10000;
         }
     }
-	private final BluetoothDevice device;
-	private String name;
-	private String pattern;
-	private int rssi;
+
+    private final BluetoothDevice device;
+    private String name;
+    private String pattern;
+    private int rssi;
     private long recentUpdate;
 
-	public ExtendedBluetoothDevice(final ScanResult scanResult) {
-		this.device = scanResult.getDevice();
-		this.name = scanResult.getScanRecord().getDeviceName();
-		this.pattern = "00000";
-		this.rssi = scanResult.getRssi();
+    public ExtendedBluetoothDevice(final ScanResult scanResult) {
+        this.device = scanResult.getDevice();
+        this.name = scanResult.getScanRecord().getDeviceName();
+        this.pattern = "00000";
+        this.rssi = scanResult.getRssi();
         this.recentUpdate = new Date().getTime();
-	}
+    }
 
-	public BluetoothDevice getDevice() {
-		return device;
-	}
+    public BluetoothDevice getDevice() {
+        return device;
+    }
 
-	public String getAddress() {
-		return device.getAddress();
-	}
+    public String getAddress() {
+        return device.getAddress();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getPattern() {
-		return pattern;
-	}
+    public String getPattern() {
+        return pattern;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public void setPattern(final String pattern) {
-		this.pattern = pattern;
-	}
+    public void setPattern(final String pattern) {
+        this.pattern = pattern;
+    }
 
-	public int getRssi() {
-		return rssi;
-	}
+    public int getRssi() {
+        return rssi;
+    }
 
-	public void setRssi(final int rssi) {
-		this.rssi = rssi;
-	}
+    public void setRssi(final int rssi) {
+        this.rssi = rssi;
+    }
 
     public float getRecentUpdate() {
         return recentUpdate;
@@ -114,23 +117,23 @@ public class ExtendedBluetoothDevice implements Parcelable {
         this.recentUpdate = recentUpdate;
     }
 
-    public boolean isRelevant(){
+    public boolean isRelevant() {
         long currentTime = new Date().getTime();
         return currentTime - recentUpdate < RELEVANT_LIMIT;
     }
 
     public boolean matches(final ScanResult scanResult) {
-		return device.getAddress().equals(scanResult.getDevice().getAddress());
-	}
+        return device.getAddress().equals(scanResult.getDevice().getAddress());
+    }
 
-	@Override
-	public boolean equals(final Object o) {
-		if (o instanceof ExtendedBluetoothDevice) {
-			final ExtendedBluetoothDevice that = (ExtendedBluetoothDevice) o;
-			return device.getAddress().equals(that.device.getAddress());
-		}
-		return super.equals(o);
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (o instanceof ExtendedBluetoothDevice) {
+            final ExtendedBluetoothDevice that = (ExtendedBluetoothDevice) o;
+            return device.getAddress().equals(that.device.getAddress());
+        }
+        return super.equals(o);
+    }
 
     @Override
     public int hashCode() {
@@ -145,35 +148,35 @@ public class ExtendedBluetoothDevice implements Parcelable {
 
     // Parcelable implementation
 
-	private ExtendedBluetoothDevice(final Parcel in) {
-		this.device = in.readParcelable(BluetoothDevice.class.getClassLoader());
-		this.name = in.readString();
-		this.pattern = in.readString();
-		this.rssi = in.readInt();
-	}
+    private ExtendedBluetoothDevice(final Parcel in) {
+        device = in.readParcelable(BluetoothDevice.class.getClassLoader());
+        name = in.readString();
+        pattern = in.readString();
+        rssi = in.readInt();
+    }
 
-	@Override
-	public void writeToParcel(final Parcel parcel, final int flags) {
-		parcel.writeParcelable(device, flags);
-		parcel.writeString(name);
-		parcel.writeString(pattern);
-		parcel.writeInt(rssi);
-	}
+    @Override
+    public void writeToParcel(final Parcel parcel, final int flags) {
+        parcel.writeParcelable(device, flags);
+        parcel.writeString(name);
+        parcel.writeString(pattern);
+        parcel.writeInt(rssi);
+    }
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	public static final Creator<ExtendedBluetoothDevice> CREATOR = new Creator<ExtendedBluetoothDevice>() {
-		@Override
-		public ExtendedBluetoothDevice createFromParcel(final Parcel source) {
-			return new ExtendedBluetoothDevice(source);
-		}
+    public static final Creator<ExtendedBluetoothDevice> CREATOR = new Creator<>() {
+        @Override
+        public ExtendedBluetoothDevice createFromParcel(final Parcel source) {
+            return new ExtendedBluetoothDevice(source);
+        }
 
-		@Override
-		public ExtendedBluetoothDevice[] newArray(final int size) {
-			return new ExtendedBluetoothDevice[size];
-		}
-	};
+        @Override
+        public ExtendedBluetoothDevice[] newArray(final int size) {
+            return new ExtendedBluetoothDevice[size];
+        }
+    };
 }

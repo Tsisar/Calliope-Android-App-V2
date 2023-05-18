@@ -23,7 +23,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini_v2.views.FobParams;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.DialogPatternBinding;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.viewmodels.ScannerLiveData;

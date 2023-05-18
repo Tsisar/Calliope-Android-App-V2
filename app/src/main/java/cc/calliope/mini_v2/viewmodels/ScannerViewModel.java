@@ -48,7 +48,7 @@ import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import cc.calliope.mini_v2.StateService;
+import cc.calliope.mini_v2.BroadcastAggregatorService;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
@@ -224,7 +224,7 @@ public class ScannerViewModel extends AndroidViewModel {
         if (flashingReceiver == null) {
             flashingReceiver = new FlashingReceiver();
             IntentFilter filter = new IntentFilter();
-            filter.addAction(StateService.BROADCAST_FLASHING);
+            filter.addAction(BroadcastAggregatorService.BROADCAST_FLASHING);
             application.registerReceiver(flashingReceiver, filter);
         }
     }
@@ -240,14 +240,12 @@ public class ScannerViewModel extends AndroidViewModel {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(StateService.BROADCAST_FLASHING)) {
-                boolean flashing = intent.getBooleanExtra(StateService.EXTRA_FLASHING, false);
-                mScannerLiveData.setFlashing(flashing);
-                if (flashing) {
+            if (action.equals(BroadcastAggregatorService.BROADCAST_FLASHING)) {
+                boolean flashing = intent.getBooleanExtra(BroadcastAggregatorService.EXTRA_FLASHING, false);
+                if (flashing && !mScannerLiveData.isFlashing()) {
                     stopScan();
-                } else {
-                    startScan();
                 }
+                mScannerLiveData.setFlashing(flashing);
             }
         }
     }

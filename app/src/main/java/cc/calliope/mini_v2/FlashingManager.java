@@ -27,8 +27,6 @@ public class FlashingManager extends BleManager {
     public static final UUID PARTIAL_FLASHING_CHARACTERISTIC = UUID.fromString("E97D3B10-251D-470A-A062-FA1922DFA9A8");
     private static final UUID DFU_V1_CONTROL_SERVICE = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
     private static final UUID DFU_V1_CONTROL_CHARACTERISTIC = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
-    private static final UUID DFU_V2_CONTROL_SERVICE = UUID.fromString("0000FE59-0000-1000-8000-00805F9B34FB");
-    private static final UUID DFU_V2_CONTROL_CHARACTERISTIC = UUID.fromString("8EC90004-F315-4F60-9FB8-838830DAEA50");
     private static final String PXT_MAGIC = "708E3B92C615A841C49866C975EE5197";
     private static final String UPY_MAGIC = ".*FE307F59.{16}9DD7B1C1.*";
     private static final byte MODE_TYPE_PAIRING = 0x00;
@@ -41,11 +39,10 @@ public class FlashingManager extends BleManager {
 
     private BluetoothGattCharacteristic partialFlashingServiceCharacteristic;
     private BluetoothGattCharacteristic dfuV1ControlServiceCharacteristic;
-    private BluetoothGattCharacteristic dfuV2ControlServiceCharacteristic;
     private OnInvalidateListener onInvalidateListener;
     private static String dalHash;
     private final String filePath;
-    private boolean isPartialFlashAvailable = false;
+    private boolean partialFlashAvailable = false;
 
     public interface OnInvalidateListener {
         void onDisconnect();
@@ -106,14 +103,7 @@ public class FlashingManager extends BleManager {
                 log(Log.WARN, "DFU Control service isn't supported");
             }
 
-            BluetoothGattService dfuV2ControlService = gatt.getService(DFU_V2_CONTROL_SERVICE);
-            if (dfuV2ControlService != null) {
-                dfuV2ControlServiceCharacteristic = dfuV2ControlService.getCharacteristic(DFU_V2_CONTROL_CHARACTERISTIC);
-            } else {
-                log(Log.WARN, "Secure DFU Control service isn't supported");
-            }
-
-            return partialFlashingService != null || dfuV1ControlService != null || dfuV2ControlService != null;
+            return partialFlashingService != null || dfuV1ControlService != null;
         }
 
         @Override
@@ -151,15 +141,15 @@ public class FlashingManager extends BleManager {
                                 byte[] hash = Arrays.copyOfRange(notificationValue, 10, 18);
                                 if (notificationValue[1] == REGION_DAL) {
                                     dalHash = bytesToHex(hash);
-                                    isPartialFlashAvailable = isPartialFlashAvailable(filePath);
+                                    partialFlashAvailable = isPartialFlashAvailable(filePath);
 
                                     log(Log.VERBOSE, "Hash: " + dalHash);
-                                    log(Log.WARN, "Is Partial Flash available: " + isPartialFlashAvailable);
+                                    log(Log.WARN, "Is Partial Flash available: " + partialFlashAvailable);
 
-                                    if (isPartialFlashAvailable) {
+                                    if (partialFlashAvailable) {
                                         sendStatusRequest();
                                     } else {
-                                        enterDFUBootloader();
+                                        startDFU();
                                     }
                                 }
                             }
@@ -171,7 +161,7 @@ public class FlashingManager extends BleManager {
                 });
                 sendHashRequest();
             } else {
-                enterDFUBootloader();
+                startDFU();
             }
         }
 
@@ -180,14 +170,12 @@ public class FlashingManager extends BleManager {
             log(Log.WARN, "Services invalidated...");
             // This method is called when the services get invalidated, i.e. when the device disconnects.
             // References to characteristics should be nullified here.
-
             partialFlashingServiceCharacteristic = null;
             dfuV1ControlServiceCharacteristic = null;
-            dfuV2ControlServiceCharacteristic = null;
 
             if (onInvalidateListener != null) {
                 onInvalidateListener.onDisconnect();
-                if (isPartialFlashAvailable) {
+                if (partialFlashAvailable) {
                     onInvalidateListener.onStartPartialFlashingService();
                 } else {
                     onInvalidateListener.onStartDFUService();
@@ -211,11 +199,12 @@ public class FlashingManager extends BleManager {
         writeCharacteristicNoResponse(partialFlashingServiceCharacteristic, (byte) 0xFF, mode);
     }
 
-    public void enterDFUBootloader() {
+    //TODO to refactoring
+    public void startDFU() {
         //Writing 0x01 initiates rebooting the Mini into the Nordic Semiconductor bootloader
-        if (dfuV2ControlServiceCharacteristic != null) {
-            writeCharacteristicNoResponse(dfuV2ControlServiceCharacteristic, (byte) 0x01);
-        } else if (dfuV1ControlServiceCharacteristic != null) {
+        log(Log.ASSERT, "Starting DFU...");
+
+        if (dfuV1ControlServiceCharacteristic != null) {
             writeCharacteristicNoResponse(dfuV1ControlServiceCharacteristic, (byte) 0x01);
         }
     }

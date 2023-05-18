@@ -36,7 +36,7 @@ import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.NonNull;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.adapter.ExtendedBluetoothDevice;
+import cc.calliope.mini_v2.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.ActivityWebBinding;
 import cc.calliope.mini_v2.dialog.scripts.ScriptsFragment;
 import cc.calliope.mini_v2.utils.FileUtils;
