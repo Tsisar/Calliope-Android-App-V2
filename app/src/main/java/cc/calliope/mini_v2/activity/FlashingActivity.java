@@ -60,7 +60,6 @@ public class FlashingActivity extends AppCompatActivity {
     private final Handler timerHandler = new Handler();
     private final Runnable deferredFinish = this::finish;
     private ProgressReceiver broadcastReceiver;
-    private InfoManager infoManager;
     private int hType = BOARD_UNIDENTIFIED;
     private String pattern;
     private String fPath;
@@ -90,7 +89,6 @@ public class FlashingActivity extends AppCompatActivity {
     protected void onDestroy() {
 //        flashingManager.close();
         binding = null;
-        infoManager.close();
         super.onDestroy();
     }
 
@@ -203,7 +201,7 @@ public class FlashingActivity extends AppCompatActivity {
     }
 
     private void readInfo(BluetoothDevice device) {
-        infoManager = new InfoManager(this);
+        InfoManager infoManager = new InfoManager(this);
         infoManager.setOnInfoListener(this::setHardwareType);
         infoManager.connect(device)
                 .retry(NUMBER_OF_RETRIES, INTERVAL_OF_RETRIES)
@@ -575,7 +573,7 @@ public class FlashingActivity extends AppCompatActivity {
                         int upper_bound = 0;
                         if (hardwareType == BOARD_V1) {
                             lower_bound = 0x18000;
-                            upper_bound = 0x38000;
+                            upper_bound = 0x3BBFF;
                         }
                         if (hardwareType == BOARD_V2) {
                             lower_bound = 0x1C000;

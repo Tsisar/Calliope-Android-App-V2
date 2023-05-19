@@ -18,7 +18,7 @@ import no.nordicsemi.android.error.GattError;
 
 public class BroadcastAggregatorService extends Service {
     private static final String TAG = "BroadcastAggregatorService";
-    public static final String BROADCAST_FLASHING = "cc.calliope.mini_v2.BROADCAST_FLASHING";
+    public static final String BROADCAST_FLASHING = "cc.calliope.mini_v2.BROADCAST_FLASHING"; //TODO are we need it?
     public static final String EXTRA_FLASHING = "cc.calliope.mini_v2.EXTRA_FLASHING";
     public static final String BROADCAST_PROGRESS = "cc.calliope.mini_v2.BROADCAST_PROGRESS";
     public static final String EXTRA_PROGRESS = "cc.calliope.mini_v2.EXTRA_PROGRESS";

@@ -33,7 +33,6 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private boolean isFabMenuOpen = false;
     private Context context;
     private ProgressReceiver broadcastReceiver;
-
     private boolean flashing;
 
     public MovableFloatingActionButton(Context context) {
@@ -62,6 +61,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        flashing = false;
         registerBroadcastReceiver();
     }
 
@@ -136,6 +136,10 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     public void setProgress(int progress) {
         this.progress = Math.max(progress, 0);
+        flashing = progress > 0;
+        if(flashing){
+            setColor(R.color.green);
+        }
         invalidate();
     }
 
@@ -214,7 +218,6 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
             Utils.log(Log.WARN, TAG, "register Progress Receiver");
             IntentFilter filter = new IntentFilter();
             filter.addAction(BroadcastAggregatorService.BROADCAST_PROGRESS);
-            filter.addAction(BroadcastAggregatorService.BROADCAST_FLASHING);
             context.registerReceiver(broadcastReceiver, filter);
         }
     }
@@ -231,21 +234,9 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            switch (action){
-                case BroadcastAggregatorService.BROADCAST_FLASHING -> {
-                    flashing = intent.getBooleanExtra(BroadcastAggregatorService.EXTRA_FLASHING, false);
-                    if(flashing){
-                        setColor(R.color.green);
-                    }
-                }
-                case BroadcastAggregatorService.BROADCAST_PROGRESS -> {
-                    int progress = intent.getIntExtra(BroadcastAggregatorService.EXTRA_PROGRESS, 0);
-                    setProgress(progress);
-                    if(progress > 0 && !flashing){
-                        flashing = true;
-                        setColor(R.color.green);
-                    }
-                }
+            if (BroadcastAggregatorService.BROADCAST_PROGRESS.equals(action)) {
+                int progress = intent.getIntExtra(BroadcastAggregatorService.EXTRA_PROGRESS, 0);
+                setProgress(progress);
             }
         }
     }
