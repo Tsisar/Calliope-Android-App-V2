@@ -104,10 +104,6 @@
         <activity
             android:name=".activity.NoPermissionActivity"
             android:exported="false" />
-        <activity
-            android:name=".activity.WebActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="false" />
 
         <service
             android:name=".service.DfuService"
