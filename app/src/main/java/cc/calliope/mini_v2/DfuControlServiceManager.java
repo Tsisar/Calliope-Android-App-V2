@@ -11,6 +11,7 @@ import android.util.Log;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import no.nordicsemi.android.ble.BleManager;
 
 public class DfuControlServiceManager extends BleManager {
@@ -26,6 +27,7 @@ public class DfuControlServiceManager extends BleManager {
     private static final UUID DFU_CONTROL_CHARACTERISTIC = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
     private BluetoothGattCharacteristic dfuControlServiceCharacteristic;
     private OnInvalidateListener onInvalidateListener;
+
     public interface OnInvalidateListener {
         void onDisconnect();
     }
@@ -79,7 +81,7 @@ public class DfuControlServiceManager extends BleManager {
                 return false;
             }
 
-            if(dfuControlServiceCharacteristic == null){
+            if (dfuControlServiceCharacteristic == null) {
                 log(Log.WARN, "Unable to get Control Service Characteristic");
                 sendBroadcast(EXTRA_FAIL);
                 return false;
@@ -120,7 +122,7 @@ public class DfuControlServiceManager extends BleManager {
         private void sendBroadcast(int extra) {
             Intent broadcast = new Intent(BROADCAST_DFU_CONTROL_SERVICE);
             broadcast.putExtra(EXTRA_DFU_CONTROL_SERVICE, extra);
-            context.sendBroadcast(broadcast);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
         }
     }
 }

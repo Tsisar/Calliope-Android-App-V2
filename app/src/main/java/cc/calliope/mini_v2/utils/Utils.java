@@ -117,8 +117,11 @@ public class Utils {
         return DateFormat.format(OUTPUT_DATE_FORMAT, date.getTime()).toString();
     }
 
-    public static void log(int priority, @NonNull String TAG, @NonNull String message) {
-        // Log from here.
+    public static void log(int priority, String TAG, String message) {
         Log.println(priority, TAG, "### " + android.os.Process.myTid() + " # " + message);
+    }
+
+    public static void log(String TAG, String message) {
+        log(Log.VERBOSE, TAG, message);
     }
 }

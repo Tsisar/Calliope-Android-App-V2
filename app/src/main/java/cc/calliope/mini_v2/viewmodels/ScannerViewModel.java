@@ -30,6 +30,7 @@
 
 package cc.calliope.mini_v2.viewmodels;
 
+import android.app.Activity;
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -41,6 +42,8 @@ import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.microbit.android.partialflashing.PartialFlashingBaseService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -48,7 +51,9 @@ import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import cc.calliope.mini_v2.BroadcastAggregatorService;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import cc.calliope.mini_v2.fragment.editors.Editor;
+import cc.calliope.mini_v2.service.DfuService;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
@@ -56,6 +61,8 @@ import no.nordicsemi.android.support.v18.scanner.ScanCallback;
 import no.nordicsemi.android.support.v18.scanner.ScanFilter;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 import no.nordicsemi.android.support.v18.scanner.ScanSettings;
+
+import static cc.calliope.mini_v2.utils.StaticExtra.SHARED_PREFERENCES_NAME;
 
 public class ScannerViewModel extends AndroidViewModel {
 
@@ -224,14 +231,18 @@ public class ScannerViewModel extends AndroidViewModel {
         if (flashingReceiver == null) {
             flashingReceiver = new FlashingReceiver();
             IntentFilter filter = new IntentFilter();
-            filter.addAction(BroadcastAggregatorService.BROADCAST_FLASHING);
-            application.registerReceiver(flashingReceiver, filter);
+
+            //DfuService
+            filter.addAction(DfuService.BROADCAST_PROGRESS);
+            //PartialFlashingService
+            filter.addAction(PartialFlashingBaseService.BROADCAST_PROGRESS);
+            LocalBroadcastManager.getInstance(application).registerReceiver(flashingReceiver, filter);
         }
     }
 
     public void unregisterFlashingBroadcastReceiver(Application application) {
         if (flashingReceiver != null) {
-            application.unregisterReceiver(flashingReceiver);
+            LocalBroadcastManager.getInstance(application).unregisterReceiver(flashingReceiver);
             flashingReceiver = null;
         }
     }
@@ -240,20 +251,36 @@ public class ScannerViewModel extends AndroidViewModel {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(BroadcastAggregatorService.BROADCAST_FLASHING)) {
-                boolean flashing = intent.getBooleanExtra(BroadcastAggregatorService.EXTRA_FLASHING, false);
-                if (flashing && !mScannerLiveData.isFlashing()) {
-                    stopScan();
+            switch (action) {
+                //DfuService
+                case DfuService.BROADCAST_PROGRESS -> {
+                    int extra = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
+                    setFlashing(extra > 0);
                 }
-                mScannerLiveData.setFlashing(flashing);
+                //PartialFlashingService
+                case PartialFlashingBaseService.BROADCAST_PROGRESS -> {
+                    int extra = intent.getIntExtra(PartialFlashingBaseService.EXTRA_PROGRESS, 0);
+                    setFlashing(extra > 0);
+                }
             }
+        }
+    }
+
+    private void setFlashing(boolean flashing){
+        if (flashing && !mScannerLiveData.isFlashing()) {
+            mScannerLiveData.setFlashing(true);
+            stopScan();
+        }else if(!flashing && mScannerLiveData.isFlashing()){
+            mScannerLiveData.setFlashing(false);
+            startScan();
         }
     }
 
     public void savePattern() {
         Float[] currentPattern = mScannerLiveData.getCurrentPattern();
         if (currentPattern != null) {
-            SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getApplication()).edit();
+            SharedPreferences sharedPreferences = getApplication().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor edit = sharedPreferences.edit();
             for (int i = 0; i < 5; i++) {
                 edit.putFloat("PATTERN_" + i, currentPattern[i]);
             }
@@ -263,7 +290,7 @@ public class ScannerViewModel extends AndroidViewModel {
 
     public void loadPattern() {
         Float[] currentPattern = {0f, 0f, 0f, 0f, 0f};
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplication());
+        SharedPreferences preferences = getApplication().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         for (int i = 0; i < 5; i++) {
             currentPattern[i] = preferences.getFloat("PATTERN_" + i, 0f);
         }

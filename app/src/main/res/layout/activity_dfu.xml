@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/status_text_view"
+        android:id="@+id/progress_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@+id/progress_bar" />
 
     <TextView
-        android:id="@+id/timer_text_view"
+        android:id="@+id/status_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -42,6 +42,6 @@
         android:textSize="@dimen/text_size_default"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/status_text_view" />
+        app:layout_constraintTop_toBottomOf="@+id/progress_text_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -115,20 +115,6 @@
         <service
             android:name=".PartialFlashingService"
             android:enabled="true" />
-        <service
-            android:name=".BroadcastAggregatorService"
-            android:enabled="true" />
-
-        <receiver
-            android:name=".MyReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="no.nordicsemi.android.dfu.broadcast.BROADCAST_PROGRESS" />
-                <action android:name="cc.calliope.mini_v2.BROADCAST_PROGRESS" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
 
     </application>
 </manifest>

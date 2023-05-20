@@ -16,8 +16,9 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import static cc.calliope.mini_v2.utils.StaticExtra.SHARED_PREFERENCES_NAME;
+
 public class Permission {
-    private static final String SHARED_PREFERENCES_NAME = "cc.calliope.mini_v2.preferences";
     public static final int UNDEFINED = -1;
     public static final int BLUETOOTH = 0;
     public static final int LOCATION = 1;

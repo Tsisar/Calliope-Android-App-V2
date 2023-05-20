@@ -24,7 +24,6 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import cc.calliope.mini_v2.BroadcastAggregatorService;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.dialog.pattern.PatternDialogFragment;
@@ -52,8 +51,6 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     private Animation fabCloseAnimation;
     private int screenWidth;
     private int screenHeight;
-    private String currentAddress;
-    private Intent stateService;
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
             }
@@ -68,15 +65,11 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
 
         scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(this, this::scanResults);
-
-        stateService = new Intent(this, BroadcastAggregatorService.class);
-        startService(stateService);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(stateService);
     }
 
     private void readDisplayMetrics() {
@@ -90,7 +83,6 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     @Override
     public void onResume() {
         super.onResume();
-        currentAddress = "";
         requestWasSent = false;
         checkPermission();
     }
@@ -155,7 +147,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     protected void setDevice(ExtendedBluetoothDevice device) {
-        if (patternFab != null) {
+        if (patternFab != null && !patternFab.isFlashing()) {
             int color = device != null && device.isRelevant() ? R.color.green : R.color.orange;
             patternFab.setColor(color);
         }

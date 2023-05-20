@@ -29,9 +29,10 @@ import cc.calliope.mini_v2.databinding.FragmentItemBinding;
 import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.utils.Utils;
 
+import static cc.calliope.mini_v2.utils.StaticExtra.SHARED_PREFERENCES_NAME;
+
 public class EditorsItemFragment extends Fragment {
     private static final String ARG_POSITION = "arg_position";
-    private static final String SHARED_PREFERENCES_NAME = "cc.calliope.mini_v2.preferences";
     private static final String KEY_CUSTOM_LINK = "custom_link";
     private FragmentItemBinding binding;
     private final AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.75F);

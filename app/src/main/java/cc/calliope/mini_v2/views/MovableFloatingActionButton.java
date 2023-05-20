@@ -1,29 +1,25 @@
 package cc.calliope.mini_v2.views;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import cc.calliope.mini_v2.ProgressListener;
+import cc.calliope.mini_v2.ProgressReceiver;
 import cc.calliope.mini_v2.R;
-import cc.calliope.mini_v2.BroadcastAggregatorService;
 import cc.calliope.mini_v2.utils.Utils;
 import cc.calliope.mini_v2.utils.Version;
 
-public class MovableFloatingActionButton extends FloatingActionButton implements View.OnTouchListener {
-    private final static String TAG = "MovableFloatingActionButton";
+public class MovableFloatingActionButton extends FloatingActionButton implements View.OnTouchListener, ProgressListener {
     private final static float CLICK_DRAG_TOLERANCE = 10; // Often, there will be a slight, unintentional, drag when the user taps the FAB, so we need to account for this.
     private float downRawX, downRawY;
     private float dX, dY;
@@ -32,7 +28,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private int progress = 0;
     private boolean isFabMenuOpen = false;
     private Context context;
-    private ProgressReceiver broadcastReceiver;
+    private ProgressReceiver progressReceiver;
     private boolean flashing;
 
     public MovableFloatingActionButton(Context context) {
@@ -52,6 +48,8 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     private void init(Context context) {
         this.context = context;
+        progressReceiver = new ProgressReceiver(context);
+        progressReceiver.setProgressListener(this);
         setOnTouchListener(this);
         paint = new Paint();
         rectF = new RectF();
@@ -61,14 +59,14 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        flashing = false;
-        registerBroadcastReceiver();
+//        setProgress(0);
+        progressReceiver.registerReceiver();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        unregisterBroadcastReceiver();
+        progressReceiver.unregisterReceiver();
     }
 
     @Override
@@ -134,10 +132,47 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     }
 
-    public void setProgress(int progress) {
-        this.progress = Math.max(progress, 0);
-        flashing = progress > 0;
-        if(flashing){
+    @Override
+    public void onDeviceConnecting() {
+        setProgress(0);
+    }
+    @Override
+    public void onProcessStarting() {
+        setProgress(0);
+    }
+    @Override
+    public void onEnablingDfuMode() {
+        setProgress(0);
+    }
+    @Override
+    public void onFirmwareValidating() {
+        setProgress(0);
+    }
+    @Override
+    public void onDeviceDisconnecting() {
+        setProgress(0);
+    }
+    @Override
+    public void onCompleted() {
+        setProgress(0);
+    }
+    @Override
+    public void onAborted() {
+        setProgress(0);
+    }
+    @Override
+    public void onProgressChanged(int percent) {
+        setProgress(percent);
+    }
+    @Override
+    public void onError(int code, String message) {
+        setProgress(0);
+    }
+
+    public void setProgress(int percent) {
+        this.progress = Math.max(percent, 0);
+        flashing = percent > 0;
+        if (flashing) {
             setColor(R.color.green);
         }
         invalidate();
@@ -208,35 +243,6 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
                         .y(parentHeight - height - layoutParams.bottomMargin)
                         .setDuration(0)
                         .start();
-            }
-        }
-    }
-
-    public void registerBroadcastReceiver() {
-        if (broadcastReceiver == null) {
-            broadcastReceiver = new ProgressReceiver();
-            Utils.log(Log.WARN, TAG, "register Progress Receiver");
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(BroadcastAggregatorService.BROADCAST_PROGRESS);
-            context.registerReceiver(broadcastReceiver, filter);
-        }
-    }
-
-    public void unregisterBroadcastReceiver() {
-        if (broadcastReceiver != null) {
-            Utils.log(Log.WARN, TAG, "unregister Progress Receiver");
-            context.unregisterReceiver(broadcastReceiver);
-            broadcastReceiver = null;
-        }
-    }
-
-    private class ProgressReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BroadcastAggregatorService.BROADCAST_PROGRESS.equals(action)) {
-                int progress = intent.getIntExtra(BroadcastAggregatorService.EXTRA_PROGRESS, 0);
-                setProgress(progress);
             }
         }
     }

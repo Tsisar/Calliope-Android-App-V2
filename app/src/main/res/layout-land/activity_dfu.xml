@@ -9,7 +9,7 @@
     tools:context=".activity.FlashingActivity">
 
     <TextView
-        android:id="@+id/timer_text_view"
+        android:id="@+id/status_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/vertical_margin"
@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
-        android:id="@+id/status_text_view"
+        android:id="@+id/progress_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/vertical_margin"
@@ -31,7 +31,7 @@
         android:text="@string/points"
         android:textColor="@color/aqua_200"
         android:textSize="@dimen/text_size_status"
-        app:layout_constraintBottom_toTopOf="@+id/timer_text_view"
+        app:layout_constraintBottom_toTopOf="@+id/status_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -42,7 +42,7 @@
         android:layout_marginBottom="@dimen/vertical_margin"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/status_text_view"
+        app:layout_constraintBottom_toTopOf="@+id/progress_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
