@@ -9,6 +9,7 @@
     tools:context=".fragment.help.HelpFragment">
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,13 +38,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:text="@string/info_app_text"
                 android:textAlignment="textStart"
                 android:textIsSelectable="true"
-                android:textSize="@dimen/text_size_default"
-                android:text="@string/info_app_text"/>
+                android:textSize="@dimen/text_size_default" />
 
         </LinearLayout>
 
     </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/settingsActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_margin="@dimen/margin_half"
+        android:src="@drawable/ic_settings_24"
+        app:tint="@color/white"
+        app:maxImageSize="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

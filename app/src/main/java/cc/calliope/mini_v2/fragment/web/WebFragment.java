@@ -57,8 +57,8 @@ public class WebFragment extends Fragment implements DownloadListener {
 
     private static final String TAG = "WEB_VIEW";
     private static final String UTF_8 = "UTF-8";
-    private static final String TARGET_URL = "TARGET_URL";
-    private static final String TARGET_NAME = "TARGET_NAME";
+    private static final String TARGET_URL = "editorUrl";
+    private static final String TARGET_NAME = "editorName";
     private String editorUrl;
     private String editorName;
     private WebView webView;
@@ -139,6 +139,8 @@ public class WebFragment extends Fragment implements DownloadListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Utils.log(Log.ASSERT, TAG, "onCreate");
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -189,6 +191,11 @@ public class WebFragment extends Fragment implements DownloadListener {
             webView.loadUrl(editorUrl);
         }
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     //TODO завантажувати xml і ділитися ними
@@ -319,14 +326,9 @@ public class WebFragment extends Fragment implements DownloadListener {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        Utils.log(Log.ASSERT, TAG, "onSaveInstanceState");
         Bundle bundle = new Bundle();
         webView.saveState(bundle);
         outState.putBundle("webViewState", bundle);
-    }
-
-    @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        webView.restoreState(savedInstanceState);
     }
 }

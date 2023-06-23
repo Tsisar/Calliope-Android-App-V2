@@ -1,5 +1,6 @@
 package cc.calliope.mini_v2.fragment.help;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
@@ -11,8 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.FragmentHelpBinding;
+import cc.calliope.mini_v2.fragment.editors.EditorsFragmentDirections;
 
 public class HelpFragment extends Fragment {
     private FragmentHelpBinding binding;
@@ -21,6 +26,8 @@ public class HelpFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentHelpBinding.inflate(inflater, container, false);
+
+        binding.settingsActionButton.setOnClickListener(this::onSettingsClicked);
 
         TextView appInfo = binding.appInfo;
         appInfo.setMovementMethod(LinkMovementMethod.getInstance());
@@ -34,5 +41,15 @@ public class HelpFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public void onSettingsClicked(View view){
+        Activity activity = getActivity();
+        if (activity == null){
+            return;
+        }
+
+        NavController navController = Navigation.findNavController(activity, R.id.navigation_host_fragment);
+        navController.navigate(R.id.navigation_settings);
     }
 }

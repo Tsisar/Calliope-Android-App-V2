@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Налаштування">
+        <CheckBoxPreference
+            android:key="pref_key_enable_notifications"
+            android:title="Увімкнути PF"
+            android:summary="Увімкнути або вимкнути PF"
+            android:defaultValue="true" />
+
+        <EditTextPreference
+            android:key="pref_key_custom_link"
+            android:icon="@drawable/ic_editors_custom"
+            android:title="Кастомний УРЛ"
+            android:summary="Ваш кастомний УРЛ"
+            android:defaultValue="https://google.com" />
+    </PreferenceCategory>
+</PreferenceScreen>

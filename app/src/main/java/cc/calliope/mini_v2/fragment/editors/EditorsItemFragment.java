@@ -22,6 +22,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
 import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.databinding.FragmentItemBinding;
 import cc.calliope.mini_v2.fragment.web.WebFragment;
@@ -31,7 +35,7 @@ import static cc.calliope.mini_v2.utils.StaticExtra.SHARED_PREFERENCES_NAME;
 
 public class EditorsItemFragment extends Fragment {
     private static final String ARG_POSITION = "arg_position";
-    private static final String KEY_CUSTOM_LINK = "custom_link";
+    private static final String KEY_CUSTOM_LINK = "pref_key_custom_link";
     private FragmentItemBinding binding;
     private final AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.75F);
     private Editor editor;
@@ -73,84 +77,24 @@ public class EditorsItemFragment extends Fragment {
         binding.iconImageView.setImageResource(editor.getIconResId());
         binding.infoTextView.setText(editor.getInfoResId());
 
-        if (editor == Editor.CUSTOM) {
-            addEditFab();
-        }
-
         binding.infoTextView.setOnClickListener(this::openEditor);
         view.setOnClickListener(this::openEditor);
     }
 
-    private void startWebActivity(String url, String editorName) {
-        Fragment webFragment = WebFragment.newInstance(url, editorName);
-
-        getParentFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frameLayout, webFragment)
-                .setReorderingAllowed(true)
-                .addToBackStack(getString(R.string.title_web))
-                .commit();
-    }
-
-    private void addEditFab() {
+    private void showWebFragment(String url, String editorName) {
         Activity activity = getActivity();
         if (activity == null){
             return;
         }
 
-        int maxImageSize = Utils.convertDpToPixel(activity, 32);
-        int color = ContextCompat.getColor(activity, R.color.white);
-        int margin = activity.getResources().getDimensionPixelSize(R.dimen.margin_half);
-        ColorStateList tint = ColorStateList.valueOf(color);
-
-        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-        );
-        params.endToEnd = binding.doubleConstraintLayout.getId();
-        params.bottomToBottom = binding.doubleConstraintLayout.getId();
-        params.setMarginEnd(margin);
-
-        FloatingActionButton fab = new FloatingActionButton(activity);
-        fab.setImageResource(R.drawable.ic_edit_24);
-        fab.setSize(FloatingActionButton.SIZE_AUTO);
-        fab.setMaxImageSize(maxImageSize);
-        fab.setImageTintList(tint);
-        fab.setOnClickListener(view -> editLink(activity));
-        fab.setLayoutParams(params);
-        binding.basicConstraintLayout.addView(fab);
+        NavController navController = Navigation.findNavController(activity, R.id.navigation_host_fragment);
+        NavDirections webFragment = EditorsFragmentDirections.actionEditorsToWeb(url, editorName);
+        navController.navigate(webFragment);
     }
 
-    private void editLink(Activity activity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        View view = LayoutInflater.from(activity).inflate(R.layout.dialog_edit, activity.findViewById(R.id.layoutDialogContainer));
-        builder.setView(view);
-
-        ((TextView) view.findViewById(R.id.textTitle)).setText(R.string.title_dialog_edit_link);
-        EditText editText = view.findViewById(R.id.editField);
-        editText.setText(readCustomLink(activity));
-
-        ((Button) view.findViewById(R.id.buttonYes)).setText(R.string.button_save);
-        ((Button) view.findViewById(R.id.buttonNo)).setText(R.string.button_cancel);
-        final AlertDialog alertDialog = builder.create();
-        view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
-            saveCustomLink(activity, editText.getText().toString());
-            alertDialog.dismiss();
-        });
-        view.findViewById(R.id.buttonNo).setOnClickListener(view12 -> alertDialog.dismiss());
-        if (alertDialog.getWindow() != null) {
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-        }
-        alertDialog.show();
-    }
-
-    private void saveCustomLink(Activity activity, String link) {
-        SharedPreferences sharedPreferences = activity.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        sharedPreferences.edit().putString(KEY_CUSTOM_LINK, link).apply();
-    }
 
     private String readCustomLink(Activity activity) {
-        SharedPreferences sharedPreferences = activity.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         return sharedPreferences.getString(KEY_CUSTOM_LINK, Editor.CUSTOM.getUrl());
     }
 
@@ -166,7 +110,7 @@ public class EditorsItemFragment extends Fragment {
             if (editor == Editor.CUSTOM) {
                 url = readCustomLink(activity);
             }
-            startWebActivity(url, editor.toString());
+            showWebFragment(url, editor.toString());
         } else {
             Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_no_internet)).show();
         }
