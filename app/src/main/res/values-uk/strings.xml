@@ -19,8 +19,11 @@
     <string name="info_make_code">Microsoft MakeCode - це інтерактивна платформа для створення програм та проектів, зокрема, для програмування мікроконтролерів та розробки ігор. Вона надає зручне середовище розробки з використанням графічного програмування, що дає змогу створювати програми без необхідності вручну писати код.</string>
     <string name="info_roberta">Open Roberta Lab - це хмарне інтегроване середовище програмування, яке дозволяє дітям та підліткам легко програмувати різні системи роботів/мікроконтролерів.</string>
     <string name="info_library">Тут ви знайдете оригінальні програми, які можна змінити або перезавантажити.</string>
-    <string name="info_custom">Тут ви можете перейти до кастомного редактору та налаштувати посилання на нього.</string>
+    <string name="info_custom">Тут ви можете перейти до кастомного редактору.</string>
     <string name="info_scripts">Тут будуть ваші скрипти.</string>
+
+    <string name="summary_custom">Посилання на кастомний редактор</string>
+    <string name="summary_partial_flashing">Увімкнути або вимкнути Partial Flashing (часткову прошивку)</string>
 
     <string name="title_welcome">Розпочнімо!</string>
     <string name="info_welcome">На цій сторінці ви дізнаєтеся, як крок за кроком підготувати Calliope mini до роботи. У першому кроці показано, як правильно під\'єднати Calliope mini до джерела живлення.</string>
@@ -105,8 +108,9 @@
     <string name="flashing_status">Статус %d</string>
     <string name="title_dialog_edit_link">Редагувати посилання</string>
     <string name="button_save">Зберегти</string>
-    <string name="menu_fab_connect">Підключення</string>
+    <string name="menu_fab_connect">Під\'єднання</string>
     <string name="menu_fab_scripts">Скрипти</string>
     <string name="menu_fab_full_screen">На весь екран</string>
     <string name="error_snackbar_save_file_error">Помилка збереження файлу</string>
+    <string name="title_settings">Налаштування</string>
 </resources>

@@ -19,7 +19,7 @@
     <string name="info_make_code">MakeCode vermittelt allen Schülern Programmierung mit unterhaltsamen Projekten, sofortigen Ergebnissen mit Block- und Texteditoren für alle Kenntnisstufen.</string>
     <string name="info_roberta">Das Open Roberta Lab ist eine Cloud-basierte integrierte Programmierumgebung, die es Kindern und Jugendlichen ermöglicht, auf einfache Weise verschiedene Roboter/Mikrocontroller-Systeme zu programmieren.</string>
     <string name="info_library">Hier findest du die Originalprogramme, die verändert oder neu geladen werden können.</string>
-    <string name="info_custom">Hier können Sie zum benutzerdefinierten Editor gehen und den Link dazu anpassen.</string>
+    <string name="info_custom">Hier können Sie zum benutzerdefinierten Editor gehen.</string>
     <string name="info_scripts">Hier sind deine Skripte.</string>
 
     <string name="title_welcome">Los geht\'s</string>
@@ -109,4 +109,7 @@
     <string name="menu_fab_scripts">Skripte</string>
     <string name="menu_fab_full_screen">Vollbild</string>
     <string name="error_snackbar_save_file_error">Fehler beim Speichern der Datei</string>
+    <string name="summary_custom">Link zum benutzerdefinierten Editor</string>
+    <string name="summary_partial_flashing">Partial Flashing aktivieren oder deaktivieren</string>
+    <string name="title_settings">Einstellungen</string>
 </resources>
