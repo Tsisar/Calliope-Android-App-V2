@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Налаштування">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="Налаштування"
+        android:icon="@drawable/ic_settings_24">
         <CheckBoxPreference
             android:key="pref_key_enable_notifications"
             android:title="Увімкнути PF"
             android:summary="Увімкнути або вимкнути PF"
             android:defaultValue="true" />
 
-        <EditTextPreference
+        <cc.calliope.mini_v2.dialog.CustomLinkDialogPreference
             android:key="pref_key_custom_link"
             android:icon="@drawable/ic_editors_custom"
             android:title="Кастомний УРЛ"
             android:summary="Ваш кастомний УРЛ"
-            android:defaultValue="https://google.com" />
+            android:defaultValue="https://google.com"
+            app:maxImageSize="16dp"/>
+
     </PreferenceCategory>
 </PreferenceScreen>

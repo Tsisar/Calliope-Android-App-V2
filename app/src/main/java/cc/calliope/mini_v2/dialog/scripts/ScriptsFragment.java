@@ -2,14 +2,11 @@ package cc.calliope.mini_v2.dialog.scripts;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -24,7 +21,6 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
@@ -35,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import cc.calliope.mini_v2.activity.FlashingActivity;
 import cc.calliope.mini_v2.adapter.FileWrapper;
 import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.dialog.DialogUtils;
 import cc.calliope.mini_v2.utils.StaticExtra;
 import cc.calliope.mini_v2.ExtendedBluetoothDevice;
 import cc.calliope.mini_v2.databinding.FragmentScriptsBinding;
@@ -178,38 +175,34 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
     }
 
     private boolean renameFile(FileWrapper file) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        View view = LayoutInflater.from(activity).inflate(R.layout.dialog_edit, activity.findViewById(R.id.layoutDialogContainer));
-        builder.setView(view);
+        String title = getResources().getString(R.string.title_dialog_rename);
+        String input = FilenameUtils.removeExtension(file.getName());
 
-        ((TextView) view.findViewById(R.id.textTitle)).setText(R.string.title_dialog_rename);
-        EditText editText = view.findViewById(R.id.editField);
-        editText.setText(FilenameUtils.removeExtension(file.getName()));
-//        editText.requestFocus();
-
-        ((Button) view.findViewById(R.id.buttonYes)).setText(R.string.button_rename);
-        ((Button) view.findViewById(R.id.buttonNo)).setText(R.string.button_cancel);
-        final AlertDialog alertDialog = builder.create();
-        view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
+        DialogUtils.showEditDialog(activity, title, input, output -> {
             File dir = new File(FilenameUtils.getFullPath(file.getAbsolutePath()));
             if (dir.exists()) {
-                FileWrapper dest = new FileWrapper(new File(dir, editText.getText().toString() + FILE_EXTENSION), file.getEditor());
+                FileWrapper dest = new FileWrapper(new File(dir, output + FILE_EXTENSION), file.getEditor());
                 if (file.exists()) {
                     if (!dest.exists() && file.renameTo(dest.getFile())) {
                         scriptsRecyclerAdapter.change(file, dest);
                     } else {
-                        Utils.errorSnackbar(view, getString(R.string.error_snackbar_name_exists)).show();
-                        return;
+                        Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_name_exists)).show();
                     }
                 }
             }
-            alertDialog.dismiss();
         });
-        view.findViewById(R.id.buttonNo).setOnClickListener(view12 -> alertDialog.dismiss());
-        if (alertDialog.getWindow() != null) {
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-        }
-        alertDialog.show();
+        return true;
+    }
+
+    private boolean removeFile(FileWrapper file) {
+        String title = getResources().getString(R.string.title_dialog_rename);
+        String message = String.format(getString(R.string.info_dialog_delete), FilenameUtils.removeExtension(file.getName()));
+
+        DialogUtils.showWarningDialog(activity, title, message, () -> {
+            if (file.delete()) {
+                scriptsRecyclerAdapter.remove(file);
+            }
+        });
         return true;
     }
 
@@ -226,33 +219,6 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
 
             startActivity(Intent.createChooser(intentShareFile, getString(R.string.title_dialog_share)));
         }
-        return true;
-    }
-
-    private boolean removeFile(FileWrapper file) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        View view = LayoutInflater.from(activity)
-                .inflate(R.layout.dialog_warning, activity.findViewById(R.id.layoutDialogContainer));
-        builder.setView(view);
-
-        ((TextView) view.findViewById(R.id.textTitle)).setText(R.string.title_dialog_delete);
-        ((TextView) view.findViewById(R.id.textMessage)).setText(String.format(
-                getString(R.string.info_dialog_delete), FilenameUtils.removeExtension(file.getName())));
-        ((Button) view.findViewById(R.id.buttonYes)).setText(R.string.button_continue);
-        ((Button) view.findViewById(R.id.buttonNo)).setText(R.string.button_cancel);
-        final AlertDialog alertDialog = builder.create();
-        view.findViewById(R.id.buttonYes).setOnClickListener(view1 -> {
-            if (file.delete()) {
-                scriptsRecyclerAdapter.remove(file);
-//                setBottomSheetVisibility(!recyclerAdapter.isEmpty());
-                alertDialog.dismiss();
-            }
-        });
-        view.findViewById(R.id.buttonNo).setOnClickListener(view12 -> alertDialog.dismiss());
-        if (alertDialog.getWindow() != null) {
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-        }
-        alertDialog.show();
         return true;
     }
 }
