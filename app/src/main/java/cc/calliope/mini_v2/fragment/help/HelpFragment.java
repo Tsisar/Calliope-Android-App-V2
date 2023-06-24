@@ -1,6 +1,6 @@
 package cc.calliope.mini_v2.fragment.help;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
@@ -12,12 +12,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
 import cc.calliope.mini_v2.R;
+import cc.calliope.mini_v2.activity.SettingsActivity;
 import cc.calliope.mini_v2.databinding.FragmentHelpBinding;
-import cc.calliope.mini_v2.fragment.editors.EditorsFragmentDirections;
 
 public class HelpFragment extends Fragment {
     private FragmentHelpBinding binding;
@@ -44,12 +41,7 @@ public class HelpFragment extends Fragment {
     }
 
     public void onSettingsClicked(View view){
-        Activity activity = getActivity();
-        if (activity == null){
-            return;
-        }
-
-        NavController navController = Navigation.findNavController(activity, R.id.navigation_host_fragment);
-        navController.navigate(R.id.navigation_settings);
+        Intent intent = new Intent(getContext(), SettingsActivity.class);
+        startActivity(intent);
     }
 }

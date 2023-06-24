@@ -105,6 +105,9 @@
         <activity
             android:name=".activity.NoPermissionActivity"
             android:exported="false" />
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.DfuService"

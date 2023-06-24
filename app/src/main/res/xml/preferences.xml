@@ -4,17 +4,18 @@
     <PreferenceCategory
         android:title="@string/title_settings">
         <CheckBoxPreference
+            android:enabled="false"
             android:key="pref_key_enable_partial_flashing"
             android:title="@string/title_partial_flashing"
             android:summary="@string/summary_partial_flashing"
-            android:defaultValue="true" />
+            android:defaultValue="false"/>
 
         <cc.calliope.mini_v2.dialog.CustomLinkDialogPreference
             android:key="pref_key_custom_link"
             android:icon="@drawable/ic_editors_custom"
             android:title="@string/title_custom"
             android:summary="@string/summary_custom"
-            android:defaultValue="https://google.com"/>
+            android:defaultValue="https://makecode.calliope.cc"/>
 
     </PreferenceCategory>
 </PreferenceScreen>
