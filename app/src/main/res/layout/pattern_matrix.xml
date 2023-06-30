@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:rotation="270">
 
-    <cc.calliope.mini_v2.views.SvgPatternBar
+    <cc.calliope.mini.views.SvgPatternBar
         android:id="@+id/column_a"
         android:layout_width="200dp"
         android:layout_height="40dp"
@@ -16,7 +16,7 @@
         android:stepSize="1"
         tools:ignore="SpeakableTextPresentCheck" />
 
-    <cc.calliope.mini_v2.views.SvgPatternBar
+    <cc.calliope.mini.views.SvgPatternBar
         android:id="@+id/column_b"
         android:layout_width="200dp"
         android:layout_height="40dp"
@@ -25,7 +25,7 @@
         android:stepSize="1"
         tools:ignore="SpeakableTextPresentCheck" />
 
-    <cc.calliope.mini_v2.views.SvgPatternBar
+    <cc.calliope.mini.views.SvgPatternBar
         android:id="@+id/column_c"
         android:layout_width="200dp"
         android:layout_height="40dp"
@@ -34,7 +34,7 @@
         android:stepSize="1"
         tools:ignore="SpeakableTextPresentCheck" />
 
-    <cc.calliope.mini_v2.views.SvgPatternBar
+    <cc.calliope.mini.views.SvgPatternBar
         android:id="@+id/column_d"
         android:layout_width="200dp"
         android:layout_height="40dp"
@@ -43,7 +43,7 @@
         android:stepSize="1"
         tools:ignore="SpeakableTextPresentCheck" />
 
-    <cc.calliope.mini_v2.views.SvgPatternBar
+    <cc.calliope.mini.views.SvgPatternBar
         android:id="@+id/column_e"
         android:layout_width="200dp"
         android:layout_height="40dp"

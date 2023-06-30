@@ -10,7 +10,7 @@
             android:summary="@string/summary_partial_flashing"
             android:defaultValue="false"/>
 
-        <cc.calliope.mini_v2.dialog.CustomLinkDialogPreference
+        <cc.calliope.mini.dialog.CustomLinkDialogPreference
             android:key="pref_key_custom_link"
             android:icon="@drawable/ic_editors_custom"
             android:title="@string/title_custom"
