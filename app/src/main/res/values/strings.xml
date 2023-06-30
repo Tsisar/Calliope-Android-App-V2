@@ -21,7 +21,7 @@
     <string name="info_make_code">Microsoft MakeCode is a free, open source platform for creating engaging computer science learning experiences that support a progression path into real-world programming.</string>
     <string name="info_roberta">The Open Roberta Lab is a cloud-based integrated programming environment that enables children and adolescents to program easily different robot/microcontroller systems.</string>
     <string name="info_library">Here you find the original programs, to change or reload.</string>
-    <string name="info_custom">Here you can enter to the custom editor and customize the link to it.</string>
+    <string name="info_custom">Here you can enter to the custom editor.</string>
     <string name="info_scripts">Your scripts will be here.</string>
 
     <string name="title_welcome">Let\'s Go</string>
@@ -65,12 +65,24 @@
     <br/>E-Mail: <a href="mailto:info@calliope.cc">info@calliope.cc</a>
     ]]></string>
 
+    <string name="info_app_text" translatable="false">
+    Hello and welcome to the Calliope mini app!
+    By using this app you can connect, code and flash programs to your Calliope mini via Bluetooth.
+    You can find inspiring and fun projects at the Calliope website at https://calliope.cc!
+    Have fun!
+    Calliope gGmbH
+    Raumerstrasse 11
+    10437 Berlin
+    Germany
+    E-Mail: info@calliope.cc
+    </string>
+
     <string name="welcome">welcome</string>
 
     <string name="title_rename">Rename</string>
     <string name="title_share">Share</string>
     <string name="title_delete">Delete</string>
-    <string name="title_save">Save</string>
+    <string name="button_save">Save</string>
 
     <string name="title_dialog_rename">Rename file</string>
     <string name="title_dialog_delete">Delete file</string>
@@ -92,6 +104,7 @@
     <string name="error_snackbar_location_disable">Location is disable</string>
     <string name="error_snackbar_no_internet">No internet available</string>
     <string name="error_snackbar_download_error">Download error</string>
+    <string name="error_snackbar_save_file_error">Save file error</string>
 
     <string name="open_hex_info">You are trying to open the \"%s\" file and flash it to your Calliope mini.
         \n\nIf you flash an incorrect or damaged file, you may have to connect your Calliope mini to the computer to reflash it.</string>
@@ -102,12 +115,20 @@
     <string name="flashing_enabling_dfu_mode">Enabling DFU mode…</string>
     <string name="flashing_firmware_validating">Firmware validating…</string>
     <string name="flashing_device_disconnecting">Device disconnecting…</string>
-    <string name="flashing_dfu_completed">DFU completed</string>
-    <string name="flashing_dfu_aborted">DFU aborted</string>
+    <string name="flashing_completed">Flashing completed</string>
+    <string name="flashing_aborted">Flashing aborted</string>
     <string name="flashing_uploading">Uploading…</string>
     <string name="flashing_percent" translatable="false">%d%%</string>
-    <string name="flashing_error">Error</string>
+    <string name="flashing_error">Error %d</string>
     <string name="flashing_connection_fail">Connection fail</string>
-    <string name="flashing_status">Status: %d</string>
+    <string name="flashing_status">Status %d</string>
     <string name="points" translatable="false">…</string>
+    <string name="title_web" translatable="false">WEB</string>
+    <string name="menu_fab_connect">Connection</string>
+    <string name="menu_fab_scripts">Scripts</string>
+    <string name="menu_fab_full_screen">Full screen</string>
+    <string name="summary_custom">Link to the custom editor</string>
+    <string name="summary_partial_flashing">Enable or disable Partial Flashing</string>
+    <string name="title_partial_flashing" translatable="false">Partial Flashing</string>
+    <string name="title_settings">Settings</string>
 </resources>

@@ -1,55 +1,81 @@
 package cc.calliope.mini_v2.views;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import cc.calliope.mini_v2.ProgressListener;
+import cc.calliope.mini_v2.ProgressReceiver;
+import cc.calliope.mini_v2.R;
 import cc.calliope.mini_v2.utils.Utils;
+import cc.calliope.mini_v2.utils.Version;
 
-public class MovableFloatingActionButton extends FloatingActionButton implements View.OnTouchListener {
-
+public class MovableFloatingActionButton extends FloatingActionButton implements View.OnTouchListener, ProgressListener {
     private final static float CLICK_DRAG_TOLERANCE = 10; // Often, there will be a slight, unintentional, drag when the user taps the FAB, so we need to account for this.
-
     private float downRawX, downRawY;
     private float dX, dY;
-
     private Paint paint;
     private RectF rectF;
     private int progress = 0;
+    private boolean isFabMenuOpen = false;
+    private Context context;
+    private ProgressReceiver progressReceiver;
+    private boolean flashing;
 
     public MovableFloatingActionButton(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public MovableFloatingActionButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public MovableFloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
-    private void init() {
+    private void init(Context context) {
+        this.context = context;
+        progressReceiver = new ProgressReceiver(context);
+        progressReceiver.setProgressListener(this);
         setOnTouchListener(this);
         paint = new Paint();
         rectF = new RectF();
+        setOnSystemUiVisibilityChangeListener(this::onFullscreenStateChanged);
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent motionEvent){
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+//        setProgress(0);
+        progressReceiver.registerReceiver();
+    }
 
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)view.getLayoutParams();
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        progressReceiver.unregisterReceiver();
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (isFabMenuOpen) {
+            return false;
+        }
+
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
         int action = motionEvent.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
@@ -61,13 +87,12 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
             return true; // Consumed
 
-        }
-        else if (action == MotionEvent.ACTION_MOVE) {
+        } else if (action == MotionEvent.ACTION_MOVE) {
 
             int viewWidth = view.getWidth();
             int viewHeight = view.getHeight();
 
-            View viewParent = (View)view.getParent();
+            View viewParent = (View) view.getParent();
             int parentWidth = viewParent.getWidth();
             int parentHeight = viewParent.getHeight();
 
@@ -87,8 +112,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
             return true; // Consumed
 
-        }
-        else if (action == MotionEvent.ACTION_UP) {
+        } else if (action == MotionEvent.ACTION_UP) {
 
             float upRawX = motionEvent.getRawX();
             float upRawY = motionEvent.getRawY();
@@ -98,38 +122,128 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
             if (Math.abs(upDX) < CLICK_DRAG_TOLERANCE && Math.abs(upDY) < CLICK_DRAG_TOLERANCE) { // A click
                 return performClick();
-            }
-            else { // A drag
+            } else { // A drag
                 return true; // Consumed
             }
 
-        }
-        else {
+        } else {
             return super.onTouchEvent(motionEvent);
         }
 
     }
 
-    public void setProgress(int progress){
-        this.progress = Math.max(progress, 0);
+    @Override
+    public void onDeviceConnecting() {
+        setProgress(0);
+    }
+    @Override
+    public void onProcessStarting() {
+        setProgress(0);
+    }
+    @Override
+    public void onEnablingDfuMode() {
+        setProgress(0);
+    }
+    @Override
+    public void onFirmwareValidating() {
+        setProgress(0);
+    }
+    @Override
+    public void onDeviceDisconnecting() {
+        setProgress(0);
+    }
+    @Override
+    public void onCompleted() {
+        setProgress(0);
+    }
+    @Override
+    public void onAborted() {
+        setProgress(0);
+    }
+    @Override
+    public void onProgressChanged(int percent) {
+        setProgress(percent);
+    }
+    @Override
+    public void onError(int code, String message) {
+        setProgress(0);
+    }
+
+    public void setProgress(int percent) {
+        this.progress = Math.max(percent, 0);
+        flashing = percent > 0;
+        if (flashing) {
+            setColor(R.color.green);
+        }
         invalidate();
+    }
+
+    public void setColor(int resId) {
+        int color;
+        if (Version.upperMarshmallow) {
+            color = context.getColor(resId);
+        } else {
+            color = getResources().getColor(resId);
+        }
+        setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int strokeWidth = Utils.convertDpToPixel(4, getContext());
+        int strokeWidth = Utils.convertDpToPixel(getContext(), 4);
         int width = getWidth();
         int height = getHeight();
         int sweepAngle = (int) (360 * (progress / 100.f));
 
-        rectF.set(strokeWidth/2.f, strokeWidth/2.f, width-strokeWidth/2.f, height-strokeWidth/2.f);
+        rectF.set(strokeWidth / 2.f, strokeWidth / 2.f, width - strokeWidth / 2.f, height - strokeWidth / 2.f);
 
         paint.setColor(Color.WHITE);
         paint.setStrokeWidth(strokeWidth);
         paint.setStyle(Paint.Style.STROKE);
 
-        canvas.drawArc (rectF, 270, sweepAngle, false, paint);
+        canvas.drawArc(rectF, 270, sweepAngle, false, paint);
 
         super.onDraw(canvas);
+    }
+
+    public boolean isFlashing() {
+        return flashing;
+    }
+
+    public boolean isFabMenuOpen() {
+        return isFabMenuOpen;
+    }
+
+    public void setFabMenuOpen(boolean fabMenuOpen) {
+        isFabMenuOpen = fabMenuOpen;
+    }
+
+    private void onFullscreenStateChanged(int visibility) {
+        boolean fullScreen = (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0;
+        if (!fullScreen) {
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) getLayoutParams();
+            View viewParent = (View) getParent();
+            int parentWidth = viewParent.getWidth();
+            int parentHeight = viewParent.getHeight();
+            int weight = getWidth();
+            int height = getHeight();
+            int x = Math.round(getX());
+            int y = Math.round(getY());
+
+            if (x + weight > parentWidth) {
+                animate()
+                        .x(parentWidth - weight - layoutParams.rightMargin)
+                        .y(y)
+                        .setDuration(0)
+                        .start();
+            }
+            if (y + height > parentHeight) {
+                animate()
+                        .x(x)
+                        .y(parentHeight - height - layoutParams.bottomMargin)
+                        .setDuration(0)
+                        .start();
+            }
+        }
     }
 }

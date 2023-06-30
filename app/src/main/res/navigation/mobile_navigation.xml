@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
@@ -7,19 +8,39 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="cc.calliope.mini_v2.ui.home.HomeFragment"
+        android:name="cc.calliope.mini_v2.fragment.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_editors"
-        android:name="cc.calliope.mini_v2.ui.editors.EditorsFragment"
+        android:name="cc.calliope.mini_v2.fragment.editors.EditorsFragment"
         android:label="@string/title_scripts"
-        tools:layout="@layout/fragment_editors" />
+        tools:layout="@layout/fragment_editors">
+
+        <action
+            android:id="@+id/action_editors_to_web"
+            app:destination="@id/navigation_web">
+            <argument
+                android:name="editorUrl"
+                app:argType="string" />
+            <argument
+                android:name="editorName"
+                app:argType="string" />
+        </action>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_help"
-        android:name="cc.calliope.mini_v2.ui.help.HelpFragment"
+        android:name="cc.calliope.mini_v2.fragment.help.HelpFragment"
         android:label="@string/title_help"
-        tools:layout="@layout/fragment_help" />
+        tools:layout="@layout/fragment_help">
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_web"
+        android:name="cc.calliope.mini_v2.fragment.web.WebFragment"
+        android:label="@string/title_web"
+        tools:layout="@layout/fragment_web" />
+
 </navigation>

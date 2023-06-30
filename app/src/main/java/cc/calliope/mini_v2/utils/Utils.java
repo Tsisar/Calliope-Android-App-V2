@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+
 public class Utils {
     private static final String TAG = "UTILS";
 
@@ -104,7 +106,7 @@ public class Utils {
      * @param context Context to get resources and device specific display metrics
      * @return A int value to represent px equivalent to dp depending on device density
      */
-    public static int convertDpToPixel(int dp, Context context) {
+    public static int convertDpToPixel(Context context, int dp) {
         return dp * (context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
@@ -115,17 +117,11 @@ public class Utils {
         return DateFormat.format(OUTPUT_DATE_FORMAT, date.getTime()).toString();
     }
 
-    public static String getFileNameFromPrefix(String url) {
-        int start = url.indexOf("data:");
-        int end = url.indexOf(".hex;");
-        String substring = "";
+    public static void log(int priority, String TAG, String message) {
+        Log.println(priority, TAG, "### " + android.os.Process.myTid() + " # " + message);
+    }
 
-        if (start != -1 && end != -1) {
-            substring = url.substring(start, end); //this will give abc
-            substring = StringUtils.remove(substring, "data:");
-            substring = StringUtils.remove(substring, "mini-");
-        }
-
-        return substring;
+    public static void log(String TAG, String message) {
+        log(Log.VERBOSE, TAG, message);
     }
 }

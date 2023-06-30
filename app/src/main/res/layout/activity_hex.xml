@@ -2,10 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_constraint_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".OpenHexActivity">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/info_textView"
@@ -13,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/open_hex_info"
         android:gravity="fill_horizontal|top"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_default"
         android:layout_margin="@dimen/horizontal_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +26,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/btn_aqua"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="@dimen/text_size_button"
         android:text="@string/open_hex_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +36,7 @@
         android:id="@+id/pattern_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/margin_half"
         android:src="@drawable/ic_device_24dp"
         app:tint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"

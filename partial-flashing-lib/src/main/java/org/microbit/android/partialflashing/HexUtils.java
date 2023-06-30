@@ -14,19 +14,14 @@ import java.util.ListIterator;
 
 /**
  * Created by Sam Kent on 01/11/2017.
- *
+ * <p>
  * A Class to manipulate micro:bit hex files
  * Focused towards stripping a file down to it's PXT section for use in Partial Flashing
- *
- *   (c) 2017 - 2021, Micro:bit Educational Foundation and contributors
- *
- *  SPDX-License-Identifier: MIT
- *
  */
 
 public class HexUtils {
     private final static String TAG = HexUtils.class.getSimpleName();
-        
+
     private final static int INIT = 0;
     private final static int INVALID_FILE = 1;
     private final static int NO_PARTIAL_FLASH = 2;
@@ -36,15 +31,15 @@ public class HexUtils {
     BufferedReader reader = null;
     List<String> hexLines = new ArrayList<String>();
 
-    public HexUtils(String filePath){
+    public HexUtils(String filePath) {
         // Hex Utils initialization
         // Open File
         try {
-          if(!openHexFile(filePath)){
-                  status = INVALID_FILE;
-          }
-        } catch(Exception e) {
-          Log.e(TAG, "Error opening file: " + e);
+            if (!openHexFile(filePath)) {
+                status = INVALID_FILE;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error opening file: " + e);
         }
     }
 
@@ -66,23 +61,23 @@ public class HexUtils {
         // Create reader for hex file
         reader = new BufferedReader(new InputStreamReader(fis));
         String line;
-        while((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             hexLines.add(line);
         }
         reader.close();
         return true;
     }
 
-    /* 
+    /*
      * A function to find the length of the hex file
      * @param none
      * @ return the size (# of lines) in the hex file
      */
     public int numOfLines() {
-            return hexLines.size();
+        return hexLines.size();
     }
-    
-    /* 
+
+    /*
      * A function to search for data in a hex file
      * @param the _string_ of data to search for
      * @return the index of the data. -1 if not found.
@@ -95,7 +90,9 @@ public class HexUtils {
             int index = i.nextIndex();
 
             // Return index if successful
-            if(i.next().toString().contains(search)){ return index; }
+            if (i.next().toString().contains(search)) {
+                return index;
+            }
         }
 
         // Return -1 if no match
@@ -116,7 +113,7 @@ public class HexUtils {
 
             // Return index if successful
             String match = i.next().toString();
-            if(match.matches(search)){
+            if (match.matches(search)) {
                 return index;
             }
         }
@@ -124,14 +121,14 @@ public class HexUtils {
         // Return -1 if no match
         return -1;
     }
-    
+
     /*
      * Returns data from an index
      * @param index
      * @return data as string
      */
     public String getDataFromIndex(int index) throws IOException {
-            return getRecordData(hexLines.get(index)); 
+        return getRecordData(hexLines.get(index));
     }
 
     /*
@@ -140,7 +137,7 @@ public class HexUtils {
      * @return type as int
      */
     public int getRecordTypeFromIndex(int index) throws IOException {
-            return getRecordType(hexLines.get(index));
+        return getRecordType(hexLines.get(index));
     }
 
     /*
@@ -150,7 +147,7 @@ public class HexUtils {
      * @return address as int
      */
     public int getRecordAddressFromIndex(int index) throws IOException {
-            return getRecordAddress(hexLines.get(index));
+        return getRecordAddress(hexLines.get(index));
     }
 
     /*
@@ -158,7 +155,7 @@ public class HexUtils {
     @param Record as a String
     @return Data length as a decimal / # of chars
  */
-    public int getRecordDataLengthFromIndex(int index){
+    public int getRecordDataLengthFromIndex(int index) {
         return getRecordDataLength(hexLines.get(index));
     }
 
@@ -168,17 +165,17 @@ public class HexUtils {
      * @return address as int
      */
     public int getSegmentAddress(int index) throws IOException {
-            // Look backwards to find current segment address
-            int segmentAddress = -1;
-            int cur = index;
-            while(segmentAddress == -1) {
-                if(getRecordTypeFromIndex(cur) == 4)
-                    break;
-                cur--;
-            }
+        // Look backwards to find current segment address
+        int segmentAddress = -1;
+        int cur = index;
+        while (segmentAddress == -1) {
+            if (getRecordTypeFromIndex(cur) == 4)
+                break;
+            cur--;
+        }
 
-            // Return segment address
-            return Integer.parseInt(getRecordData(hexLines.get(cur)), 16);
+        // Return segment address
+        return Integer.parseInt(getRecordData(hexLines.get(cur)), 16);
     }
 
     /*
@@ -186,8 +183,8 @@ public class HexUtils {
         @param Record as a String
         @return Data address as a decimal
      */
-    private int getRecordAddress(String record){
-        String hexAddress = record.substring(3,7);
+    private int getRecordAddress(String record) {
+        String hexAddress = record.substring(3, 7);
         return Integer.parseInt(hexAddress, 16);
     }
 
@@ -196,8 +193,8 @@ public class HexUtils {
         @param Record as a String
         @return Data length as a decimal / # of chars
      */
-    private int getRecordDataLength(String record){
-        String hexLength = record.substring(1,3);
+    private int getRecordDataLength(String record) {
+        String hexLength = record.substring(1, 3);
         int len = 2 * Integer.parseInt(hexLength, 16); // Num Of Bytes. Each Byte is represented by 2 chars hence 2*
         return len;
     }
@@ -207,11 +204,11 @@ public class HexUtils {
     @param Record as a String
     @return Record type as a decimal
     */
-    private int getRecordType(String record){
+    private int getRecordType(String record) {
         try {
             String hexType = record.substring(7, 9);
             return Integer.parseInt(hexType, 16);
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "getRecordType " + e.toString());
             return 0;
         }
@@ -222,7 +219,7 @@ public class HexUtils {
     @param Record as a String
     @return Data
     */
-    private String getRecordData(String record){
+    private String getRecordData(String record) {
         try {
             int len = getRecordDataLength(record);
             return record.substring(9, 9 + len);
@@ -249,19 +246,19 @@ public class HexUtils {
     @param hexString string to convert
     @return byteArray of hex
      */
-    public static byte[] recordToByteArray(String hexString, int offset, int packetNum){
+    public static byte[] recordToByteArray(String hexString, int offset, int packetNum) {
         int len = hexString.length();
-        byte[] data = new byte[(len/2) + 4];
-        for(int i=0; i < len; i+=2){
-            data[(i / 2) + 4] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character.digit(hexString.charAt(i+1), 16));
+        byte[] data = new byte[(len / 2) + 4];
+        for (int i = 0; i < len; i += 2) {
+            data[(i / 2) + 4] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character.digit(hexString.charAt(i + 1), 16));
         }
 
         // WRITE Command
         data[0] = 0x01;
 
-        data[1]   = (byte)(offset >> 8);
-        data[2] = (byte)(offset & 0xFF);
-        data[3] = (byte)(packetNum & 0xFF);
+        data[1] = (byte) (offset >> 8);
+        data[2] = (byte) (offset & 0xFF);
+        data[3] = (byte) (packetNum & 0xFF);
 
         Log.v(TAG, "Sent: " + data.toString());
 
