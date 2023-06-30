@@ -40,8 +40,8 @@ public class Permission {
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private static final String[] LOCATION_PERMISSIONS_Q = {
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION};
+            Manifest.permission.ACCESS_FINE_LOCATION/*,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION*/};
 
     private static final String[] LOCATION_PERMISSIONS = {
             Manifest.permission.ACCESS_COARSE_LOCATION,
