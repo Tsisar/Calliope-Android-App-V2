@@ -1,9 +1,12 @@
 package cc.calliope.mini.service;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.util.Log;
 
+
+import java.lang.reflect.Method;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,8 +38,9 @@ public class DfuService extends DfuBaseService {
 
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
+        Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + "onHandleIntent()");
         assert intent != null;
-        final long delay = intent.getLongExtra(DfuBaseService.EXTRA_SCAN_DELAY, 0);
+        final long delay = intent.getLongExtra(DfuBaseService.EXTRA_SCAN_DELAY, 200);
         waitFor(delay);
         super.onHandleIntent(intent);
     }
@@ -52,5 +56,21 @@ public class DfuService extends DfuBaseService {
     @Override
     protected void updateProgressNotification(@NonNull final NotificationCompat.Builder builder, final int progress) {
         // Remove Abort action from the notification
+    }
+
+    @Override
+    protected BluetoothGatt connect(@NonNull String address){
+        return super.connect(address);
+    }
+    private void refreshDeviceCache(BluetoothGatt gatt) {
+        try {
+            Method localMethod = gatt.getClass().getMethod("refresh");
+            if(localMethod != null) {
+                Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + "refreshDeviceCache()");
+                localMethod.invoke(gatt);
+            }
+        } catch(Exception localException) {
+            Log.d("Exception", localException.toString());
+        }
     }
 }
