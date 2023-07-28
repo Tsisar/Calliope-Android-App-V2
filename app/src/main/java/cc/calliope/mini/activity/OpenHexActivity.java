@@ -27,6 +27,7 @@ import cc.calliope.mini.fragment.editors.Editor;
 import cc.calliope.mini.utils.FileUtils;
 import cc.calliope.mini.utils.StaticExtra;
 import cc.calliope.mini.utils.Utils;
+import cc.calliope.mini.utils.Version;
 import cc.calliope.mini.viewmodels.ScannerLiveData;
 
 
@@ -117,7 +118,7 @@ public class OpenHexActivity extends ScannerActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_CODE_PERMISSIONS && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (Version.upperTiramisu || (requestCode == REQUEST_CODE_PERMISSIONS && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             // Дозвіл на читання зовнішнього сховища отримано
             Log.w("HexActivity", "Дозвіл на читання зовнішнього сховища отримано");
         }else{

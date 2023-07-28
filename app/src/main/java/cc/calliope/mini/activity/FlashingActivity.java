@@ -294,9 +294,9 @@ public class FlashingActivity extends AppCompatActivity implements ProgressListe
                     .setPrepareDataObjectDelay(300L)
                     .setNumberOfRetries(NUMBER_OF_RETRIES)
                     .setRebootTime(REBOOT_TIME)
+                    .setForceDfu(true)
                     .setKeepBond(true)
                     .setMbrSize(0x1000)
-                    .setPrepareDataObjectDelay(5)
                     .setBinOrHex(DfuBaseService.TYPE_APPLICATION, hexPath)
                     .start(this, DfuService.class);
         } else {
@@ -323,7 +323,6 @@ public class FlashingActivity extends AppCompatActivity implements ProgressListe
                     .setNumberOfRetries(NUMBER_OF_RETRIES)
                     .setRebootTime(REBOOT_TIME)
                     .setKeepBond(true)
-                    .setForeground(true)
                     .setPacketsReceiptNotificationsEnabled(true)
                     .setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true)
                     .setZip(zipPath)
