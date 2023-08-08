@@ -22,14 +22,14 @@ public class BoardProgressBar extends BoardView {
 
     public void setProgress(int progress) {
         if (progress == DfuService.PROGRESS_COMPLETED) {
-            setAllLed(false);
-            setLed(true, 2, 3, 4, 6, 10, 17, 19);
+            turnedOnAllLed(true);
+//            setLed(true, 2, 3, 4, 6, 10, 17, 19);
         } else {
             int p = Math.max(progress, 0);
             int max = p / 4;
 
             for (int i = 0; i <= max; i++) {
-                setLed(true, i);
+                turnedOnLed(true, i);
             }
         }
         invalidate();

@@ -50,20 +50,20 @@ public class BoardView extends View {
 
     private void init() {
         setImageResource(R.drawable.layers_board);
-        setAllLed(false);
+        turnedOnAllLed(false);
     }
 
     public void setImageResource(int resId) {
         drawable = ResourcesCompat.getDrawable(getResources(), resId, null);
     }
 
-    public void setLed(boolean turnedOn, @LedRange int led) {
+    public void turnedOnLed(boolean turnedOn, @LedRange int led) {
         if (led > 0 && led < ledArray.length) {
             ledArray[led] = turnedOn;
         }
     }
 
-    public void setLed(boolean turnedOn, @LedRange int... led) {
+    public void turnedOnLed(boolean turnedOn, @LedRange int... led) {
         for (int j : led) {
             if (j > 0 && j < ledArray.length) {
                 ledArray[j] = turnedOn;
@@ -71,7 +71,7 @@ public class BoardView extends View {
         }
     }
 
-    public void setAllLed(boolean turnedOn) {
+    public void turnedOnAllLed(boolean turnedOn) {
         Arrays.fill(ledArray, turnedOn);
     }
 
