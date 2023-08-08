@@ -16,7 +16,6 @@ import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.error.GattError;
 
 import static cc.calliope.mini.DfuControlService.BOARD_UNIDENTIFIED;
-import static cc.calliope.mini.DfuControlService.BROADCAST_BONDING;
 import static cc.calliope.mini.DfuControlService.EXTRA_BOARD_VERSION;
 import static cc.calliope.mini.DfuControlService.EXTRA_BOND_STATE;
 import static cc.calliope.mini.DfuControlService.EXTRA_ERROR;
@@ -59,6 +58,7 @@ public class ProgressReceiver extends BroadcastReceiver {
 
         //DfuControlService
         filter.addAction(DfuControlService.BROADCAST_START);
+        filter.addAction(DfuControlService.BROADCAST_BONDING);
         filter.addAction(DfuControlService.BROADCAST_COMPLETED);
         filter.addAction(DfuControlService.BROADCAST_FAILED);
         filter.addAction(DfuControlService.BROADCAST_ERROR);
