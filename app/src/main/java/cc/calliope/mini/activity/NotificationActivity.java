@@ -15,7 +15,7 @@ public class NotificationActivity extends AppCompatActivity {
         // If this activity is the root activity of the task, the app is not running
         if(isTaskRoot()) {
             // Start the app before finishing
-            final Intent intent = new Intent(this, FlashingActivity.class);
+            final Intent intent = new Intent(this, AlternativeFlashingActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtras(getIntent().getExtras()); // copy all extras
             startActivity(intent);

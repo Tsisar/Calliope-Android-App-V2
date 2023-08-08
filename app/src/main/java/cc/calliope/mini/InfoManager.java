@@ -16,8 +16,9 @@ import no.nordicsemi.android.ble.BleManager;
 public class InfoManager extends BleManager {
     private static final String TAG = "DeviceInformation";
     public static final UUID PARTIAL_FLASHING_SERVICE = UUID.fromString("E97DD91D-251D-470A-A062-FA1922DFA9A8");
-    private static final UUID DFU_CONTROL_SERVICE = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
-    private static final UUID DFU_SECURE_CONTROL_SERVICE = UUID.fromString("0000FE59-0000-1000-8000-00805F9B34FB");
+    private static final UUID DEVICE_FIRMWARE_UPDATE_CONTROL_SERVICE = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID DEVICE_FIRMWARE_UPDATE_SERVICE = UUID.fromString("00001530-1212-EFDE-1523-785FEABCD123");
+    private static final UUID SECURE_DEVICE_FIRMWARE_UPDATE_SERVICE = UUID.fromString("0000FE59-0000-1000-8000-00805F9B34FB");
     public static final int BOARD_UNIDENTIFIED = 0;
     public static final int BOARD_V1 = 1;
     public static final int BOARD_V2 = 2;
@@ -26,11 +27,19 @@ public class InfoManager extends BleManager {
     public @interface HardwareType {
     }
     private int hardwareType = BOARD_UNIDENTIFIED;
-    private boolean partialFlashingAvailable = false;
+
+    public static final int TYPE_CONTROL = 0;
+    public static final int TYPE_DFU = 1;
+    public static final int TYPE_PF = 2;
+    @IntDef({TYPE_CONTROL, TYPE_DFU, TYPE_PF})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface flashingType {
+    }
+    private int flashingType = TYPE_CONTROL;
     private GetInfoListener getInfoListener;
 
     public interface GetInfoListener {
-        void getInfo(int hardwareType, boolean partialFlashAvailable);
+        void getInfo(@HardwareType int hardwareType, @flashingType int flashingType);
     }
 
     public InfoManager(@NonNull final Context context) {
@@ -65,35 +74,47 @@ public class InfoManager extends BleManager {
     private class MyGattCallbackImpl extends BleManagerGattCallback {
         @Override
         protected boolean isRequiredServiceSupported(@NonNull BluetoothGatt gatt) {
-            BluetoothGattService dfuControlService = gatt.getService(DFU_CONTROL_SERVICE);
-            if (dfuControlService == null) {
-                log(Log.WARN, "Can't find DFU_CONTROL_SERVICE");
+            BluetoothGattService deviceFirmwareUpdateControlService = gatt.getService(DEVICE_FIRMWARE_UPDATE_CONTROL_SERVICE);
+            if (deviceFirmwareUpdateControlService == null) {
+                log(Log.WARN, "Can't find DEVICE_FIRMWARE_UPDATE_CONTROL_SERVICE");
             } else {
                 hardwareType = BOARD_V1;
+                flashingType = TYPE_CONTROL;
             }
 
-            BluetoothGattService dfuSecureControlService = gatt.getService(DFU_SECURE_CONTROL_SERVICE);
-            if (dfuSecureControlService == null) {
-                log(Log.WARN, "Can't find DFU_SECURE_CONTROL_SERVICE");
+            BluetoothGattService deviceFirmwareUpdateService = gatt.getService(DEVICE_FIRMWARE_UPDATE_SERVICE);
+            if (deviceFirmwareUpdateService == null) {
+                log(Log.WARN, "Can't find DEVICE_FIRMWARE_UPDATE_SERVICE");
             } else {
-                hardwareType = BOARD_V2;
+                hardwareType = BOARD_V1;
+                flashingType = TYPE_DFU;
             }
 
             BluetoothGattService partialFlashingService = gatt.getService(PARTIAL_FLASHING_SERVICE);
             if (partialFlashingService == null) {
                 log(Log.WARN, "Can't find PARTIAL_FLASHING_SERVICE");
             } else {
-                partialFlashingAvailable = true;
+                hardwareType = BOARD_V1;
+                flashingType = TYPE_PF;
             }
 
-            return dfuControlService != null || dfuSecureControlService != null || partialFlashingService != null;
+            BluetoothGattService secureDeviceFirmwareUpdateService = gatt.getService(SECURE_DEVICE_FIRMWARE_UPDATE_SERVICE);
+            if (secureDeviceFirmwareUpdateService == null) {
+                log(Log.WARN, "Can't find SECURE_DEVICE_FIRMWARE_UPDATE_SERVICE");
+            } else {
+                hardwareType = BOARD_V2;
+                flashingType = TYPE_DFU;
+            }
+
+            return deviceFirmwareUpdateControlService != null || deviceFirmwareUpdateService != null
+                    || secureDeviceFirmwareUpdateService != null || partialFlashingService != null;
         }
 
         @Override
         protected void initialize() {
             log(Log.DEBUG, "Initialize...");
             if (getInfoListener != null) {
-                getInfoListener.getInfo(hardwareType, partialFlashingAvailable);
+                getInfoListener.getInfo(hardwareType, flashingType);
             }
             //disconnect().enqueue();
         }

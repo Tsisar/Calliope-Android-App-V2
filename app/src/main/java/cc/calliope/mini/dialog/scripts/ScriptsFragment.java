@@ -28,7 +28,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import cc.calliope.mini.activity.FlashingActivity;
+import cc.calliope.mini.activity.AlternativeFlashingActivity;
 import cc.calliope.mini.adapter.FileWrapper;
 import cc.calliope.mini.R;
 import cc.calliope.mini.dialog.DialogUtils;
@@ -116,7 +116,7 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             scriptsRecyclerAdapter = new ScriptsRecyclerAdapter(filesList);
-            scriptsRecyclerAdapter.setOnItemClickListener(this::openDFUActivity);
+            scriptsRecyclerAdapter.setOnItemClickListener(this::openDfuActivity);
             scriptsRecyclerAdapter.setOnItemLongClickListener(this::openPopupMenu);
             recyclerView.setAdapter(scriptsRecyclerAdapter);
             recyclerView.addItemDecoration(new SimpleDividerItemDecoration(activity));
@@ -139,9 +139,9 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
         return filesList;
     }
 
-    private void openDFUActivity(FileWrapper file) {
+    private void openDfuActivity(FileWrapper file) {
         if (device != null && device.isRelevant()) {
-            final Intent intent = new Intent(activity, FlashingActivity.class);
+            final Intent intent = new Intent(activity, AlternativeFlashingActivity.class);
             intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
             intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);

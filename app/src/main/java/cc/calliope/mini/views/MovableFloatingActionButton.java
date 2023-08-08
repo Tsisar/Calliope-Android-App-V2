@@ -164,6 +164,10 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     public void onProgressChanged(int percent) {
         setProgress(percent);
     }
+
+    @Override
+    public void onDfuControlCompleted(int boardVersion){}
+
     @Override
     public void onError(int code, String message) {
         setProgress(0);

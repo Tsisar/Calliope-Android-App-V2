@@ -195,7 +195,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     public void onItemFabMenuClicked(View view) {
         if (view.getId() == R.id.fabConnect) {
             if (patternFab.isFlashing()) {
-                final Intent intent = new Intent(this, FlashingActivity.class);
+                final Intent intent = new Intent(this, AlternativeFlashingActivity.class);
                 startActivity(intent);
             } else {
                 showPatternDialog(new FobParams(

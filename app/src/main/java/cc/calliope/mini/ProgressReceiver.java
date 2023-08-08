@@ -15,6 +15,10 @@ import cc.calliope.mini.utils.Utils;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.error.GattError;
 
+import static cc.calliope.mini.DfuControlService.BOARD_UNIDENTIFIED;
+import static cc.calliope.mini.DfuControlService.EXTRA_BOARD_VERSION;
+import static cc.calliope.mini.DfuControlService.EXTRA_ERROR;
+
 public class ProgressReceiver extends BroadcastReceiver {
     private static final String TAG = "DfuServiceReceiver";
     private final Context context;
@@ -49,6 +53,12 @@ public class ProgressReceiver extends BroadcastReceiver {
 
         //PartialFlashingService
         filter.addAction(DfuControlServiceManager.BROADCAST_DFU_CONTROL_SERVICE);
+
+        //DfuControlService
+        filter.addAction(DfuControlService.BROADCAST_START);
+        filter.addAction(DfuControlService.BROADCAST_COMPLETED);
+        filter.addAction(DfuControlService.BROADCAST_FAILED);
+        filter.addAction(DfuControlService.BROADCAST_ERROR);
 
         LocalBroadcastManager.getInstance(context).registerReceiver(this, filter);
     }
@@ -113,6 +123,17 @@ public class ProgressReceiver extends BroadcastReceiver {
                             listener.onError(-1, "Enabling Dfu Mode FAILED");
                         }
                     }
+                }
+                //DfuControlService
+                case DfuControlService.BROADCAST_START -> listener.onEnablingDfuMode();
+                case DfuControlService.BROADCAST_COMPLETED -> {
+                    int boardVersion = intent.getIntExtra(EXTRA_BOARD_VERSION, BOARD_UNIDENTIFIED);
+                    listener.onDfuControlCompleted(boardVersion);
+                }
+                case DfuControlService.BROADCAST_FAILED -> listener.onDeviceDisconnecting();
+                case DfuControlService.BROADCAST_ERROR -> {
+                    String message = intent.getStringExtra(EXTRA_ERROR);
+                    listener.onError(-1, message);
                 }
             }
         }

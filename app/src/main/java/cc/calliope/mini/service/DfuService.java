@@ -62,15 +62,4 @@ public class DfuService extends DfuBaseService {
     protected BluetoothGatt connect(@NonNull String address){
         return super.connect(address);
     }
-    private void refreshDeviceCache(BluetoothGatt gatt) {
-        try {
-            Method localMethod = gatt.getClass().getMethod("refresh");
-            if(localMethod != null) {
-                Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + "refreshDeviceCache()");
-                localMethod.invoke(gatt);
-            }
-        } catch(Exception localException) {
-            Log.d("Exception", localException.toString());
-        }
-    }
 }

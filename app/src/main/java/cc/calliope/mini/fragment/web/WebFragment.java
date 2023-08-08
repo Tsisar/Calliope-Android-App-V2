@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import cc.calliope.mini.activity.FlashingActivity;
+import cc.calliope.mini.activity.AlternativeFlashingActivity;
 import cc.calliope.mini.R;
 import cc.calliope.mini.utils.StaticExtra;
 import cc.calliope.mini.ExtendedBluetoothDevice;
@@ -81,7 +81,7 @@ public class WebFragment extends Fragment implements DownloadListener {
                 Utils.errorSnackbar(webView, getString(R.string.error_snackbar_save_file_error)).show();
             } else {
                 if (createAndSaveFileFromBase64Url(url, file)) {
-                    startDFUActivity(file);
+                    startDfuActivity(file);
                 } else {
                     Utils.errorSnackbar(webView, getString(R.string.error_snackbar_download_error)).show();
                 }
@@ -244,7 +244,7 @@ public class WebFragment extends Fragment implements DownloadListener {
                 result = downloadFileFromURL(url, file);
             }
             if (result) {
-                startDFUActivity(file);
+                startDfuActivity(file);
             } else {
                 Utils.errorSnackbar(webView, getString(R.string.error_snackbar_download_error)).show();
             }
@@ -311,10 +311,10 @@ public class WebFragment extends Fragment implements DownloadListener {
         return true;
     }
 
-    private void startDFUActivity(File file) {
+    private void startDfuActivity(File file) {
         if (device != null && device.isRelevant()) {
             Log.e(TAG, "start DFU Activity");
-            final Intent intent = new Intent(getActivity(), FlashingActivity.class);
+            final Intent intent = new Intent(getActivity(), AlternativeFlashingActivity.class);
             intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
             intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);

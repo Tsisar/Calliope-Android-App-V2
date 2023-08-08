@@ -23,8 +23,8 @@ public class DfuControlServiceManager extends BleManager {
     public static final int EXTRA_DONE = 1;
 
     private final Context context;
-    private static final UUID DFU_CONTROL_SERVICE = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
-    private static final UUID DFU_CONTROL_CHARACTERISTIC = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID DEVICE_FIRMWARE_UPDATE_CONTROL_SERVICE = UUID.fromString("E95D93B0-251D-470A-A062-FA1922DFA9A8");
+    private static final UUID DEVICE_FIRMWARE_UPDATE_CONTROL_CHARACTERISTIC = UUID.fromString("E95D93B1-251D-470A-A062-FA1922DFA9A8");
     private BluetoothGattCharacteristic dfuControlServiceCharacteristic;
     private OnInvalidateListener onInvalidateListener;
 
@@ -72,9 +72,9 @@ public class DfuControlServiceManager extends BleManager {
             log("Checking if the flashing services is supported...");
             sendBroadcast(EXTRA_ENABLING);
 
-            BluetoothGattService dfuControlService = gatt.getService(DFU_CONTROL_SERVICE);
+            BluetoothGattService dfuControlService = gatt.getService(DEVICE_FIRMWARE_UPDATE_CONTROL_SERVICE);
             if (dfuControlService != null) {
-                dfuControlServiceCharacteristic = dfuControlService.getCharacteristic(DFU_CONTROL_CHARACTERISTIC);
+                dfuControlServiceCharacteristic = dfuControlService.getCharacteristic(DEVICE_FIRMWARE_UPDATE_CONTROL_CHARACTERISTIC);
             } else {
                 log(Log.WARN, "DFU Control service isn't supported");
                 sendBroadcast(EXTRA_FAIL);
@@ -110,6 +110,7 @@ public class DfuControlServiceManager extends BleManager {
         }
 
         private void done(BluetoothDevice device) {
+            refreshDeviceCache().enqueue();
             log(Log.DEBUG, "Device: " + device.getAddress() + ". Done");
             sendBroadcast(EXTRA_DONE);
         }
