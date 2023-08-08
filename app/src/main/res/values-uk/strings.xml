@@ -112,4 +112,7 @@
     <string name="menu_fab_full_screen">На весь екран</string>
     <string name="error_snackbar_save_file_error">Помилка збереження файлу</string>
     <string name="title_settings">Налаштування</string>
+    <string name="bonding_started">Створення пари</string>
+    <string name="bonding_succeeded">Пару створено</string>
+    <string name="bonding_not_succeeded">Не вдалося створити пару</string>
 </resources>

@@ -111,4 +111,7 @@
     <string name="summary_custom">Link zum benutzerdefinierten Editor</string>
     <string name="summary_partial_flashing">Partial Flashing aktivieren oder deaktivieren</string>
     <string name="title_settings">Einstellungen</string>
+    <string name="bonding_started">Bindung begonnen</string>
+    <string name="bonding_succeeded">Bindung gelungen</string>
+    <string name="bonding_not_succeeded">Bindung nicht gelungen</string>
 </resources>

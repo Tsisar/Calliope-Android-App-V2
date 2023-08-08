@@ -161,6 +161,11 @@ public class FlashingActivity extends AppCompatActivity implements ProgressListe
     }
 
     @Override
+    public void onBonding(int bondState, int previousBondState) {
+
+    }
+
+    @Override
     public void onDfuControlCompleted(int boardVersion){
 
     }

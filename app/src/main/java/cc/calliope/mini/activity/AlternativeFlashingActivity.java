@@ -1,6 +1,9 @@
 package cc.calliope.mini.activity;
 
+import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,6 +22,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.DfuControlService;
 import cc.calliope.mini.ProgressListener;
@@ -29,10 +33,14 @@ import cc.calliope.mini.service.DfuService;
 import cc.calliope.mini.utils.FileUtils;
 import cc.calliope.mini.utils.StaticExtra;
 import cc.calliope.mini.utils.Utils;
+import cc.calliope.mini.utils.Version;
 import cc.calliope.mini.views.BoardProgressBar;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 
+import static android.bluetooth.BluetoothDevice.BOND_BONDED;
+import static android.bluetooth.BluetoothDevice.BOND_BONDING;
+import static android.bluetooth.BluetoothDevice.BOND_NONE;
 import static cc.calliope.mini.DfuControlService.BOARD_UNIDENTIFIED;
 import static cc.calliope.mini.DfuControlService.BOARD_V1;
 import static cc.calliope.mini.DfuControlService.BOARD_V2;
@@ -52,7 +60,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     private final Handler timerHandler = new Handler();
     private final Runnable deferredFinish = this::finish;
     private ProgressReceiver progressReceiver;
-    private String deviceAddress;
+    private BluetoothDevice device;
     private String pattern;
     private String filePath;
 
@@ -70,7 +78,6 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
         progressReceiver = new ProgressReceiver(this);
         progressReceiver.setProgressListener(this);
 
-        //TODO Не розпочинати, якщо вже шиється
         initFlashing();
     }
 
@@ -155,7 +162,25 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     }
 
     @Override
+    public void onBonding(int bondState, int previousBondState) {
+        progress.setText("");
+        switch (bondState) {
+            case BOND_BONDING -> status.setText(R.string.bonding_started);
+            case BOND_BONDED -> status.setText(R.string.bonding_succeeded);
+            case BOND_NONE -> status.setText(R.string.bonding_not_succeeded);
+        }
+    }
+
+    @Override
     public void onError(int code, String message) {
+        if (code == 4110) {
+            if ((Version.upperSnowCone && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+                Utils.log(Log.ERROR, TAG, "BLUETOOTH permission no granted");
+                return;
+            }
+            device.createBond();
+        }
         progress.setText(String.format(getString(R.string.flashing_error), code));
         status.setText(message);
         Utils.log(Log.ERROR, TAG, "ERROR " + code + ", " + message);
@@ -178,14 +203,14 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
             return;
         }
 
-        deviceAddress = extendedDevice.getAddress();
+        device = extendedDevice.getDevice();
         pattern = extendedDevice.getPattern();
 
         Utils.log(Log.INFO, TAG, "Device: " + extendedDevice.getAddress() + " " + extendedDevice.getName());
         Utils.log(Log.INFO, TAG, "File path: " + filePath);
 
         Intent intent = new Intent(this, DfuControlService.class);
-        intent.putExtra(EXTRA_DEVICE_ADDRESS, deviceAddress);
+        intent.putExtra(EXTRA_DEVICE_ADDRESS, device.getAddress());
         startService(intent);
     }
 
@@ -210,7 +235,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
         }
 
         if (hardwareType == BOARD_V1) {
-            new DfuServiceInitiator(deviceAddress)
+            new DfuServiceInitiator(device.getAddress())
                     .setDeviceName(pattern)
                     .setPrepareDataObjectDelay(300L)
                     .setNumberOfRetries(NUMBER_OF_RETRIES)
@@ -238,7 +263,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
                 return;
             }
 
-            new DfuServiceInitiator(deviceAddress)
+            new DfuServiceInitiator(device.getAddress())
                     .setDeviceName(pattern)
                     .setPrepareDataObjectDelay(300L)
                     .setNumberOfRetries(NUMBER_OF_RETRIES)

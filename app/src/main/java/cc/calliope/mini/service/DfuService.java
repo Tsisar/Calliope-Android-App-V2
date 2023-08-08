@@ -18,9 +18,6 @@ import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 
 public class DfuService extends DfuBaseService {
-
-    private static final String TAG = "DfuService";
-
     @Override
     protected Class<? extends Activity> getNotificationTarget() {
         return NotificationActivity.class;
@@ -28,7 +25,6 @@ public class DfuService extends DfuBaseService {
 
     @Override
     public void onCreate() {
-        Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + "onCreate()");
         // Enable Notification Channel for Android OREO
         if (Version.upperOreo) {
             DfuServiceInitiator.createDfuNotificationChannel(getApplicationContext());
@@ -38,10 +34,9 @@ public class DfuService extends DfuBaseService {
 
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
-        Log.e(TAG, "### " + Thread.currentThread().getId() + " # " + "onHandleIntent()");
-        assert intent != null;
-        final long delay = intent.getLongExtra(DfuBaseService.EXTRA_SCAN_DELAY, 200);
-        waitFor(delay);
+//        assert intent != null;
+//        final long delay = intent.getLongExtra(DfuBaseService.EXTRA_SCAN_DELAY, 200);
+//        waitFor(delay);
         super.onHandleIntent(intent);
     }
 
@@ -56,10 +51,5 @@ public class DfuService extends DfuBaseService {
     @Override
     protected void updateProgressNotification(@NonNull final NotificationCompat.Builder builder, final int progress) {
         // Remove Abort action from the notification
-    }
-
-    @Override
-    protected BluetoothGatt connect(@NonNull String address){
-        return super.connect(address);
     }
 }

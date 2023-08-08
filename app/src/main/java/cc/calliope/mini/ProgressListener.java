@@ -10,5 +10,6 @@ public interface ProgressListener {
     void onAborted();
     void onDfuControlCompleted(int boardVersion);
     void onProgressChanged(int percent);
+    void onBonding(int bondState, int previousBondState);
     void onError(int code, String message);
 }

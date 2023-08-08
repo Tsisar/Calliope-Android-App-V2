@@ -1,5 +1,6 @@
 package cc.calliope.mini;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -49,11 +50,14 @@ public class DfuControlService extends Service {
     public static final String BROADCAST_START = "cc.calliope.mini.DFUControlService.BROADCAST_START";
     public static final String BROADCAST_COMPLETED = "cc.calliope.mini.DFUControlService.BROADCAST_COMPLETE";
     public static final String BROADCAST_FAILED = "cc.calliope.mini.DFUControlService.BROADCAST_FAILED";
+    public static final String BROADCAST_BONDING = "cc.calliope.mini.DFUControlService.BROADCAST_BONDING";
     public static final String BROADCAST_ERROR = "cc.calliope.mini.DFUControlService.BROADCAST_ERROR";
     public static final String EXTRA_BOARD_VERSION = "cc.calliope.mini.DFUControlService.EXTRA_BOARD_VERSION";
     public static final String EXTRA_ERROR = "cc.calliope.mini.DFUControlService.EXTRA_ERROR";
     public static final String EXTRA_DEVICE_ADDRESS = "cc.calliope.mini.DFUControlService.EXTRA_DEVICE_ADDRESS";
     public static final String EXTRA_MAX_RETRIES_NUMBER = "cc.calliope.mini.DFUControlService.EXTRA_MAX_RETRIES_NUMBER";
+    public static final String EXTRA_PREVIOUS_BOND_STATE = "cc.calliope.mini.DFUControlService.EXTRA_PREVIOUS_BOND_STATE";
+    public static final String EXTRA_BOND_STATE = "cc.calliope.mini.DFUControlService.EXTRA_BOND_STATE";
 
     private final Object mLock = new Object();
     private int maxRetries;
@@ -77,8 +81,6 @@ public class DfuControlService extends Service {
                 return;
 
             final String action = intent.getAction();
-            Utils.log(Log.DEBUG, TAG, "device: " + device.getAddress());
-
             // Check if action is valid
             if (action == null) return;
 
@@ -88,24 +90,27 @@ public class DfuControlService extends Service {
                 final int previousBondState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, ERROR);
                 Utils.log(Log.DEBUG, TAG, "previousBondState: " + previousBondState);
 
+                final Intent broadcast = new Intent(BROADCAST_BONDING);
+                broadcast.putExtra(EXTRA_PREVIOUS_BOND_STATE, newBondState);
+                broadcast.putExtra(EXTRA_PREVIOUS_BOND_STATE, previousBondState);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcast);
+
                 bondState = newBondState;
 
                 switch (newBondState) {
-                    case BOND_BONDING:
-                        Utils.log(Log.WARN, TAG, "Bonding started");
-                        break;
-                    case BOND_BONDED:
+                    case BOND_BONDING -> Utils.log(Log.WARN, TAG, "Bonding started");
+                    case BOND_BONDED -> {
                         Utils.log(Log.WARN, TAG, "Bonding succeeded");
                         synchronized (mLock) {
                             mLock.notifyAll();
                         }
-                        break;
-                    case BOND_NONE:
+                    }
+                    case BOND_NONE -> {
                         Utils.log(Log.WARN, TAG, "Oh oh");
                         synchronized (mLock) {
                             mLock.notifyAll();
                         }
-                        break;
+                    }
                 }
             }
         }
@@ -264,8 +269,9 @@ public class DfuControlService extends Service {
     };
 
     private void connect() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            Utils.log(Log.ERROR, TAG, "NO PERMISSION GRANTED");
+        if ((Version.upperSnowCone && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            Utils.log(Log.ERROR, TAG, "BLUETOOTH permission no granted");
             return;
         }
         Utils.log(Log.DEBUG, TAG, "Connecting to the device...");
