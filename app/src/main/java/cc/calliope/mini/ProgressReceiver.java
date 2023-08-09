@@ -17,7 +17,7 @@ import no.nordicsemi.android.error.GattError;
 
 import static cc.calliope.mini.DfuControlService.BOARD_UNIDENTIFIED;
 import static cc.calliope.mini.DfuControlService.EXTRA_BOARD_VERSION;
-import static cc.calliope.mini.DfuControlService.EXTRA_BOND_STATE;
+import static cc.calliope.mini.DfuControlService.EXTRA_NEW_BOND_STATE;
 import static cc.calliope.mini.DfuControlService.EXTRA_ERROR;
 import static cc.calliope.mini.DfuControlService.EXTRA_PREVIOUS_BOND_STATE;
 
@@ -130,9 +130,10 @@ public class ProgressReceiver extends BroadcastReceiver {
                 //DfuControlService
                 case DfuControlService.BROADCAST_START -> listener.onEnablingDfuMode();
                 case DfuControlService.BROADCAST_BONDING -> {
-                    int bondState = intent.getIntExtra(EXTRA_BOND_STATE, -1);
+                    int bondState = intent.getIntExtra(EXTRA_NEW_BOND_STATE, -1);
                     int previousBondState = intent.getIntExtra(EXTRA_PREVIOUS_BOND_STATE, -1);
                     listener.onBonding(bondState, previousBondState);
+                    Utils.log(Log.WARN, TAG, "BOND_STATE: " + bondState + ", PREVIOUS_BOND_STATE: " + previousBondState);
                 }
                 case DfuControlService.BROADCAST_COMPLETED -> {
                     int boardVersion = intent.getIntExtra(EXTRA_BOARD_VERSION, BOARD_UNIDENTIFIED);

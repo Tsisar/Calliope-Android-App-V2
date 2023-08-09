@@ -57,7 +57,7 @@ public class DfuControlService extends Service {
     public static final String EXTRA_DEVICE_ADDRESS = "cc.calliope.mini.DFUControlService.EXTRA_DEVICE_ADDRESS";
     public static final String EXTRA_MAX_RETRIES_NUMBER = "cc.calliope.mini.DFUControlService.EXTRA_MAX_RETRIES_NUMBER";
     public static final String EXTRA_PREVIOUS_BOND_STATE = "cc.calliope.mini.DFUControlService.EXTRA_PREVIOUS_BOND_STATE";
-    public static final String EXTRA_BOND_STATE = "cc.calliope.mini.DFUControlService.EXTRA_BOND_STATE";
+    public static final String EXTRA_NEW_BOND_STATE = "cc.calliope.mini.DFUControlService.EXTRA_BOND_STATE";
 
     private final Object mLock = new Object();
     private int maxRetries;
@@ -88,10 +88,9 @@ public class DfuControlService extends Service {
             if (action.equals(ACTION_BOND_STATE_CHANGED)) {
                 final int newBondState = intent.getIntExtra(EXTRA_BOND_STATE, ERROR);
                 final int previousBondState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, ERROR);
-                Utils.log(Log.DEBUG, TAG, "previousBondState: " + previousBondState);
 
                 final Intent broadcast = new Intent(BROADCAST_BONDING);
-                broadcast.putExtra(EXTRA_PREVIOUS_BOND_STATE, newBondState);
+                broadcast.putExtra(EXTRA_NEW_BOND_STATE, newBondState);
                 broadcast.putExtra(EXTRA_PREVIOUS_BOND_STATE, previousBondState);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcast);
 
