@@ -1,12 +1,19 @@
 package cc.calliope.mini.activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
@@ -15,6 +22,7 @@ import cc.calliope.mini.R;
 import cc.calliope.mini.databinding.ActivityMainBinding;
 import cc.calliope.mini.dialog.scripts.ScriptsFragment;
 import cc.calliope.mini.utils.Utils;
+import cc.calliope.mini.utils.Version;
 import cc.calliope.mini.views.FabMenuView;
 
 public class MainActivity extends ScannerActivity {
@@ -22,6 +30,14 @@ public class MainActivity extends ScannerActivity {
     private ActivityMainBinding binding;
     private boolean fullScreen = false;
     private boolean currentWeb = false;
+    private final ActivityResultLauncher<String> pushNotificationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Utils.log(Log.INFO, TAG, "NotificationPermission is Granted");
+                } else {
+                    Utils.log(Log.WARN, TAG, "NotificationPermission NOT Granted");
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +51,9 @@ public class MainActivity extends ScannerActivity {
         NavController navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             currentWeb = destination.getId() == R.id.navigation_web;
-            if(currentWeb){
+            if (currentWeb) {
                 binding.bottomNavigation.setVisibility(View.GONE);
-            }else {
+            } else {
                 binding.bottomNavigation.setVisibility(View.VISIBLE);
             }
             Utils.log(Log.ASSERT, TAG, "Destination id: " + destination.getId());
@@ -48,6 +64,10 @@ public class MainActivity extends ScannerActivity {
             }
         });
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+
+        if(Version.upperTiramisu) {
+            requestPushNotificationPermission();
+        }
     }
 
     @Override
@@ -116,8 +136,15 @@ public class MainActivity extends ScannerActivity {
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             Utils.log(Log.WARN, TAG, "ORIENTATION_PORTRAIT");
         }
-        if(!currentWeb) {
+        if (!currentWeb) {
             recreate();
+        }
+    }
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    private void requestPushNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
     }
 }

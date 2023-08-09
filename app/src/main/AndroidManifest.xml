@@ -2,6 +2,11 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
+
+    <!--
+    Notification
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!--
     Connect to the network
     -->
