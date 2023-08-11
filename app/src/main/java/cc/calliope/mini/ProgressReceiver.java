@@ -15,10 +15,10 @@ import cc.calliope.mini.utils.Utils;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.error.GattError;
 
-import static cc.calliope.mini.DfuControlService.BOARD_UNIDENTIFIED;
+import static cc.calliope.mini.DfuControlService.UNIDENTIFIED;
 import static cc.calliope.mini.DfuControlService.EXTRA_BOARD_VERSION;
 import static cc.calliope.mini.DfuControlService.EXTRA_NEW_BOND_STATE;
-import static cc.calliope.mini.DfuControlService.EXTRA_ERROR;
+import static cc.calliope.mini.DfuControlService.EXTRA_ERROR_MESSAGE;
 import static cc.calliope.mini.DfuControlService.EXTRA_PREVIOUS_BOND_STATE;
 
 public class ProgressReceiver extends BroadcastReceiver {
@@ -28,7 +28,7 @@ public class ProgressReceiver extends BroadcastReceiver {
 
     public ProgressReceiver(@NonNull Context context) {
         this.context = context;
-        if (context instanceof InfoManager.GetInfoListener) {
+        if (context instanceof ProgressListener) {
             this.listener = (ProgressListener) context;
         }
     }
@@ -53,7 +53,7 @@ public class ProgressReceiver extends BroadcastReceiver {
         filter.addAction(PartialFlashingBaseService.BROADCAST_PF_FAILED);
         filter.addAction(PartialFlashingBaseService.BROADCAST_PF_ATTEMPT_DFU);
 
-        //PartialFlashingService
+        //DfuControlServiceManager
         filter.addAction(DfuControlServiceManager.BROADCAST_DFU_CONTROL_SERVICE);
 
         //DfuControlService
@@ -132,16 +132,16 @@ public class ProgressReceiver extends BroadcastReceiver {
                 case DfuControlService.BROADCAST_BONDING -> {
                     int bondState = intent.getIntExtra(EXTRA_NEW_BOND_STATE, -1);
                     int previousBondState = intent.getIntExtra(EXTRA_PREVIOUS_BOND_STATE, -1);
-                    listener.onBonding(bondState, previousBondState);
+                    listener.onBonding(null, bondState, previousBondState);
                     Utils.log(Log.WARN, TAG, "BOND_STATE: " + bondState + ", PREVIOUS_BOND_STATE: " + previousBondState);
                 }
                 case DfuControlService.BROADCAST_COMPLETED -> {
-                    int boardVersion = intent.getIntExtra(EXTRA_BOARD_VERSION, BOARD_UNIDENTIFIED);
-                    listener.onDfuControlCompleted(boardVersion);
+                    int boardVersion = intent.getIntExtra(EXTRA_BOARD_VERSION, UNIDENTIFIED);
+                    listener.onStartDfuService(boardVersion);
                 }
                 case DfuControlService.BROADCAST_FAILED -> listener.onDeviceDisconnecting();
                 case DfuControlService.BROADCAST_ERROR -> {
-                    String message = intent.getStringExtra(EXTRA_ERROR);
+                    String message = intent.getStringExtra(EXTRA_ERROR_MESSAGE);
                     listener.onError(-1, message);
                 }
             }

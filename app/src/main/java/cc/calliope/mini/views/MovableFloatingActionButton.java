@@ -1,5 +1,6 @@
 package cc.calliope.mini.views;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
@@ -13,8 +14,9 @@ import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.NonNull;
+import cc.calliope.mini.ProgressCollector;
 import cc.calliope.mini.ProgressListener;
-import cc.calliope.mini.ProgressReceiver;
 import cc.calliope.mini.R;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.utils.Version;
@@ -28,7 +30,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private int progress = 0;
     private boolean isFabMenuOpen = false;
     private Context context;
-    private ProgressReceiver progressReceiver;
+    private ProgressCollector progressCollector;
     private boolean flashing;
 
     public MovableFloatingActionButton(Context context) {
@@ -48,8 +50,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     private void init(Context context) {
         this.context = context;
-        progressReceiver = new ProgressReceiver(context);
-        progressReceiver.setProgressListener(this);
+        progressCollector = new ProgressCollector(context);
         setOnTouchListener(this);
         paint = new Paint();
         rectF = new RectF();
@@ -60,13 +61,13 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 //        setProgress(0);
-        progressReceiver.registerReceiver();
+        progressCollector.registerReceivers();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        progressReceiver.unregisterReceiver();
+        progressCollector.unregisterReceivers();
     }
 
     @Override
@@ -166,12 +167,12 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     }
 
     @Override
-    public void onBonding(int bondState, int previousBondState) {
+    public void onBonding(@NonNull BluetoothDevice device, int bondState, int previousBondState) {
 
     }
 
     @Override
-    public void onDfuControlCompleted(int boardVersion){}
+    public void onStartDfuService(int hardwareVersion){}
 
     @Override
     public void onError(int code, String message) {

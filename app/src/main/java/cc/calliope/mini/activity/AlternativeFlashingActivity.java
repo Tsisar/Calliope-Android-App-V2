@@ -21,12 +21,13 @@ import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import cc.calliope.mini.ProgressCollector;
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.DfuControlService;
 import cc.calliope.mini.ProgressListener;
-import cc.calliope.mini.ProgressReceiver;
 import cc.calliope.mini.R;
 import cc.calliope.mini.databinding.ActivityDfuBinding;
 import cc.calliope.mini.service.DfuService;
@@ -41,10 +42,10 @@ import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import static android.bluetooth.BluetoothDevice.BOND_BONDED;
 import static android.bluetooth.BluetoothDevice.BOND_BONDING;
 import static android.bluetooth.BluetoothDevice.BOND_NONE;
-import static cc.calliope.mini.DfuControlService.BOARD_UNIDENTIFIED;
-import static cc.calliope.mini.DfuControlService.BOARD_V1;
-import static cc.calliope.mini.DfuControlService.BOARD_V2;
-import static cc.calliope.mini.DfuControlService.HardwareType;
+import static cc.calliope.mini.DfuControlService.UNIDENTIFIED;
+import static cc.calliope.mini.DfuControlService.MINI_V1;
+import static cc.calliope.mini.DfuControlService.MINI_V2;
+import static cc.calliope.mini.DfuControlService.HardwareVersion;
 
 import static cc.calliope.mini.DfuControlService.EXTRA_DEVICE_ADDRESS;
 
@@ -59,10 +60,10 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     private BoardProgressBar progressBar;
     private final Handler timerHandler = new Handler();
     private final Runnable deferredFinish = this::finish;
-    private ProgressReceiver progressReceiver;
-    private BluetoothDevice device;
+    private BluetoothDevice currentDevice;
     private String pattern;
     private String filePath;
+    private ProgressCollector progressCollector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +76,8 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
         progress = binding.progressTextView;
         progressBar = binding.progressBar;
 
-        progressReceiver = new ProgressReceiver(this);
-        progressReceiver.setProgressListener(this);
+        progressCollector = new ProgressCollector(this);
+        progressCollector.registerReceivers();
 
         initFlashing();
     }
@@ -85,18 +86,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     protected void onDestroy() {
         binding = null;
         super.onDestroy();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        progressReceiver.registerReceiver();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        progressReceiver.unregisterReceiver();
+        progressCollector.unregisterReceivers();
     }
 
     @Override
@@ -154,16 +144,20 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     }
 
     @Override
-    public void onDfuControlCompleted(int boardVersion) {
-        Utils.log(Log.ASSERT, "DeviceInformation", "Board version: " + boardVersion);
+    public void onStartDfuService(int hardwareVersion) {
+        Utils.log(Log.ASSERT, "DeviceInformation", "Board version: " + hardwareVersion);
 
-        startFlashing(boardVersion);
+        startFlashing(hardwareVersion);
         Utils.log(Log.ASSERT, TAG, "onDfuControlCompleted");
     }
 
     @Override
-    public void onBonding(int bondState, int previousBondState) {
+    public void onBonding(@NonNull BluetoothDevice device, int bondState, int previousBondState) {
+        if (!currentDevice.getAddress().equals(device.getAddress())) {
+            return;
+        }
         progress.setText("");
+
         switch (bondState) {
             case BOND_BONDING -> status.setText(R.string.bonding_started);
             case BOND_BONDED -> status.setText(R.string.bonding_succeeded);
@@ -179,7 +173,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
                 Utils.log(Log.ERROR, TAG, "BLUETOOTH permission no granted");
                 return;
             }
-            device.createBond();
+            currentDevice.createBond();
         }
         progress.setText(String.format(getString(R.string.flashing_error), code));
         status.setText(message);
@@ -203,27 +197,27 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
             return;
         }
 
-        device = extendedDevice.getDevice();
+        currentDevice = extendedDevice.getDevice();
         pattern = extendedDevice.getPattern();
 
         Utils.log(Log.INFO, TAG, "Device: " + extendedDevice.getAddress() + " " + extendedDevice.getName());
         Utils.log(Log.INFO, TAG, "File path: " + filePath);
 
         Intent intent = new Intent(this, DfuControlService.class);
-        intent.putExtra(EXTRA_DEVICE_ADDRESS, device.getAddress());
+        intent.putExtra(EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
         startService(intent);
     }
 
     @SuppressWarnings("deprecation")
-    private void startFlashing(final int hardwareType) {
+    private void startFlashing(@HardwareVersion final int hardwareVersion) {
         Utils.log(Log.INFO, TAG, "Starting DFU Service...");
 
-        if (hardwareType == BOARD_UNIDENTIFIED) {
+        if (hardwareVersion == UNIDENTIFIED) {
             Utils.log(Log.ERROR, TAG, "BOARD_UNIDENTIFIED");
             return;
         }
 
-        HexToDfu hexToDFU = universalHexToDFU(filePath, hardwareType);
+        HexToDfu hexToDFU = universalHexToDFU(filePath, hardwareVersion);
         String hexPath = hexToDFU.getPath();
         int hexSize = hexToDFU.getSize();
 
@@ -234,8 +228,8 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
             return;
         }
 
-        if (hardwareType == BOARD_V1) {
-            new DfuServiceInitiator(device.getAddress())
+        if (hardwareVersion == MINI_V1) {
+            new DfuServiceInitiator(currentDevice.getAddress())
                     .setDeviceName(pattern)
                     .setPrepareDataObjectDelay(300L)
                     .setNumberOfRetries(NUMBER_OF_RETRIES)
@@ -263,7 +257,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
                 return;
             }
 
-            new DfuServiceInitiator(device.getAddress())
+            new DfuServiceInitiator(currentDevice.getAddress())
                     .setDeviceName(pattern)
                     .setPrepareDataObjectDelay(300L)
                     .setNumberOfRetries(NUMBER_OF_RETRIES)
@@ -369,7 +363,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
         }
     }
 
-    private HexToDfu universalHexToDFU(String inputPath, @HardwareType int hardwareType) {
+    private HexToDfu universalHexToDFU(String inputPath, @HardwareVersion int hardwareVersion) {
         FileInputStream fis;
         ByteArrayOutputStream outputHex;
         outputHex = new ByteArrayOutputStream();
@@ -412,11 +406,11 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
 
                         // Check data for id
                         if (bs[b_x + 9] == '9' && bs[b_x + 10] == '9' && bs[b_x + 11] == '0' && bs[b_x + 12] == '0') {
-                            records_wanted = (hardwareType == BOARD_V1);
+                            records_wanted = (hardwareVersion == MINI_V1);
                         } else if (bs[b_x + 9] == '9' && bs[b_x + 10] == '9' && bs[b_x + 11] == '0' && bs[b_x + 12] == '1') {
-                            records_wanted = (hardwareType == BOARD_V1);
+                            records_wanted = (hardwareVersion == MINI_V1);
                         } else if (bs[b_x + 9] == '9' && bs[b_x + 10] == '9' && bs[b_x + 11] == '0' && bs[b_x + 12] == '3') {
-                            records_wanted = (hardwareType == BOARD_V2);
+                            records_wanted = (hardwareVersion == MINI_V2);
                         }
                         break;
                     case 'E':
@@ -452,7 +446,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
                     case '1':
                         // EOF
                         // Ensure KV storage is erased
-                        if (hardwareType == BOARD_V1) {
+                        if (hardwareVersion == MINI_V1) {
                             String kv_address = ":020000040003F7\n";
                             String kv_data = ":1000000000000000000000000000000000000000F0\n";
                             outputHex.write(kv_address.getBytes());
@@ -504,12 +498,12 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
                         int lower_bound = 0;
                         int upper_bound = 0;
                         //MICROBIT_V1 lower_bound = 0x18000; upper_bound = 0x38000;
-                        if (hardwareType == BOARD_V1) {
+                        if (hardwareVersion == MINI_V1) {
                             lower_bound = 0x18000;
                             upper_bound = 0x3BBFF;
                         }
                         //MICROBIT_V2 lower_bound = 0x27000; upper_bound = 0x71FFF;
-                        if (hardwareType == BOARD_V2) {
+                        if (hardwareVersion == MINI_V2) {
                             lower_bound = 0x1C000;
                             upper_bound = 0x77000;
                         }
@@ -567,7 +561,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
                 Utils.log(Log.VERBOSE, TAG, hexToFlash.getAbsolutePath());
 
                 /*
-                if(hardwareType == MICROBIT_V2 && (!is_v2 && !is_fat)) {
+                if(hardwareVersion == MICROBIT_V2 && (!is_v2 && !is_fat)) {
                     ret[1] = Integer.toString(-1); // Invalidate hex file
                 }
                  */

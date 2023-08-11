@@ -1,14 +1,12 @@
 package cc.calliope.mini;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,6 +24,7 @@ import java.util.UUID;
 
 import androidx.annotation.IntDef;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.utils.Version;
@@ -53,7 +52,8 @@ public class DfuControlService extends Service {
     public static final String BROADCAST_BONDING = "cc.calliope.mini.DFUControlService.BROADCAST_BONDING";
     public static final String BROADCAST_ERROR = "cc.calliope.mini.DFUControlService.BROADCAST_ERROR";
     public static final String EXTRA_BOARD_VERSION = "cc.calliope.mini.DFUControlService.EXTRA_BOARD_VERSION";
-    public static final String EXTRA_ERROR = "cc.calliope.mini.DFUControlService.EXTRA_ERROR";
+    public static final String EXTRA_ERROR_CODE = "cc.calliope.mini.DFUControlService.EXTRA_ERROR_CODE";
+    public static final String EXTRA_ERROR_MESSAGE = "cc.calliope.mini.DFUControlService.EXTRA_ERROR_MESSAGE";
     public static final String EXTRA_DEVICE_ADDRESS = "cc.calliope.mini.DFUControlService.EXTRA_DEVICE_ADDRESS";
     public static final String EXTRA_MAX_RETRIES_NUMBER = "cc.calliope.mini.DFUControlService.EXTRA_MAX_RETRIES_NUMBER";
     public static final String EXTRA_PREVIOUS_BOND_STATE = "cc.calliope.mini.DFUControlService.EXTRA_PREVIOUS_BOND_STATE";
@@ -65,14 +65,24 @@ public class DfuControlService extends Service {
     private boolean isComplete = false;
     private int bondState;
     private String deviceAddress;
-    public static final int BOARD_UNIDENTIFIED = 0;
-    public static final int BOARD_V1 = 1;
-    public static final int BOARD_V2 = 2;
-    @IntDef({BOARD_UNIDENTIFIED, BOARD_V1, BOARD_V2})
+    public static final int UNIDENTIFIED = 0;
+    /**
+     * Version 1.x, 2.0, 2,1
+     * https://calliope-mini.github.io/v10/
+     * https://calliope-mini.github.io/v20/
+     * https://calliope-mini.github.io/v21/
+     */
+    public static final int MINI_V1 = 1;
+    /**
+     * New version
+     */
+    public static final int MINI_V2 = 2;
+    @IntDef({UNIDENTIFIED, MINI_V1, MINI_V2})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface HardwareType {
+    public @interface HardwareVersion {
     }
-    private int boardVersion = BOARD_UNIDENTIFIED;
+    private int boardVersion = UNIDENTIFIED;
+
     private final BroadcastReceiver bondStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -86,17 +96,8 @@ public class DfuControlService extends Service {
 
             // Take action depending on new bond state
             if (action.equals(ACTION_BOND_STATE_CHANGED)) {
-                final int newBondState = intent.getIntExtra(EXTRA_BOND_STATE, ERROR);
-                final int previousBondState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, ERROR);
-
-                final Intent broadcast = new Intent(BROADCAST_BONDING);
-                broadcast.putExtra(EXTRA_NEW_BOND_STATE, newBondState);
-                broadcast.putExtra(EXTRA_PREVIOUS_BOND_STATE, previousBondState);
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcast);
-
-                bondState = newBondState;
-
-                switch (newBondState) {
+                bondState = intent.getIntExtra(EXTRA_BOND_STATE, ERROR);
+                switch (bondState) {
                     case BOND_BONDING -> Utils.log(Log.WARN, TAG, "Bonding started");
                     case BOND_BONDED -> {
                         Utils.log(Log.WARN, TAG, "Bonding succeeded");
@@ -114,6 +115,83 @@ public class DfuControlService extends Service {
             }
         }
     };
+
+    @SuppressWarnings({"MissingPermission"})
+    private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
+            Utils.log(Log.ASSERT, TAG, "onConnectionStateChange(gatt: " + gatt + ", status: " + status + ", newState: " + newState + ")");
+
+            if (status == GATT_SUCCESS) {
+                if (newState == STATE_CONNECTED) {
+                    if (bondState == BOND_NONE || bondState == BOND_BONDED) {
+                        if (bondState == BOND_BONDED && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
+                            waitFor(1600);
+                        }
+                        boolean result = gatt.discoverServices();
+                        if (!result) {
+                            Utils.log(Log.ERROR, TAG, "discoverServices failed to start");
+                        }
+                    } else if (bondState == BOND_BONDING) {
+                        Utils.log(Log.WARN, TAG, "waiting for bonding to complete");
+                    }
+                } else if (newState == STATE_DISCONNECTED) {
+                    stopService(gatt);
+                }
+            } else {
+                stopService(gatt);
+            }
+        }
+
+        @Override
+        public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
+            Utils.log(Log.ASSERT, TAG, "onServicesDiscovered(status: " + status + ")");
+
+            if (status == GATT_SUCCESS) {
+                startLegacyDfu(gatt);
+            } else {
+                setError(gatt, status, "Services discovered not success");
+            }
+        }
+
+        // Other methods just pass the parameters through
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Utils.log(Log.ASSERT, TAG, "onCharacteristicWrite(status: " + status + ")");
+
+            if (bondState == BOND_NONE || bondState == BOND_BONDED) {
+                if (status == GATT_SUCCESS) {
+                    isComplete = true;
+                    boardVersion = MINI_V1;
+                } else {
+                    setError(gatt, status, "Characteristic write not success");
+                }
+            } else if (bondState == BOND_BONDING) {
+                Utils.log(Log.WARN, TAG, "waiting for bonding to complete");
+            }
+        }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Utils.log(Log.ASSERT, TAG, "onCharacteristicRead(gatt: " + gatt + ", characteristic: " + characteristic + ", status: " + status + ")");
+
+            if (bondState == BOND_NONE || bondState == BOND_BONDED) {
+                if (status == GATT_SUCCESS) {
+                    characteristic.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+                    try {
+                        Utils.log(Log.DEBUG, TAG, "Writing Flash Command...");
+                        gatt.writeCharacteristic(characteristic);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        setError(gatt, 133, e.toString());
+                    }
+                }
+            } else if (bondState == BOND_BONDING) {
+                Utils.log(Log.WARN, TAG, "waiting for bonding to complete");
+            }
+        }
+    };
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -144,128 +222,6 @@ public class DfuControlService extends Service {
 
         Utils.log(Log.DEBUG, TAG, "Сервіс зупинений.");
     }
-
-    @SuppressWarnings({"MissingPermission"})
-    private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
-        @Override
-        public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName + "(gatt: " + gatt + ", status: " + status + ", newState: " + newState + ")");
-
-            if (status == GATT_SUCCESS) {
-                if (newState == STATE_CONNECTED) {
-//                    if (bondState == BOND_NONE && Version.upperTiramisu) {
-//                        bondState = BOND_BONDING;
-//                        device.createBond();
-//                    }
-
-                    if (bondState == BOND_NONE || bondState == BOND_BONDED) {
-                        if (bondState == BOND_BONDED && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
-                            waitFor(1600);
-                        }
-                        boolean result = gatt.discoverServices();
-                        if (!result) {
-                            Utils.log(Log.ERROR, TAG, "discoverServices failed to start");
-                        }
-                    } else if (bondState == BOND_BONDING) {
-                        Utils.log(Log.WARN, TAG, "waiting for bonding to complete");
-                    }
-                } else if (newState == STATE_DISCONNECTED) {
-                    stopService(gatt);
-                }
-            } else {
-                stopService(gatt);
-            }
-        }
-
-        @Override
-        public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName);
-
-            if (status == GATT_SUCCESS) {
-                startLegacyDfu(gatt);
-            } else {
-                setError(gatt, "Services discovered not success");
-            }
-        }
-
-        // Other methods just pass the parameters through
-        @Override
-        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName + " status: " + status);
-
-            if (bondState == BOND_NONE || bondState == BOND_BONDED) {
-                if (status == GATT_SUCCESS) {
-                    isComplete = true;
-                    boardVersion = BOARD_V1;
-                } else {
-                    setError(gatt, "Characteristic write not success");
-                }
-            } else if (bondState == BOND_BONDING) {
-                Utils.log(Log.WARN, TAG, "waiting for bonding to complete");
-            }
-        }
-
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName + "(gatt: " + gatt + ", characteristic: " + characteristic + ", status: " + status + ")");
-
-            if (status == GATT_SUCCESS) {
-                characteristic.setValue(1, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-                try {
-                    Utils.log(Log.DEBUG, TAG, "Writing Flash Command...");
-                    gatt.writeCharacteristic(characteristic);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    setError(gatt, e.toString());
-                }
-            }
-        }
-
-        @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName);
-        }
-
-        @Override
-        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName);
-        }
-
-        @Override
-        public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName);
-        }
-
-        @SuppressLint("NewApi")
-        @Override
-        public void onMtuChanged(final BluetoothGatt gatt, final int mtu, final int status) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName);
-        }
-
-        @SuppressLint("NewApi")
-        @Override
-        public void onPhyUpdate(final BluetoothGatt gatt, final int txPhy, final int rxPhy, final int status) {
-            String methodName = new Object() {
-            }.getClass().getEnclosingMethod().getName();
-            Utils.log(Log.ASSERT, TAG, methodName);
-        }
-    };
 
     private void connect() {
         if ((Version.upperSnowCone && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
@@ -318,7 +274,7 @@ public class DfuControlService extends Service {
 
         final BluetoothGattCharacteristic legacyDfuCharacteristic = legacyDfuService.getCharacteristic(DEVICE_FIRMWARE_UPDATE_CONTROL_CHARACTERISTIC_UUID);
         if (legacyDfuCharacteristic == null) {
-            setError(gatt, "Cannot find DEVICE_FIRMWARE_UPDATE_CONTROL_CHARACTERISTIC_UUID");
+            setError(gatt, 133, "Cannot find DEVICE_FIRMWARE_UPDATE_CONTROL_CHARACTERISTIC_UUID");
             return;
         }
 
@@ -336,11 +292,11 @@ public class DfuControlService extends Service {
                 clearServicesCache(gatt);
                 gatt.discoverServices();
             } else {
-                setError(gatt, "Cannot find services");
+                setError(gatt, 133, "Cannot find services");
             }
         } else {
             isComplete = true;
-            boardVersion = BOARD_V2;
+            boardVersion = MINI_V2;
             gatt.disconnect();
         }
     }
@@ -381,10 +337,11 @@ public class DfuControlService extends Service {
     }
 
     @SuppressWarnings({"MissingPermission"})
-    private void setError(BluetoothGatt gatt, final String message) {
+    private void setError(BluetoothGatt gatt, final int code, final String message) {
         gatt.disconnect();
         final Intent broadcast = new Intent(BROADCAST_ERROR);
-        broadcast.putExtra(EXTRA_ERROR, message);
+        broadcast.putExtra(EXTRA_ERROR_CODE, code);
+        broadcast.putExtra(EXTRA_ERROR_MESSAGE, message);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcast);
         Utils.log(Log.ERROR, TAG, message);
     }
