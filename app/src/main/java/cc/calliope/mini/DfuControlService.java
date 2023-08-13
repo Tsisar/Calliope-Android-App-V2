@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import androidx.annotation.IntDef;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.MutableLiveData;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.utils.Version;
@@ -82,6 +81,7 @@ public class DfuControlService extends Service {
     public @interface HardwareVersion {
     }
     private int boardVersion = UNIDENTIFIED;
+    private App app;
 
     private final BroadcastReceiver bondStateReceiver = new BroadcastReceiver() {
         @Override
@@ -201,10 +201,14 @@ public class DfuControlService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Utils.log(Log.DEBUG, TAG, "Сервіс запущений.");
+
         registerReceiver(bondStateReceiver, new IntentFilter(ACTION_BOND_STATE_CHANGED));
 
         deviceAddress = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
         maxRetries = intent.getIntExtra(EXTRA_MAX_RETRIES_NUMBER, 2);
+
+        app = (App) getApplication();
+        app.setAppState(App.APP_STATE_CONNECTING);
 
         connect();
 
@@ -220,6 +224,7 @@ public class DfuControlService extends Service {
         broadcast.putExtra(EXTRA_BOARD_VERSION, boardVersion);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcast);
 
+        app.setAppState(App.APP_STATE_STANDBY);
         Utils.log(Log.DEBUG, TAG, "Сервіс зупинений.");
     }
 

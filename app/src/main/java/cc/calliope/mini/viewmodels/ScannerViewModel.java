@@ -40,8 +40,6 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.util.Log;
 
-import org.microbit.android.partialflashing.PartialFlashingBaseService;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -49,8 +47,7 @@ import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import cc.calliope.mini.service.DfuService;
+import cc.calliope.mini.App;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.utils.Version;
 import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
@@ -59,6 +56,7 @@ import no.nordicsemi.android.support.v18.scanner.ScanFilter;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 
+import static cc.calliope.mini.App.APP_STATE_FLASHING;
 import static cc.calliope.mini.utils.StaticExtra.SHARED_PREFERENCES_NAME;
 
 public class ScannerViewModel extends AndroidViewModel {
@@ -67,7 +65,6 @@ public class ScannerViewModel extends AndroidViewModel {
     // If there is no one device in the bluetooth visibility range callback not working.
     private Timer timer;
     private static final int REFRESH_PERIOD = 3000;
-    private FlashingReceiver flashingReceiver;
 
     /**
      * MutableLiveData containing the scanner state to notify MainActivity.
@@ -84,7 +81,6 @@ public class ScannerViewModel extends AndroidViewModel {
         mScannerLiveData = new ScannerLiveData(Utils.isBluetoothEnabled(),
                 Utils.isLocationEnabled(application) || Version.upperSnowCone);
         registerBroadcastReceivers(application);
-        registerFlashingBroadcastReceiver(application);
         loadPattern();
     }
 
@@ -93,7 +89,6 @@ public class ScannerViewModel extends AndroidViewModel {
         super.onCleared();
         Application application = getApplication();
 
-        unregisterFlashingBroadcastReceiver(application);
         application.unregisterReceiver(mBluetoothStateBroadcastReceiver);
 
         if (Version.upperMarshmallow) {
@@ -110,7 +105,8 @@ public class ScannerViewModel extends AndroidViewModel {
      */
     public void startScan() {
         Log.e("SCANNER", "### " + Thread.currentThread().getId() + " # " + "startScan()");
-        if (mScannerLiveData.isScanning() || !mScannerLiveData.isBluetoothEnabled() || mScannerLiveData.isFlashing()) {
+        boolean isFlashing = ((App) getApplication()).getAppState() == APP_STATE_FLASHING;
+        if (mScannerLiveData.isScanning() || !mScannerLiveData.isBluetoothEnabled() || isFlashing) {
             return;
         }
 
@@ -224,54 +220,6 @@ public class ScannerViewModel extends AndroidViewModel {
             }
         }
     };
-    public void registerFlashingBroadcastReceiver(Application application) {
-        if (flashingReceiver == null) {
-            flashingReceiver = new FlashingReceiver();
-            IntentFilter filter = new IntentFilter();
-
-            //DfuService
-            filter.addAction(DfuService.BROADCAST_PROGRESS);
-            //PartialFlashingService
-            filter.addAction(PartialFlashingBaseService.BROADCAST_PROGRESS);
-            LocalBroadcastManager.getInstance(application).registerReceiver(flashingReceiver, filter);
-        }
-    }
-
-    public void unregisterFlashingBroadcastReceiver(Application application) {
-        if (flashingReceiver != null) {
-            LocalBroadcastManager.getInstance(application).unregisterReceiver(flashingReceiver);
-            flashingReceiver = null;
-        }
-    }
-
-    private class FlashingReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            switch (action) {
-                //DfuService
-                case DfuService.BROADCAST_PROGRESS -> {
-                    int extra = intent.getIntExtra(DfuService.EXTRA_DATA, 0);
-                    setFlashing(extra > 0);
-                }
-                //PartialFlashingService
-                case PartialFlashingBaseService.BROADCAST_PROGRESS -> {
-                    int extra = intent.getIntExtra(PartialFlashingBaseService.EXTRA_PROGRESS, 0);
-                    setFlashing(extra > 0);
-                }
-            }
-        }
-    }
-
-    private void setFlashing(boolean flashing){
-        if (flashing && !mScannerLiveData.isFlashing()) {
-            mScannerLiveData.setFlashing(true);
-            stopScan();
-        }else if(!flashing && mScannerLiveData.isFlashing()){
-            mScannerLiveData.setFlashing(false);
-            startScan();
-        }
-    }
 
     public void savePattern() {
         Float[] currentPattern = mScannerLiveData.getCurrentPattern();

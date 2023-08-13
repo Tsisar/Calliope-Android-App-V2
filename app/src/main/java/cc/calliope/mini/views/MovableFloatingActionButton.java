@@ -31,7 +31,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private boolean isFabMenuOpen = false;
     private Context context;
     private ProgressCollector progressCollector;
-    private boolean flashing;
+//    private boolean flashing;
 
     public MovableFloatingActionButton(Context context) {
         super(context);
@@ -51,6 +51,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private void init(Context context) {
         this.context = context;
         progressCollector = new ProgressCollector(context);
+        progressCollector.registerOnProgressListener(this);
         setOnTouchListener(this);
         paint = new Paint();
         rectF = new RectF();
@@ -181,7 +182,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     public void setProgress(int percent) {
         this.progress = Math.max(percent, 0);
-        flashing = percent > 0;
+        boolean flashing = percent > -5;
         if (flashing) {
             setColor(R.color.green);
         }
@@ -214,10 +215,6 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         canvas.drawArc(rectF, 270, sweepAngle, false, paint);
 
         super.onDraw(canvas);
-    }
-
-    public boolean isFlashing() {
-        return flashing;
     }
 
     public boolean isFabMenuOpen() {

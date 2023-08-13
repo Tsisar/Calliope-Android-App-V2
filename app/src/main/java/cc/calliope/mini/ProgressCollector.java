@@ -6,12 +6,17 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 
 import org.microbit.android.partialflashing.PartialFlashingBaseService;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cc.calliope.mini.service.DfuService;
+import cc.calliope.mini.utils.Utils;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.error.GattError;
 
@@ -23,9 +28,12 @@ import static cc.calliope.mini.DfuControlService.EXTRA_BOARD_VERSION;
 import static cc.calliope.mini.DfuControlService.EXTRA_ERROR_CODE;
 import static cc.calliope.mini.DfuControlService.EXTRA_ERROR_MESSAGE;
 
-public class ProgressCollector extends ContextWrapper {
+public class ProgressCollector extends ContextWrapper implements DefaultLifecycleObserver {
+    private static final String TAG = "ProgressCollector";
     private final Context context;
     private ProgressListener listener;
+
+    private App app;
 
     private final BroadcastReceiver bondStateReceiver = new BroadcastReceiver() {
         @Override
@@ -140,7 +148,51 @@ public class ProgressCollector extends ContextWrapper {
         }
     }
 
+    public void registerOnProgressListener(ProgressListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void onCreate(@NonNull LifecycleOwner owner) {
+        DefaultLifecycleObserver.super.onCreate(owner);
+        Utils.log(TAG, "onCreate");
+    }
+
+    @Override
+    public void onStart(@NonNull LifecycleOwner owner) {
+        DefaultLifecycleObserver.super.onStart(owner);
+        Utils.log(TAG, "onStart");
+    }
+
+    @Override
+    public void onResume(@NonNull LifecycleOwner owner) {
+        DefaultLifecycleObserver.super.onResume(owner);
+        Utils.log(TAG, "onResume");
+    }
+
+    @Override
+    public void onPause(@NonNull LifecycleOwner owner) {
+        DefaultLifecycleObserver.super.onPause(owner);
+        Utils.log(TAG, "onPause");
+    }
+
+    @Override
+    public void onStop(@NonNull LifecycleOwner owner) {
+        DefaultLifecycleObserver.super.onStop(owner);
+        Utils.log(TAG, "onStop");
+    }
+
+    @Override
+    public void onDestroy(@NonNull LifecycleOwner owner) {
+        DefaultLifecycleObserver.super.onDestroy(owner);
+        Utils.log(TAG, "onDestroy");
+    }
+
     public void registerReceivers() {
+        Utils.log(Log.WARN, TAG, "registerReceivers() listener: " + listener);
+        if(listener == null){
+            return;
+        }
         //BondStateReceiver
         IntentFilter bondStateFilter = new IntentFilter();
         bondStateFilter.addAction(ACTION_BOND_STATE_CHANGED);
@@ -172,6 +224,7 @@ public class ProgressCollector extends ContextWrapper {
     }
 
     public void unregisterReceivers() {
+        Utils.log(Log.WARN, TAG, "unregisterReceivers()");
         unregisterReceiver(bondStateReceiver);
         LocalBroadcastManager.getInstance(context).unregisterReceiver(dfuServiceReceiver);
         LocalBroadcastManager.getInstance(context).unregisterReceiver(dfuControlServiceReceiver);

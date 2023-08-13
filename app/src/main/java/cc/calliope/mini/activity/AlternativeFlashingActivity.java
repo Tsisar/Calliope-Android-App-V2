@@ -24,6 +24,7 @@ import java.util.zip.ZipOutputStream;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini.ProgressCollector;
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.DfuControlService;
@@ -77,6 +78,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
         progressBar = binding.progressBar;
 
         progressCollector = new ProgressCollector(this);
+        getLifecycle().addObserver(progressCollector);
         progressCollector.registerReceivers();
 
         initFlashing();

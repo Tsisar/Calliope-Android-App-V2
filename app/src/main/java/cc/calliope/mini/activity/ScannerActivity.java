@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -24,6 +25,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import cc.calliope.mini.App;
 import cc.calliope.mini.R;
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.dialog.pattern.PatternDialogFragment;
@@ -51,6 +53,8 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     private Animation fabCloseAnimation;
     private int screenWidth;
     private int screenHeight;
+    private App app;
+
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
             }
@@ -59,6 +63,8 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        app = (App) getApplication();
 
         fabOpenAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_open);
         fabCloseAnimation = AnimationUtils.loadAnimation(this, R.anim.fab_close);
@@ -147,8 +153,9 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     protected void setDevice(ExtendedBluetoothDevice device) {
-        if (patternFab != null && !patternFab.isFlashing()) {
-            int color = device != null && device.isRelevant() ? R.color.green : R.color.orange;
+        if (patternFab != null) {
+            boolean colorGreen = (device != null && device.isRelevant()) || app.getAppState() != App.APP_STATE_STANDBY;
+            int color = colorGreen ? R.color.green : R.color.orange;
             patternFab.setColor(color);
         }
     }
@@ -194,16 +201,16 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
 
     public void onItemFabMenuClicked(View view) {
         if (view.getId() == R.id.fabConnect) {
-            if (patternFab.isFlashing()) {
-                final Intent intent = new Intent(this, AlternativeFlashingActivity.class);
-                startActivity(intent);
-            } else {
+            if (app.getAppState() == App.APP_STATE_STANDBY) {
                 showPatternDialog(new FobParams(
                         patternFab.getWidth(),
                         patternFab.getHeight(),
                         patternFab.getX(),
                         patternFab.getY()
                 ));
+            } else {
+                final Intent intent = new Intent(this, AlternativeFlashingActivity.class);
+                startActivity(intent);
             }
         }
         collapseFabMenu();
