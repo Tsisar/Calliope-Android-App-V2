@@ -1,13 +1,17 @@
 package cc.calliope.mini.activity;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,10 +25,11 @@ import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini.ProgressCollector;
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.DfuControlService;
@@ -51,10 +56,11 @@ import static cc.calliope.mini.DfuControlService.HardwareVersion;
 import static cc.calliope.mini.DfuControlService.EXTRA_DEVICE_ADDRESS;
 
 public class AlternativeFlashingActivity extends AppCompatActivity implements ProgressListener {
-    private static final String TAG = "FlashingActivity";
+    private static final String TAG = "AlternativeFlashingActivity";
     private static final int NUMBER_OF_RETRIES = 3;
     private static final int REBOOT_TIME = 2000; // time required by the device to reboot, ms
     private static final int DELAY_TO_FINISH_ACTIVITY = 5000; // delay to finish activity after flashing
+    private static final int SNACKBAR_DURATION = 10000; // how long to display the snackbar message.
     private ActivityDfuBinding binding;
     private TextView progress;
     private TextView status;
@@ -66,6 +72,12 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     private String filePath;
     private ProgressCollector progressCollector;
 
+    ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                startDfuControlService();
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +88,8 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
         status = binding.statusTextView;
         progress = binding.progressTextView;
         progressBar = binding.progressBar;
+
+        binding.retryButton.setOnClickListener(this::onRetryClicked);
 
         progressCollector = new ProgressCollector(this);
         getLifecycle().addObserver(progressCollector);
@@ -118,7 +132,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     @Override
     public void onDeviceDisconnecting() {
         status.setText(R.string.flashing_device_disconnecting);
-        timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
+        finishActivity();
         Utils.log(Log.WARN, TAG, "onDeviceDisconnecting");
     }
 
@@ -177,9 +191,21 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
             }
             currentDevice.createBond();
         }
-        progress.setText(String.format(getString(R.string.flashing_error), code));
-        status.setText(message);
+        binding.retryButton.setVisibility(View.VISIBLE);
+        String error = String.format(getString(R.string.flashing_error), code, message);
+        Utils.errorSnackbar(binding.getRoot(), error).show();
+//        progress.setText(String.format(getString(R.string.flashing_error), code));
+        status.setText(error);
         Utils.log(Log.ERROR, TAG, "ERROR " + code + ", " + message);
+    }
+
+    private void onRetryClicked(View view) {
+        view.setVisibility(View.INVISIBLE);
+        startDfuControlService();
+    }
+
+    private void finishActivity() {
+        timerHandler.postDelayed(deferredFinish, DELAY_TO_FINISH_ACTIVITY);
     }
 
     private void initFlashing() {
@@ -205,9 +231,17 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
         Utils.log(Log.INFO, TAG, "Device: " + extendedDevice.getAddress() + " " + extendedDevice.getName());
         Utils.log(Log.INFO, TAG, "File path: " + filePath);
 
-        Intent intent = new Intent(this, DfuControlService.class);
-        intent.putExtra(EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
-        startService(intent);
+        startDfuControlService();
+    }
+
+    private void startDfuControlService() {
+        if (Utils.isBluetoothEnabled()) {
+            Intent intent = new Intent(this, DfuControlService.class);
+            intent.putExtra(EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
+            startService(intent);
+        } else {
+            showBluetoothDisabledWarning();
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -594,5 +628,17 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
 
         // A - F
         return in - 55;
+    }
+
+    private void showBluetoothDisabledWarning() {
+        Snackbar snackbar = Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_bluetooth_disable));
+        snackbar.setDuration(SNACKBAR_DURATION);
+        snackbar.setAction(R.string.button_enable, this::startBluetoothEnableActivity)
+                .show();
+    }
+
+    public void startBluetoothEnableActivity(View view) {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        bluetoothEnableResultLauncher.launch(enableBtIntent);
     }
 }

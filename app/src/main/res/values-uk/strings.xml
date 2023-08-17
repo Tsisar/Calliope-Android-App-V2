@@ -102,7 +102,7 @@
     <string name="flashing_completed">Прошивку завершено</string>
     <string name="flashing_aborted">Прошивку скасовано</string>
     <string name="flashing_uploading">Завантаження…</string>
-    <string name="flashing_error">Помилка %d</string>
+    <string name="flashing_error">Помилка %d. %s</string>
     <string name="flashing_connection_fail">Помилка з\'єднання</string>
     <string name="flashing_status">Статус %d</string>
     <string name="title_dialog_edit_link">Редагувати посилання</string>
@@ -115,4 +115,5 @@
     <string name="bonding_started">Створення пари</string>
     <string name="bonding_succeeded">Пару створено</string>
     <string name="bonding_not_succeeded">Не вдалося створити пару</string>
+    <string name="button_retry">Повторити</string>
 </resources>

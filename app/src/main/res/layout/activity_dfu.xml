@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/horizontal_margin"
-    tools:context=".activity.FlashingActivity">
+    tools:context=".activity.AlternativeFlashingActivity">
 
     <cc.calliope.mini.views.BoardProgressBar
         android:id="@+id/progress_bar"
@@ -43,5 +43,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progress_text_view" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/retryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_aqua"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_button"
+        android:text="@string/button_retry"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -99,7 +99,7 @@
     <string name="flashing_completed">Flashen abgeschlossen</string>
     <string name="flashing_aborted">Flashen abgebrochen</string>
     <string name="flashing_uploading">Hochladen…</string>
-    <string name="flashing_error">Fehler %d</string>
+    <string name="flashing_error">Fehler %d. %s</string>
     <string name="flashing_connection_fail">Verbindung fehlgeschlagen</string>
     <string name="flashing_status">Zustand %d</string>
     <string name="title_dialog_edit_link">Link bearbeiten</string>
@@ -114,4 +114,5 @@
     <string name="bonding_started">Bindung begonnen</string>
     <string name="bonding_succeeded">Bindung gelungen</string>
     <string name="bonding_not_succeeded">Bindung nicht gelungen</string>
+    <string name="button_retry">Wiederholen</string>
 </resources>

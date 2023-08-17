@@ -48,16 +48,13 @@ public class DfuControlService extends Service {
     public static final String BROADCAST_START = "cc.calliope.mini.DFUControlService.BROADCAST_START";
     public static final String BROADCAST_COMPLETED = "cc.calliope.mini.DFUControlService.BROADCAST_COMPLETE";
     public static final String BROADCAST_FAILED = "cc.calliope.mini.DFUControlService.BROADCAST_FAILED";
-    public static final String BROADCAST_BONDING = "cc.calliope.mini.DFUControlService.BROADCAST_BONDING";
     public static final String BROADCAST_ERROR = "cc.calliope.mini.DFUControlService.BROADCAST_ERROR";
     public static final String EXTRA_BOARD_VERSION = "cc.calliope.mini.DFUControlService.EXTRA_BOARD_VERSION";
     public static final String EXTRA_ERROR_CODE = "cc.calliope.mini.DFUControlService.EXTRA_ERROR_CODE";
     public static final String EXTRA_ERROR_MESSAGE = "cc.calliope.mini.DFUControlService.EXTRA_ERROR_MESSAGE";
     public static final String EXTRA_DEVICE_ADDRESS = "cc.calliope.mini.DFUControlService.EXTRA_DEVICE_ADDRESS";
     public static final String EXTRA_MAX_RETRIES_NUMBER = "cc.calliope.mini.DFUControlService.EXTRA_MAX_RETRIES_NUMBER";
-    public static final String EXTRA_PREVIOUS_BOND_STATE = "cc.calliope.mini.DFUControlService.EXTRA_PREVIOUS_BOND_STATE";
-    public static final String EXTRA_NEW_BOND_STATE = "cc.calliope.mini.DFUControlService.EXTRA_BOND_STATE";
-
+    public static final int GATT_DISCONNECTED_BY_DEVICE = 19;
     private final Object mLock = new Object();
     private int maxRetries;
     private int numOfRetries = 0;
@@ -76,10 +73,12 @@ public class DfuControlService extends Service {
      * New version
      */
     public static final int MINI_V2 = 2;
+
     @IntDef({UNIDENTIFIED, MINI_V1, MINI_V2})
     @Retention(RetentionPolicy.SOURCE)
     public @interface HardwareVersion {
     }
+
     private int boardVersion = UNIDENTIFIED;
     private App app;
 
@@ -87,12 +86,15 @@ public class DfuControlService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            if (device == null || !device.getAddress().equals(deviceAddress))
+            if (device == null || !device.getAddress().equals(deviceAddress)) {
                 return;
+            }
 
             final String action = intent.getAction();
             // Check if action is valid
-            if (action == null) return;
+            if (action == null) {
+                return;
+            }
 
             // Take action depending on new bond state
             if (action.equals(ACTION_BOND_STATE_CHANGED)) {
@@ -122,7 +124,7 @@ public class DfuControlService extends Service {
         public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
             Utils.log(Log.ASSERT, TAG, "onConnectionStateChange(gatt: " + gatt + ", status: " + status + ", newState: " + newState + ")");
 
-            if (status == GATT_SUCCESS) {
+            if (status == GATT_SUCCESS || status == GATT_DISCONNECTED_BY_DEVICE) {
                 if (newState == STATE_CONNECTED) {
                     if (bondState == BOND_NONE || bondState == BOND_BONDED) {
                         if (bondState == BOND_BONDED && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
@@ -139,7 +141,9 @@ public class DfuControlService extends Service {
                     stopService(gatt);
                 }
             } else {
-                stopService(gatt);
+                String message = getStringFromResource(GattStatus.get(status).getMessage());
+                setError(gatt, status, message);
+                //stopService(gatt);
             }
         }
 
@@ -349,5 +353,14 @@ public class DfuControlService extends Service {
         broadcast.putExtra(EXTRA_ERROR_MESSAGE, message);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcast);
         Utils.log(Log.ERROR, TAG, message);
+    }
+
+    private String getStringFromResource(int resId) {
+        try {
+            return getResources().getString(resId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

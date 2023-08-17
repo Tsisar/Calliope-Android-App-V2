@@ -33,18 +33,18 @@ public class ProgressCollector extends ContextWrapper implements DefaultLifecycl
     private final Context context;
     private ProgressListener listener;
 
-    private App app;
-
     private final BroadcastReceiver bondStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            if (device == null)
+            if (device == null) {
                 return;
+            }
 
             final String action = intent.getAction();
-            if (action == null)
+            if (action == null) {
                 return;
+            }
 
             // Take action depending on new bond state
             if (action.equals(ACTION_BOND_STATE_CHANGED)) {
@@ -59,8 +59,9 @@ public class ProgressCollector extends ContextWrapper implements DefaultLifecycl
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (action == null)
+            if (action == null) {
                 return;
+            }
 
             switch (action) {
                 case DfuService.BROADCAST_PROGRESS -> {
@@ -96,8 +97,9 @@ public class ProgressCollector extends ContextWrapper implements DefaultLifecycl
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (action == null)
+            if (action == null) {
                 return;
+            }
 
             switch (action){
                 case DfuControlService.BROADCAST_START -> listener.onEnablingDfuMode();
@@ -119,8 +121,9 @@ public class ProgressCollector extends ContextWrapper implements DefaultLifecycl
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (action == null)
+            if (action == null) {
                 return;
+            }
 
             switch (action){
                 case PartialFlashingBaseService.BROADCAST_PROGRESS -> {
@@ -130,7 +133,6 @@ public class ProgressCollector extends ContextWrapper implements DefaultLifecycl
                 case PartialFlashingBaseService.BROADCAST_START -> listener.onProcessStarting();
                 case PartialFlashingBaseService.BROADCAST_COMPLETE -> listener.onCompleted();
                 case PartialFlashingBaseService.BROADCAST_PF_FAILED -> {
-                    listener.onDeviceDisconnecting();
                     listener.onError(-1, "Partial Flashing FAILED");
                 }
                 case PartialFlashingBaseService.BROADCAST_PF_ATTEMPT_DFU -> {
