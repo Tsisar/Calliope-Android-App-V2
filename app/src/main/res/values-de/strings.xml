@@ -109,10 +109,15 @@
     <string name="menu_fab_full_screen">Vollbild</string>
     <string name="error_snackbar_save_file_error">Fehler beim Speichern der Datei</string>
     <string name="summary_custom">Link zum benutzerdefinierten Editor</string>
-    <string name="summary_partial_flashing">Partial Flashing aktivieren oder deaktivieren</string>
+    <string name="summary_partial_flashing">aktivieren oder deaktivieren</string>
     <string name="title_settings">Einstellungen</string>
     <string name="bonding_started">Bindung begonnen</string>
     <string name="bonding_succeeded">Bindung gelungen</string>
     <string name="bonding_not_succeeded">Bindung nicht gelungen</string>
     <string name="button_retry">Wiederholen</string>
+    <string name="title_copy">Kopieren</string>
+    <string name="summary_auto_flashing">Aunach dem Herunterladen der .hex-Datei.</string>
+    <string name="title_partial_flashing">Partielles Flashen</string>
+    <string name="title_auto_flashing">Automatisches Flashen</string>
+    <string name="button_ok">Ja</string>
 </resources>

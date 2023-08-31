@@ -4,7 +4,12 @@
     <PreferenceCategory
         android:title="@string/title_settings">
         <CheckBoxPreference
-            android:enabled="false"
+            android:key="pref_key_enable_auto_flashing"
+            android:title="@string/title_auto_flashing"
+            android:summary="@string/summary_auto_flashing"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
             android:key="pref_key_enable_partial_flashing"
             android:title="@string/title_partial_flashing"
             android:summary="@string/summary_partial_flashing"

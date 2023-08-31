@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini.activity.AlternativeFlashingActivity;
 import cc.calliope.mini.R;
+import cc.calliope.mini.utils.Preference;
 import cc.calliope.mini.utils.StaticExtra;
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.utils.FileUtils;
@@ -312,6 +313,11 @@ public class WebFragment extends Fragment implements DownloadListener {
     }
 
     private void startDfuActivity(File file) {
+        boolean autoFlashing = Preference.getBoolean(getContext(), Preference.PREF_KEY_ENABLE_AUTO_FLASHING, true);
+        if(!autoFlashing){
+            return;
+        }
+
         if (device != null && device.isRelevant()) {
             Log.e(TAG, "start DFU Activity");
             final Intent intent = new Intent(getActivity(), AlternativeFlashingActivity.class);

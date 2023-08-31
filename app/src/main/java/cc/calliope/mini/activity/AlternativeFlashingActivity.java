@@ -30,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import cc.calliope.mini.PartialFlashingService;
 import cc.calliope.mini.ProgressCollector;
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.DfuControlService;
@@ -38,6 +39,7 @@ import cc.calliope.mini.R;
 import cc.calliope.mini.databinding.ActivityDfuBinding;
 import cc.calliope.mini.service.DfuService;
 import cc.calliope.mini.utils.FileUtils;
+import cc.calliope.mini.utils.Preference;
 import cc.calliope.mini.utils.StaticExtra;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.utils.Version;
@@ -56,7 +58,7 @@ import static cc.calliope.mini.DfuControlService.HardwareVersion;
 import static cc.calliope.mini.DfuControlService.EXTRA_DEVICE_ADDRESS;
 
 public class AlternativeFlashingActivity extends AppCompatActivity implements ProgressListener {
-    private static final String TAG = "AlternativeFlashingActivity";
+    private static final String TAG = "FlashingActivity";
     private static final int NUMBER_OF_RETRIES = 3;
     private static final int REBOOT_TIME = 2000; // time required by the device to reboot, ms
     private static final int DELAY_TO_FINISH_ACTIVITY = 5000; // delay to finish activity after flashing
@@ -236,9 +238,20 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
 
     private void startDfuControlService() {
         if (Utils.isBluetoothEnabled()) {
-            Intent intent = new Intent(this, DfuControlService.class);
-            intent.putExtra(EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
-            startService(intent);
+            if(Preference.getBoolean(getApplicationContext(), Preference.PREF_KEY_ENABLE_PARTIAL_FLASHING, false)){
+                Utils.log(TAG, "Starting PartialFlashing Service...");
+
+                Intent service = new Intent(this, PartialFlashingService.class);
+                service.putExtra("deviceAddress", currentDevice.getAddress());
+                service.putExtra("filepath", filePath); // a path or URI must be provided.
+                startService(service);
+            }else {
+                Utils.log(TAG, "Starting DfuControl Service...");
+
+                Intent service = new Intent(this, DfuControlService.class);
+                service.putExtra(EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
+                startService(service);
+            }
         } else {
             showBluetoothDisabledWarning();
         }

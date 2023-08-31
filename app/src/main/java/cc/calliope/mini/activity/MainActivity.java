@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
+import java.io.File;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -67,6 +69,15 @@ public class MainActivity extends ScannerActivity {
 
         if(Version.upperTiramisu) {
             requestPushNotificationPermission();
+        }
+
+        externalStorageVolumes();
+    }
+
+    private void externalStorageVolumes() {
+        File[] externalStorageVolumes = ContextCompat.getExternalFilesDirs(getApplicationContext(), null);
+        for (File externalDir : externalStorageVolumes) {
+            Utils.log(Log.ASSERT, TAG, "Found dir at : " + externalDir);
         }
     }
 

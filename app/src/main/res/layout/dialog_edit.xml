@@ -60,7 +60,7 @@
         android:background="@drawable/btn_aqua"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_button"
-        android:text="@string/button_rename"
+        android:text="@string/button_ok"
         app:layout_constraintBottom_toBottomOf="@id/layoutDialog"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/dialog_cancel"

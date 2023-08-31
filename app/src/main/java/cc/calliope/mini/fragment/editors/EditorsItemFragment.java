@@ -1,7 +1,6 @@
 package cc.calliope.mini.fragment.editors;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +13,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-import androidx.preference.PreferenceManager;
 import cc.calliope.mini.R;
 import cc.calliope.mini.databinding.FragmentItemBinding;
+import cc.calliope.mini.utils.Preference;
 import cc.calliope.mini.utils.Utils;
+
+import static cc.calliope.mini.utils.Preference.PREF_KEY_CUSTOM_LINK;
 
 public class EditorsItemFragment extends Fragment {
     private static final String ARG_POSITION = "arg_position";
-    private static final String KEY_CUSTOM_LINK = "pref_key_custom_link";
     private FragmentItemBinding binding;
     private final AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.75F);
     private Editor editor;
@@ -77,13 +77,6 @@ public class EditorsItemFragment extends Fragment {
         NavDirections webFragment = EditorsFragmentDirections.actionEditorsToWeb(url, editorName);
         navController.navigate(webFragment);
     }
-
-
-    private String readCustomLink(Activity activity) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        return sharedPreferences.getString(KEY_CUSTOM_LINK, Editor.CUSTOM.getUrl());
-    }
-
     private void networkSecurityConfig(String url){
 //        try {
 //            // Завантаження поточної конфігурації
@@ -117,7 +110,7 @@ public class EditorsItemFragment extends Fragment {
         if (Utils.isNetworkConnected(activity)) {
             String url = editor.getUrl();
             if (editor == Editor.CUSTOM) {
-                url = readCustomLink(activity);
+                url = Preference.getString(getContext(), PREF_KEY_CUSTOM_LINK, Editor.CUSTOM.getUrl());
             }
             showWebFragment(url, editor.toString());
         } else {

@@ -22,7 +22,7 @@
     <string name="info_scripts">Тут будуть ваші скрипти.</string>
 
     <string name="summary_custom">Посилання на кастомний редактор</string>
-    <string name="summary_partial_flashing">Увімкнути або вимкнути Partial Flashing (часткову прошивку)</string>
+    <string name="summary_partial_flashing">увімкнути або вимкнути</string>
 
     <string name="title_welcome">Розпочнімо!</string>
     <string name="info_welcome">На цій сторінці ви дізнаєтеся, як крок за кроком підготувати Calliope mini до роботи. У першому кроці показано, як правильно під\'єднати Calliope mini до джерела живлення.</string>
@@ -116,4 +116,9 @@
     <string name="bonding_succeeded">Пару створено</string>
     <string name="bonding_not_succeeded">Не вдалося створити пару</string>
     <string name="button_retry">Повторити</string>
+    <string name="title_copy">Копіювати</string>
+    <string name="summary_auto_flashing">після завантаження .hex файлу.</string>
+    <string name="title_partial_flashing">Часткове прошивання</string>
+    <string name="title_auto_flashing">Автоматичне прошивання</string>
+    <string name="button_ok">Так</string>
 </resources>

@@ -19,13 +19,13 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * A class to communicate with and flash the micro:bit without having to transfer the entire HEX file
@@ -37,20 +37,26 @@ import java.util.UUID;
  */
 
 // A service that interacts with the BLE device via the Android BLE API.
-public abstract class PartialFlashingBaseService extends IntentService {
+public abstract class AlternativePartialFlashingBaseService extends IntentService {
 
+    public static final String BROADCAST_START = "org.microbit.android.partialflashing.broadcast.BROADCAST_START";
+    public static final String BROADCAST_COMPLETE = "org.microbit.android.partialflashing.broadcast.BROADCAST_COMPLETE";
+    public static final String BROADCAST_PROGRESS = "org.microbit.android.partialflashing.broadcast.BROADCAST_PROGRESS";
+    public static final String EXTRA_PROGRESS = "org.microbit.android.partialflashing.extra.EXTRA_PROGRESS";
     public static final String DFU_BROADCAST_ERROR = "no.nordicsemi.android.dfu.broadcast.BROADCAST_ERROR";
+
 
     public static final UUID PARTIAL_FLASH_CHARACTERISTIC = UUID.fromString("e97d3b10-251d-470a-a062-fa1922dfa9a8");
     public static final UUID PARTIAL_FLASHING_SERVICE = UUID.fromString("e97dd91d-251d-470a-a062-fa1922dfa9a8");
     public static final String PXT_MAGIC = "708E3B92C615A841C49866C975EE5197";
     public static final String UPY_MAGIC = ".*FE307F59.{16}9DD7B1C1.*";
 
+
     private static final UUID MICROBIT_DFU_SERVICE = UUID.fromString("e95d93b0-251d-470a-a062-fa1922dfa9a8");
     private static final UUID MICROBIT_SECURE_DFU_SERVICE = UUID.fromString("0000fe59-0000-1000-8000-00805f9b34fb");
     private static final UUID MICROBIT_DFU_CHARACTERISTIC = UUID.fromString("e95d93b1-251d-470a-a062-fa1922dfa9a8");
 
-    private final static String TAG = PartialFlashingBaseService.class.getSimpleName();
+    private final static String TAG = AlternativePartialFlashingBaseService.class.getSimpleName();
 
     public static final String BROADCAST_ACTION = "org.microbit.android.partialflashing.broadcast.BROADCAST_ACTION";
 
@@ -124,11 +130,11 @@ public abstract class PartialFlashingBaseService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
-        // Create intent filter and add to Local Broadcast Manager so that we can use an Intent to 
+        // Create intent filter and add to Local Broadcast Manager so that we can use an Intent to
         // start the Partial Flashing Service
 
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(PartialFlashingBaseService.BROADCAST_ACTION);
+        intentFilter.addAction(AlternativePartialFlashingBaseService.BROADCAST_ACTION);
 
         final LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
         manager.registerReceiver(broadcastReceiver, intentFilter);
@@ -296,14 +302,10 @@ public abstract class PartialFlashingBaseService extends IntentService {
 
     };
 
-    public PartialFlashingBaseService() {
+    public AlternativePartialFlashingBaseService() {
         super(TAG);
     }
 
-    public static final String BROADCAST_PROGRESS = "org.microbit.android.partialflashing.broadcast.BROADCAST_PROGRESS";
-    public static final String BROADCAST_START = "org.microbit.android.partialflashing.broadcast.BROADCAST_START";
-    public static final String BROADCAST_COMPLETE = "org.microbit.android.partialflashing.broadcast.BROADCAST_COMPLETE";
-    public static final String EXTRA_PROGRESS = "org.microbit.android.partialflashing.extra.EXTRA_PROGRESS";
 
     private void sendProgressBroadcast(final int progress) {
         Log.v(TAG, "Sending progress broadcast: " + progress + "%");
@@ -523,12 +525,9 @@ public abstract class PartialFlashingBaseService extends IntentService {
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         BluetoothGatt gatt;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            gatt = device.connectGatt(this, false, mGattCallback,
-                    BluetoothDevice.TRANSPORT_LE,
-                    BluetoothDevice.PHY_LE_1M_MASK | BluetoothDevice.PHY_LE_2M_MASK);
+            gatt = device.connectGatt(this, false, mGattCallback, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_1M_MASK | BluetoothDevice.PHY_LE_2M_MASK);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            gatt = device.connectGatt(this, false, mGattCallback,
-                    BluetoothDevice.TRANSPORT_LE);
+            gatt = device.connectGatt(this, false, mGattCallback, BluetoothDevice.TRANSPORT_LE);
         } else {
             gatt = device.connectGatt(this, false, mGattCallback);
         }

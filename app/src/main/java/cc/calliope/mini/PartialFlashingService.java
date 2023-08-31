@@ -16,36 +16,6 @@ public class PartialFlashingService extends PartialFlashingBaseService {
         return NotificationActivity.class;
     }
 
-    @Override
-    public void onDeviceConnecting(@NonNull BluetoothDevice device) {
-        log(Log.INFO, Thread.currentThread().getStackTrace()[2].getMethodName());
-    }
-
-    @Override
-    public void onDeviceConnected(@NonNull BluetoothDevice device) {
-        log(Log.INFO, Thread.currentThread().getStackTrace()[2].getMethodName());
-    }
-
-    @Override
-    public void onDeviceFailedToConnect(@NonNull BluetoothDevice device, int reason) {
-        log(Log.INFO, Thread.currentThread().getStackTrace()[2].getMethodName());
-    }
-
-    @Override
-    public void onDeviceReady(@NonNull BluetoothDevice device) {
-        log(Log.INFO, Thread.currentThread().getStackTrace()[2].getMethodName());
-    }
-
-    @Override
-    public void onDeviceDisconnecting(@NonNull BluetoothDevice device) {
-        log(Log.INFO, Thread.currentThread().getStackTrace()[2].getMethodName());
-    }
-
-    @Override
-    public void onDeviceDisconnected(@NonNull BluetoothDevice device, int reason) {
-        log(Log.INFO, Thread.currentThread().getStackTrace()[2].getMethodName());
-    }
-
     public void log(int priority, @NonNull String message) {
         // Log from here.
         Log.println(priority, TAG, "### " + Thread.currentThread().getId() + " # " + message);

@@ -69,6 +69,7 @@
         android:background="@drawable/btn_aqua"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_button"
+        android:paddingHorizontal="@dimen/padding"
         android:text="@string/button_retry"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
