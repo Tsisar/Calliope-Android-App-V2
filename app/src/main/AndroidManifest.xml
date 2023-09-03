@@ -2,53 +2,56 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
+
+    <!--
+    Notification
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!--
     Connect to the network
     -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!--
-    To communicate with Bluetooth LE devices on Android version 4.3 until 11
-    two permissions were required: BLUETOOTH and BLUETOOTH_ADMIN.
-    -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" /> <!-- In Android 6-11, location permission is required and has to be granted in runtime before DFU is started. -->
-    <!--
-    "ACCESS_BACKGROUND_LOCATION" permission would also be required to trigger a successful
-    DFU whilst the device screen is turned off, mainly to receive the scan results when scanning
-    and connecting to the peripheral in bootloader mode while the device screen is turned off.
-    -->
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN"
+
+    <!-- Request legacy Bluetooth permissions on older devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
         android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+
+    <!-- Needed only if your app looks for Bluetooth devices.
+         If your app doesn't use Bluetooth scan results to derive physical
+         location information, you can strongly assert that your app
+         doesn't derive physical location. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="S" />
+
+    <!-- Needed only if your app communicates with already-paired Bluetooth
+         devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Needed only if your app uses Bluetooth scan results to derive physical location. -->
     <uses-permission
         android:name="android.permission.ACCESS_COARSE_LOCATION"
         android:maxSdkVersion="30" />
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
         android:maxSdkVersion="30" />
-    <!--
-    Starting from Android 12 location permission is not needed, instead BLUETOOTH_CONNECT is required.
-    When your device is using buttonless service and changes MAC address, it also requires BLUETOOTH_SCAN
-    permission to be granted. This permission can be used with neverForLocation flag.
-    -->
-    <uses-permission
-        android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
-        android:maxSdkVersion="30" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_SCAN"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="S" />
-    <!--
-    Apps that target Android 9 (API level 28) or higher and use foreground services must request
-    the FOREGROUND_SERVICE permission. This is a normal permission, so the system automatically grants it to the requesting app.
-    -->
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
     <application
+        android:name=".App"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -61,7 +64,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="cc.calliope.mini_v2.file_provider"
+            android:authorities="cc.calliope.file_provider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
@@ -70,16 +73,16 @@
         </provider>
 
         <activity
-            android:name=".MainActivity"
-            android:exported="true" >
+            android:name=".activity.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".OpenHexActivity"
+            android:name=".activity.OpenHexActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -92,20 +95,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NotificationActivity"
+            android:name=".activity.NotificationActivity"
             android:exported="false" />
         <activity
-            android:name=".DFUActivity"
+            android:name=".activity.FlashingActivity"
             android:exported="false" />
         <activity
-            android:name=".NoPermissionActivity"
+            android:name=".activity.NoPermissionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SettingsActivity"
             android:exported="false" />
 
         <service
             android:name=".service.DfuService"
             android:enabled="true" />
         <service
-            android:name=".PartialFlashingService"
+            android:name=".service.PartialFlashingService"
             android:enabled="true" />
+        <service
+            android:name=".service.DfuControlService"
+            android:enabled="true" />
+
     </application>
 </manifest>

@@ -1,14 +1,18 @@
 <resources>
-    <string name="app_name">Calliope mini v.2 (BETA)</string>
+    <string name="app_name" translatable="false">Calliope mini Next (BETA)</string>
     <string name="title_home">Home</string>
     <string name="title_editors">Editors</string>
     <string name="title_help">Help</string>
 
     <string name="title_location_permission">LOCATION PERMISSION REQUIRED</string>
     <string name="title_bluetooth_permission">BLUETOOTH PERMISSION REQUIRED</string>
+    <string name="title_notification_permission">NOTIFICATION PERMISSION REQUIRED</string>
+
     <string name="info_location_permission">From Android 6.0 Marshmallow onwards the application requires Location permission in order to scan for Bluetooth devices.
         \n\nThis is because Bluetooth may be used to determine the phone\'s and user\'s location, <b>Calliope</b> will not use this information in any way.</string>
     <string name="info_bluetooth_permission">To use Bluetooth features to communicate APP with your <b>Calliope mini</b> you must granted several permissions.</string>
+    <string name="info_notification_permission">Click "Allow" to allow the app to send you notifications about the flashing status.</string>
+
 
     <string name="settings_btn_permission">Settings</string>
     <string name="action_btn_permission">Grant permission</string>
@@ -21,7 +25,7 @@
     <string name="info_make_code">Microsoft MakeCode is a free, open source platform for creating engaging computer science learning experiences that support a progression path into real-world programming.</string>
     <string name="info_roberta">The Open Roberta Lab is a cloud-based integrated programming environment that enables children and adolescents to program easily different robot/microcontroller systems.</string>
     <string name="info_library">Here you find the original programs, to change or reload.</string>
-    <string name="info_custom">Here you can enter to the custom editor and customize the link to it.</string>
+    <string name="info_custom">Here you can enter to the custom editor.</string>
     <string name="info_scripts">Your scripts will be here.</string>
 
     <string name="title_welcome">Let\'s Go</string>
@@ -65,12 +69,24 @@
     <br/>E-Mail: <a href="mailto:info@calliope.cc">info@calliope.cc</a>
     ]]></string>
 
+    <string name="info_app_text" translatable="false">
+    Hello and welcome to the Calliope mini app!
+    By using this app you can connect, code and flash programs to your Calliope mini via Bluetooth.
+    You can find inspiring and fun projects at the Calliope website at https://calliope.cc!
+    Have fun!
+    Calliope gGmbH
+    Raumerstrasse 11
+    10437 Berlin
+    Germany
+    E-Mail: info@calliope.cc
+    </string>
+
     <string name="welcome">welcome</string>
 
     <string name="title_rename">Rename</string>
     <string name="title_share">Share</string>
     <string name="title_delete">Delete</string>
-    <string name="title_save">Save</string>
+    <string name="button_save">Save</string>
 
     <string name="title_dialog_rename">Rename file</string>
     <string name="title_dialog_delete">Delete file</string>
@@ -78,6 +94,7 @@
     <string name="title_dialog_edit_link">Edit link</string>
 
     <string name="button_cancel">Cancel</string>
+    <string name="button_ok">Ok</string>
     <string name="button_rename">Rename</string>
     <string name="button_continue">Continue</string>
     <string name="button_enable">Enable</string>
@@ -92,6 +109,7 @@
     <string name="error_snackbar_location_disable">Location is disable</string>
     <string name="error_snackbar_no_internet">No internet available</string>
     <string name="error_snackbar_download_error">Download error</string>
+    <string name="error_snackbar_save_file_error">Save file error</string>
 
     <string name="open_hex_info">You are trying to open the \"%s\" file and flash it to your Calliope mini.
         \n\nIf you flash an incorrect or damaged file, you may have to connect your Calliope mini to the computer to reflash it.</string>
@@ -102,12 +120,67 @@
     <string name="flashing_enabling_dfu_mode">Enabling DFU mode…</string>
     <string name="flashing_firmware_validating">Firmware validating…</string>
     <string name="flashing_device_disconnecting">Device disconnecting…</string>
-    <string name="flashing_dfu_completed">DFU completed</string>
-    <string name="flashing_dfu_aborted">DFU aborted</string>
+    <string name="flashing_completed">Flashing completed</string>
+    <string name="flashing_aborted">Flashing aborted</string>
     <string name="flashing_uploading">Uploading…</string>
     <string name="flashing_percent" translatable="false">%d%%</string>
-    <string name="flashing_error">Error</string>
+    <string name="flashing_error">Error %d. %s</string>
     <string name="flashing_connection_fail">Connection fail</string>
-    <string name="flashing_status">Status: %d</string>
+    <string name="flashing_status">Status %d</string>
     <string name="points" translatable="false">…</string>
+    <string name="title_web" translatable="false">WEB</string>
+    <string name="menu_fab_connect">Connection</string>
+    <string name="menu_fab_scripts">Scripts</string>
+    <string name="menu_fab_full_screen">Full screen</string>
+    <string name="summary_custom">Link to the custom editor</string>
+    <string name="summary_auto_flashing">after downloading the .hex file</string>
+    <string name="summary_partial_flashing">enable or disable</string>
+    <string name="title_partial_flashing">Partial flashing</string>
+    <string name="title_auto_flashing">Automatic flashing</string>
+    <string name="title_settings">Settings</string>
+    <string name="bonding_started">Bonding started</string>
+    <string name="bonding_succeeded">Bonding succeeded</string>
+    <string name="bonding_not_succeeded">Bonding not succeeded</string>
+    <string name="button_retry">Retry</string>
+
+    <string name="gatt_success" translatable="false">GATT SUCCESS</string>
+    <string name="gatt_invalid_handle" translatable="false">GATT INVALID HANDLE</string>
+    <string name="gatt_read_not_permit" translatable="false">GATT READ NOT PERMIT</string>
+    <string name="gatt_write_not_permitted" translatable="false">GATT write operation is not permitted</string>
+    <string name="gatt_invalid_pdu" translatable="false">GATT INVALID PDU</string>
+    <string name="gatt_insuf_authentication" translatable="false">GATT INSUF AUTHENTICATION</string>
+    <string name="gatt_request_not_supported" translatable="false">The given request is not supported</string>
+    <string name="gatt_invalid_offset" translatable="false">A read or write operation was requested with an invalid offset</string>
+    <string name="gatt_insufficient_authorization" translatable="false">Insufficient authorization for a given operation</string>
+    <string name="gatt_prepare_q_full" translatable="false">GATT PREPARE Q FULL</string>
+    <string name="gatt_not_found" translatable="false">GATT NOT FOUND</string>
+    <string name="gatt_not_long" translatable="false">GATT NOT LONG</string>
+    <string name="gatt_insuf_key_size" translatable="false">GATT INSUF KEY SIZE</string>
+    <string name="gatt_invalid_attribute_length" translatable="false">A write operation exceeds the maximum length of the attribute</string>
+    <string name="gatt_invalid_attr_len" translatable="false">GATT INVALID ATTR LEN</string>
+    <string name="gatt_err_unlikely" translatable="false">GATT ERR UNLIKELY</string>
+    <string name="gatt_insufficient_encryption" translatable="false">Insufficient encryption for a given operation</string>
+    <string name="gatt_unsupport_grp_type" translatable="false">GATT UNSUPPORT GRP TYPE</string>
+    <string name="gatt_insuf_resource" translatable="false">GATT INSUF RESOURCE</string>
+    <string name="gatt_disconnected_by_device" translatable="false">Disconnected by device</string>
+    <string name="gatt_no_bonded" translatable="false">Issue with bond</string>
+    <string name="gatt_no_ressources" translatable="false">GATT NO RESSOURCES</string>
+    <string name="gatt_internal_error" translatable="false">GATT INTERNAL ERROR</string>
+    <string name="gatt_wrong_state" translatable="false">GATT WRONG_STATE</string>
+    <string name="gatt_db_full" translatable="false">GATT DB FULL</string>
+    <string name="gatt_busy" translatable="false">GATT BUSY</string>
+    <string name="gatt_error" translatable="false">GATT ERROR</string>
+    <string name="gatt_cmd_started" translatable="false">GATT CMD STARTED</string>
+    <string name="gatt_illegal_parameter" translatable="false">GATT ILLEGAL PARAMETER</string>
+    <string name="gatt_pending" translatable="false">GATT PENDING</string>
+    <string name="gatt_auth_fail" translatable="false">A GATT operation failed, errors other than the above</string>
+    <string name="gatt_more" translatable="false">GATT MORE</string>
+    <string name="gatt_invalid_cfg" translatable="false">GATT INVALID CFG</string>
+    <string name="gatt_service_started" translatable="false">GATT SERVICE STARTED</string>
+    <string name="gatt_encryped_no_mitm" translatable="false">GATT ENCRYPED NO MITM</string>
+    <string name="gatt_not_encrypted" translatable="false">GATT NOT ENCRYPTED</string>
+    <string name="gatt_connection_congested" translatable="false">A remote device connection is congested.</string>
+    <string name="gatt_failure" translatable="false">GATT FAILURE</string>
+    <string name="gatt_unidentified" translatable="false">GATT UNIDENTIFIED</string>
+    <string name="title_copy">Copy</string>
 </resources>
