@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -246,7 +245,7 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
     }
 
     public void copyFile(FileWrapper file){
-        if (Version.upperQuinceTart) {
+        if (Version.VERSION_Q_AND_NEWER) {
             isMiniConnected();
             saveFilePath = file.getAbsolutePath();
             openDocumentTree();

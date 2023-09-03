@@ -142,7 +142,8 @@ public class DfuControlService extends Service {
                 }
             } else {
                 String message = getStringFromResource(GattStatus.get(status).getMessage());
-                setError(gatt, status, message);
+                gatt.disconnect();
+                sendError(status, message);
                 //stopService(gatt);
             }
         }
@@ -154,7 +155,8 @@ public class DfuControlService extends Service {
             if (status == GATT_SUCCESS) {
                 startLegacyDfu(gatt);
             } else {
-                setError(gatt, status, "Services discovered not success");
+                gatt.disconnect();
+                sendError(status, "Services discovered not success");
             }
         }
 
@@ -168,7 +170,8 @@ public class DfuControlService extends Service {
                     isComplete = true;
                     boardVersion = MINI_V1;
                 } else {
-                    setError(gatt, status, "Characteristic write not success");
+                    gatt.disconnect();
+                    sendError(status, "Characteristic write not success");
                 }
             } else if (bondState == BOND_BONDING) {
                 Utils.log(Log.WARN, TAG, "waiting for bonding to complete");
@@ -187,7 +190,8 @@ public class DfuControlService extends Service {
                         gatt.writeCharacteristic(characteristic);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        setError(gatt, 133, e.toString());
+                        gatt.disconnect();
+                        sendError(133, e.toString());
                     }
                 }
             } else if (bondState == BOND_BONDING) {
@@ -233,7 +237,7 @@ public class DfuControlService extends Service {
     }
 
     private void connect() {
-        if ((Version.upperSnowCone && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
+        if ((Version.VERSION_S_AND_NEWER && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
             Utils.log(Log.ERROR, TAG, "BLUETOOTH permission no granted");
             return;
@@ -244,15 +248,20 @@ public class DfuControlService extends Service {
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcast);
 
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+
+        if(!adapter.isEnabled()){
+            return;
+        }
+
         BluetoothDevice device = adapter.getRemoteDevice(deviceAddress);
         bondState = device.getBondState();
 
-        if (Version.upperOreo) {
+        if (Version.VERSION_O_AND_NEWER) {
             Utils.log(Log.DEBUG, TAG, "gatt = device.connectGatt(autoConnect = false, TRANSPORT_LE, preferredPhy = LE_1M | LE_2M)");
             device.connectGatt(this, false, gattCallback,
                     BluetoothDevice.TRANSPORT_LE,
                     BluetoothDevice.PHY_LE_1M_MASK | BluetoothDevice.PHY_LE_2M_MASK);
-        } else if (Version.upperMarshmallow) {
+        } else if (Version.VERSION_M_AND_NEWER) {
             Utils.log(Log.DEBUG, TAG, "gatt = device.connectGatt(autoConnect = false, TRANSPORT_LE)");
             device.connectGatt(this, false, gattCallback,
                     BluetoothDevice.TRANSPORT_LE);
@@ -283,7 +292,8 @@ public class DfuControlService extends Service {
 
         final BluetoothGattCharacteristic legacyDfuCharacteristic = legacyDfuService.getCharacteristic(DEVICE_FIRMWARE_UPDATE_CONTROL_CHARACTERISTIC_UUID);
         if (legacyDfuCharacteristic == null) {
-            setError(gatt, 133, "Cannot find DEVICE_FIRMWARE_UPDATE_CONTROL_CHARACTERISTIC_UUID");
+            gatt.disconnect();
+            sendError(133, "Cannot find DEVICE_FIRMWARE_UPDATE_CONTROL_CHARACTERISTIC_UUID");
             return;
         }
 
@@ -301,7 +311,8 @@ public class DfuControlService extends Service {
                 clearServicesCache(gatt);
                 gatt.discoverServices();
             } else {
-                setError(gatt, 133, "Cannot find services");
+                gatt.disconnect();
+                sendError(133, "Cannot find services");
             }
         } else {
             isComplete = true;
@@ -345,9 +356,7 @@ public class DfuControlService extends Service {
         }
     }
 
-    @SuppressWarnings({"MissingPermission"})
-    private void setError(BluetoothGatt gatt, final int code, final String message) {
-        gatt.disconnect();
+    private void sendError(final int code, final String message) {
         final Intent broadcast = new Intent(BROADCAST_ERROR);
         broadcast.putExtra(EXTRA_ERROR_CODE, code);
         broadcast.putExtra(EXTRA_ERROR_MESSAGE, message);

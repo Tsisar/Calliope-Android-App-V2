@@ -67,7 +67,7 @@ public class MainActivity extends ScannerActivity {
         });
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
 
-        if(Version.upperTiramisu) {
+        if(Version.VERSION_T_AND_NEWER) {
             requestPushNotificationPermission();
         }
 

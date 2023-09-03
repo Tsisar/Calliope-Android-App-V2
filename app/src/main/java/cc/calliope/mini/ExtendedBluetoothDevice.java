@@ -53,7 +53,7 @@ public class ExtendedBluetoothDevice implements Parcelable {
     private static final long RELEVANT_LIMIT; //the time during which the device is relevant in ms
 
     static {
-        if (Version.upperOreo) {
+        if (Version.VERSION_O_AND_NEWER) {
             RELEVANT_LIMIT = 5000;
         } else {
             RELEVANT_LIMIT = 10000;

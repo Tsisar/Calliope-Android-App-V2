@@ -191,7 +191,7 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     public void setColor(int resId) {
         int color;
-        if (Version.upperMarshmallow) {
+        if (Version.VERSION_M_AND_NEWER) {
             color = context.getColor(resId);
         } else {
             color = getResources().getColor(resId);

@@ -177,7 +177,7 @@ public class WebFragment extends Fragment implements DownloadListener {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (Version.upperMarshmallow) {
+                if (Version.VERSION_M_AND_NEWER) {
                     Utils.errorSnackbar(webView, "Oh no! " + error.getDescription()).show();
                 } else {
                     Utils.errorSnackbar(webView, "Oh no! onReceivedError").show();

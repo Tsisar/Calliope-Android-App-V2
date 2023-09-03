@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -125,13 +124,13 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     private void checkPermission() {
-        boolean isBluetoothAccessGranted = Permission.isAccessGranted(this, Permission.BLUETOOTH);
-        boolean isLocationAccessGranted = Version.upperSnowCone || Permission.isAccessGranted(this, Permission.LOCATION);
+        boolean isBluetoothAccessGranted = Permission.isAccessGranted(this, Permission.BLUETOOTH_PERMISSIONS);
+        boolean isLocationAccessGranted = Version.VERSION_S_AND_NEWER || Permission.isAccessGranted(this, Permission.LOCATION_PERMISSIONS);
 
         if (isBluetoothAccessGranted && isLocationAccessGranted) {
             if (!Utils.isBluetoothEnabled()) {
                 showBluetoothDisabledWarning();
-            } else if (!Version.upperSnowCone && !Utils.isLocationEnabled(this)) {
+            } else if (!Version.VERSION_S_AND_NEWER && !Utils.isLocationEnabled(this)) {
                 showLocationDisabledWarning();
             }
             scannerViewModel.startScan();

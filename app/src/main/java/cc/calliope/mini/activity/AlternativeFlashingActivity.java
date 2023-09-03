@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import org.microbit.android.partialflashing.AlternativePartialFlashingBaseService;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,8 +56,6 @@ import static cc.calliope.mini.DfuControlService.UNIDENTIFIED;
 import static cc.calliope.mini.DfuControlService.MINI_V1;
 import static cc.calliope.mini.DfuControlService.MINI_V2;
 import static cc.calliope.mini.DfuControlService.HardwareVersion;
-
-import static cc.calliope.mini.DfuControlService.EXTRA_DEVICE_ADDRESS;
 
 public class AlternativeFlashingActivity extends AppCompatActivity implements ProgressListener {
     private static final String TAG = "FlashingActivity";
@@ -186,7 +186,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     @Override
     public void onError(int code, String message) {
         if (code == 4110) {
-            if ((Version.upperSnowCone && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
+            if ((Version.VERSION_S_AND_NEWER && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
                 Utils.log(Log.ERROR, TAG, "BLUETOOTH permission no granted");
                 return;
@@ -242,14 +242,14 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
                 Utils.log(TAG, "Starting PartialFlashing Service...");
 
                 Intent service = new Intent(this, PartialFlashingService.class);
-                service.putExtra("deviceAddress", currentDevice.getAddress());
+                service.putExtra(AlternativePartialFlashingBaseService.EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
                 service.putExtra("filepath", filePath); // a path or URI must be provided.
                 startService(service);
             }else {
                 Utils.log(TAG, "Starting DfuControl Service...");
 
                 Intent service = new Intent(this, DfuControlService.class);
-                service.putExtra(EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
+                service.putExtra(DfuControlService.EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
                 startService(service);
             }
         } else {

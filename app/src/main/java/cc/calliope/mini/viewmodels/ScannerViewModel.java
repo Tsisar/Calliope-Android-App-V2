@@ -79,7 +79,7 @@ public class ScannerViewModel extends AndroidViewModel {
         super(application);
 
         mScannerLiveData = new ScannerLiveData(Utils.isBluetoothEnabled(),
-                Utils.isLocationEnabled(application) || Version.upperSnowCone);
+                Utils.isLocationEnabled(application) || Version.VERSION_S_AND_NEWER);
         registerBroadcastReceivers(application);
         loadPattern();
     }
@@ -91,7 +91,7 @@ public class ScannerViewModel extends AndroidViewModel {
 
         application.unregisterReceiver(mBluetoothStateBroadcastReceiver);
 
-        if (Version.upperMarshmallow) {
+        if (Version.VERSION_M_AND_NEWER) {
             application.unregisterReceiver(mLocationProviderChangedReceiver);
         }
     }
@@ -180,7 +180,7 @@ public class ScannerViewModel extends AndroidViewModel {
      */
     private void registerBroadcastReceivers(final Application application) {
         application.registerReceiver(mBluetoothStateBroadcastReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-        if (Version.upperMarshmallow) {
+        if (Version.VERSION_M_AND_NEWER) {
             application.registerReceiver(mLocationProviderChangedReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
         }
     }

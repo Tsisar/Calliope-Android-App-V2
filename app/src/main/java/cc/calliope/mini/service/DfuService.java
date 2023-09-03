@@ -24,7 +24,7 @@ public class DfuService extends DfuBaseService{
     @Override
     public void onCreate() {
         // Enable Notification Channel for Android OREO
-        if (Version.upperOreo) {
+        if (Version.VERSION_O_AND_NEWER) {
             DfuServiceInitiator.createDfuNotificationChannel(getApplicationContext());
         }
         super.onCreate();

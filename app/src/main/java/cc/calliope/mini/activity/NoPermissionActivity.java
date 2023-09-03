@@ -15,9 +15,8 @@ import android.view.View;
 
 public class NoPermissionActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int REQUEST_CODE = 1022; // random number
+    private PermissionContent content;
     private ActivityNoPermissionBinding binding;
-    @Permission.RequestType
-    private int requestType;
     private boolean deniedForever;
 
     @Override
@@ -33,12 +32,16 @@ public class NoPermissionActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onResume() {
         super.onResume();
-        requestType = getRequestType();
-        deniedForever = Permission.isAccessDeniedForever(this, requestType);
-        if (requestType == Permission.UNDEFINED) {
-            finish();
-        } else {
+        if (!Permission.isAccessGranted(this, Permission.BLUETOOTH_PERMISSIONS)) {
+            deniedForever = Permission.isAccessDeniedForever(this, Permission.BLUETOOTH_PERMISSIONS);
+            content = PermissionContent.BLUETOOTH;
             updateUi();
+        } else if (!Version.VERSION_S_AND_NEWER && !Permission.isAccessGranted(this, Permission.LOCATION_PERMISSIONS)) {
+            deniedForever = Permission.isAccessDeniedForever(this, Permission.LOCATION_PERMISSIONS);
+            content = PermissionContent.LOCATION;
+            updateUi();
+        } else {
+            finish();
         }
     }
 
@@ -50,23 +53,12 @@ public class NoPermissionActivity extends AppCompatActivity implements View.OnCl
             intent.setData(uri);
             startActivity(intent);
         } else {
-            String[] permissionsArray = Permission.getPermissionsArray(requestType);
-            Permission.markPermissionRequested(this, requestType);
-            ActivityCompat.requestPermissions(this, permissionsArray, REQUEST_CODE);
+            Permission.markPermissionRequested(this, content.getPermissionsArray());
+            ActivityCompat.requestPermissions(this, content.getPermissionsArray(), REQUEST_CODE);
         }
-    }
-
-    private int getRequestType() {
-        if (!Permission.isAccessGranted(this, Permission.BLUETOOTH)) {
-            return Permission.BLUETOOTH;
-        } else if (!Version.upperSnowCone && !Permission.isAccessGranted(this, Permission.LOCATION)) {
-            return Permission.LOCATION;
-        }
-        return Permission.UNDEFINED;
     }
 
     private void updateUi() {
-        ContentNoPermission content = ContentNoPermission.getContent(requestType);
         binding.iconImageView.setImageResource(content.getIcResId());
         binding.titleTextView.setText(content.getTitleResId());
         binding.messageTextView.setText(content.getMessageResId());
