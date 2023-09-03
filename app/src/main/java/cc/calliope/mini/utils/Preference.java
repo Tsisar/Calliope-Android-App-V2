@@ -20,4 +20,9 @@ public class Preference {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(key, defValue);
     }
+
+    public static void setBoolean(Context context, String key, Boolean value){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putBoolean(key, value).apply();
+    }
 }

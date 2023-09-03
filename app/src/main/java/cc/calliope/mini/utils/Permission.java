@@ -2,19 +2,14 @@ package cc.calliope.mini.utils;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import static cc.calliope.mini.utils.StaticExtra.SHARED_PREFERENCES_NAME;
 
 public class Permission {
     public static final String[] BLUETOOTH_PERMISSIONS;
@@ -29,6 +24,9 @@ public class Permission {
 
     public static final String[] LOCATION_PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public static final String[] POST_NOTIFICATIONS = {Manifest.permission.POST_NOTIFICATIONS};
+
     public static boolean isAccessGranted(Activity activity, String... permissions) {
         for (String permission : permissions) {
             boolean granted = ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
@@ -41,14 +39,12 @@ public class Permission {
     }
 
     public static boolean isAccessDeniedForever(Activity activity, String... permissions) {
-        SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         return !isAccessGranted(activity, permissions) // Location permission must be denied
-                && preferences.getBoolean(permissions[0], false) // Permission must have been requested before
+                && Preference.getBoolean(activity, permissions[0], false)// Permission must have been requested before
                 && !ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[0]); // This method should return false
     }
 
     public static void markPermissionRequested(Activity activity, String... permissions) {
-        SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        preferences.edit().putBoolean(permissions[0], true).apply();
+        Preference.setBoolean(activity, permissions[0], true);
     }
 }

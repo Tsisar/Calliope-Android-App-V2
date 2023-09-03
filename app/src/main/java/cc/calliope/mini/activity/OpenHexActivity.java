@@ -118,7 +118,7 @@ public class OpenHexActivity extends ScannerActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (Version.VERSION_T_AND_NEWER || (requestCode == REQUEST_CODE_PERMISSIONS && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+        if (Version.VERSION_TIRAMISU_AND_NEWER || (requestCode == REQUEST_CODE_PERMISSIONS && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             // Дозвіл на читання зовнішнього сховища отримано
             Log.w("HexActivity", "Дозвіл на читання зовнішнього сховища отримано");
         }else{

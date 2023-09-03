@@ -15,7 +15,7 @@ import android.view.View;
 
 public class NoPermissionActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int REQUEST_CODE = 1022; // random number
-    private PermissionContent content;
+    private NoPermissionContent content;
     private ActivityNoPermissionBinding binding;
     private boolean deniedForever;
 
@@ -34,11 +34,15 @@ public class NoPermissionActivity extends AppCompatActivity implements View.OnCl
         super.onResume();
         if (!Permission.isAccessGranted(this, Permission.BLUETOOTH_PERMISSIONS)) {
             deniedForever = Permission.isAccessDeniedForever(this, Permission.BLUETOOTH_PERMISSIONS);
-            content = PermissionContent.BLUETOOTH;
+            content = NoPermissionContent.BLUETOOTH;
             updateUi();
         } else if (!Version.VERSION_S_AND_NEWER && !Permission.isAccessGranted(this, Permission.LOCATION_PERMISSIONS)) {
             deniedForever = Permission.isAccessDeniedForever(this, Permission.LOCATION_PERMISSIONS);
-            content = PermissionContent.LOCATION;
+            content = NoPermissionContent.LOCATION;
+            updateUi();
+        } else if (Version.VERSION_TIRAMISU_AND_NEWER && !Permission.isAccessGranted(this, Permission.POST_NOTIFICATIONS)) {
+            deniedForever = Permission.isAccessDeniedForever(this, Permission.LOCATION_PERMISSIONS);
+            content = NoPermissionContent.NOTIFICATIONS;
             updateUi();
         } else {
             finish();

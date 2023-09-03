@@ -47,6 +47,7 @@ import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.preference.PreferenceManager;
 import cc.calliope.mini.App;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.utils.Version;
@@ -57,7 +58,6 @@ import no.nordicsemi.android.support.v18.scanner.ScanResult;
 import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 
 import static cc.calliope.mini.App.APP_STATE_FLASHING;
-import static cc.calliope.mini.utils.StaticExtra.SHARED_PREFERENCES_NAME;
 
 public class ScannerViewModel extends AndroidViewModel {
 
@@ -224,7 +224,7 @@ public class ScannerViewModel extends AndroidViewModel {
     public void savePattern() {
         Float[] currentPattern = mScannerLiveData.getCurrentPattern();
         if (currentPattern != null) {
-            SharedPreferences sharedPreferences = getApplication().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplication());
             SharedPreferences.Editor edit = sharedPreferences.edit();
             for (int i = 0; i < 5; i++) {
                 edit.putFloat("PATTERN_" + i, currentPattern[i]);
@@ -235,7 +235,7 @@ public class ScannerViewModel extends AndroidViewModel {
 
     public void loadPattern() {
         Float[] currentPattern = {0f, 0f, 0f, 0f, 0f};
-        SharedPreferences preferences = getApplication().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplication());
         for (int i = 0; i < 5; i++) {
             currentPattern[i] = preferences.getFloat("PATTERN_" + i, 0f);
         }

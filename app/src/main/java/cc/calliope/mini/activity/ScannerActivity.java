@@ -126,8 +126,10 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     private void checkPermission() {
         boolean isBluetoothAccessGranted = Permission.isAccessGranted(this, Permission.BLUETOOTH_PERMISSIONS);
         boolean isLocationAccessGranted = Version.VERSION_S_AND_NEWER || Permission.isAccessGranted(this, Permission.LOCATION_PERMISSIONS);
+        boolean isNotificationAccessGranted = Version.VERSION_TIRAMISU_AND_NEWER &&
+                (Permission.isAccessGranted(this, Permission.POST_NOTIFICATIONS) || Permission.isAccessDeniedForever(this, Permission.POST_NOTIFICATIONS));
 
-        if (isBluetoothAccessGranted && isLocationAccessGranted) {
+        if (isBluetoothAccessGranted && isLocationAccessGranted && isNotificationAccessGranted) {
             if (!Utils.isBluetoothEnabled()) {
                 showBluetoothDisabledWarning();
             } else if (!Version.VERSION_S_AND_NEWER && !Utils.isLocationEnabled(this)) {
