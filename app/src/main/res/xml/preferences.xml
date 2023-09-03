@@ -17,7 +17,6 @@
 
         <cc.calliope.mini.dialog.CustomLinkDialogPreference
             android:key="pref_key_custom_link"
-            android:icon="@drawable/ic_editors_custom"
             android:title="@string/title_custom"
             android:summary="@string/summary_custom"
             android:defaultValue="https://makecode.calliope.cc"/>
