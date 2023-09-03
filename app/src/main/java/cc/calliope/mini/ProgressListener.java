@@ -22,6 +22,7 @@ public interface ProgressListener {
 
     void onDeviceConnecting();
     void onProcessStarting();
+    void onAttemptDfuMode();
     void onEnablingDfuMode();
     void onFirmwareValidating();
     void onDeviceDisconnecting();

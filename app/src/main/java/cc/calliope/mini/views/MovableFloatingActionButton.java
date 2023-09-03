@@ -169,7 +169,9 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
 
     @Override
     public void onBonding(@NonNull BluetoothDevice device, int bondState, int previousBondState) {
-
+    }
+    @Override
+    public void onAttemptDfuMode(){
     }
 
     @Override

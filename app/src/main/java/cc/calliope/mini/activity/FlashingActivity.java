@@ -119,6 +119,11 @@ public class FlashingActivity extends AppCompatActivity implements ProgressListe
     }
 
     @Override
+    public void onAttemptDfuMode() {
+
+    }
+
+    @Override
     public void onEnablingDfuMode() {
         status.setText(R.string.flashing_enabling_dfu_mode);
         Utils.log(Log.WARN, TAG, "onEnablingDfuMode");

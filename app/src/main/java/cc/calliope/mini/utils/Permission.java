@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat;
 
 public class Permission {
     public static final String[] BLUETOOTH_PERMISSIONS;
-
     static {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             BLUETOOTH_PERMISSIONS = new String[]{Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT};
@@ -23,7 +22,6 @@ public class Permission {
     }
 
     public static final String[] LOCATION_PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public static final String[] POST_NOTIFICATIONS = {Manifest.permission.POST_NOTIFICATIONS};
 

@@ -101,7 +101,7 @@ public class ProgressCollector extends ContextWrapper implements DefaultLifecycl
                 return;
             }
 
-            switch (action){
+            switch (action) {
                 case DfuControlService.BROADCAST_START -> listener.onEnablingDfuMode();
                 case DfuControlService.BROADCAST_COMPLETED -> {
                     int boardVersion = intent.getIntExtra(EXTRA_BOARD_VERSION, UNIDENTIFIED);
@@ -125,18 +125,21 @@ public class ProgressCollector extends ContextWrapper implements DefaultLifecycl
                 return;
             }
 
-            switch (action){
+            switch (action) {
                 case PartialFlashingBaseService.BROADCAST_PROGRESS -> {
                     int percent = intent.getIntExtra(PartialFlashingBaseService.EXTRA_PROGRESS, 0);
                     listener.onProgressChanged(percent);
                 }
                 case PartialFlashingBaseService.BROADCAST_START -> listener.onProcessStarting();
-                case PartialFlashingBaseService.BROADCAST_COMPLETE -> listener.onCompleted();
+                case PartialFlashingBaseService.BROADCAST_COMPLETE -> {
+                    listener.onCompleted();
+                    listener.onDeviceDisconnecting();
+                }
                 case PartialFlashingBaseService.BROADCAST_PF_FAILED -> {
                     listener.onError(-1, "Partial Flashing FAILED");
                 }
                 case PartialFlashingBaseService.BROADCAST_PF_ATTEMPT_DFU -> {
-                    //TODO ATTEMPT_DFU
+                    listener.onAttemptDfuMode();
                 }
             }
         }
@@ -192,7 +195,7 @@ public class ProgressCollector extends ContextWrapper implements DefaultLifecycl
 
     public void registerReceivers() {
         Utils.log(Log.WARN, TAG, "registerReceivers() listener: " + listener);
-        if(listener == null){
+        if (listener == null) {
             return;
         }
         //BondStateReceiver

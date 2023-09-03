@@ -76,7 +76,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
 
     ActivityResultLauncher<Intent> bluetoothEnableResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
-                startDfuControlService();
+                checkBluetooth();
             }
     );
 
@@ -117,6 +117,11 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
     public void onProcessStarting() {
         status.setText(R.string.flashing_process_starting);
         Utils.log(Log.WARN, TAG, "onProcessStarting");
+    }
+
+    @Override
+    public void onAttemptDfuMode() {
+        startDfuControlService();
     }
 
     @Override
@@ -203,7 +208,7 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
 
     private void onRetryClicked(View view) {
         view.setVisibility(View.INVISIBLE);
-        startDfuControlService();
+        checkBluetooth();
     }
 
     private void finishActivity() {
@@ -233,28 +238,36 @@ public class AlternativeFlashingActivity extends AppCompatActivity implements Pr
         Utils.log(Log.INFO, TAG, "Device: " + extendedDevice.getAddress() + " " + extendedDevice.getName());
         Utils.log(Log.INFO, TAG, "File path: " + filePath);
 
-        startDfuControlService();
+        checkBluetooth();
     }
 
-    private void startDfuControlService() {
+    private void checkBluetooth() {
         if (Utils.isBluetoothEnabled()) {
-            if(Preference.getBoolean(getApplicationContext(), Preference.PREF_KEY_ENABLE_PARTIAL_FLASHING, false)){
-                Utils.log(TAG, "Starting PartialFlashing Service...");
-
-                Intent service = new Intent(this, PartialFlashingService.class);
-                service.putExtra(AlternativePartialFlashingBaseService.EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
-                service.putExtra("filepath", filePath); // a path or URI must be provided.
-                startService(service);
-            }else {
-                Utils.log(TAG, "Starting DfuControl Service...");
-
-                Intent service = new Intent(this, DfuControlService.class);
-                service.putExtra(DfuControlService.EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
-                startService(service);
+            if (Preference.getBoolean(getApplicationContext(), Preference.PREF_KEY_ENABLE_PARTIAL_FLASHING, false)) {
+                startPartialFlashing();
+            } else {
+                startDfuControlService();
             }
         } else {
             showBluetoothDisabledWarning();
         }
+    }
+
+    private void startPartialFlashing() {
+        Utils.log(TAG, "Starting PartialFlashing Service...");
+
+        Intent service = new Intent(this, PartialFlashingService.class);
+        service.putExtra(AlternativePartialFlashingBaseService.EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
+        service.putExtra(AlternativePartialFlashingBaseService.EXTRA_FILE_PATH, filePath); // a path or URI must be provided.
+        startService(service);
+    }
+
+    private void startDfuControlService() {
+        Utils.log(TAG, "Starting DfuControl Service...");
+
+        Intent service = new Intent(this, DfuControlService.class);
+        service.putExtra(DfuControlService.EXTRA_DEVICE_ADDRESS, currentDevice.getAddress());
+        startService(service);
     }
 
     @SuppressWarnings("deprecation")
