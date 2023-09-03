@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import cc.calliope.mini.service.DfuControlService;
 import cc.calliope.mini.service.DfuService;
 import cc.calliope.mini.utils.Utils;
 import no.nordicsemi.android.dfu.DfuBaseService;
@@ -23,10 +24,10 @@ import no.nordicsemi.android.error.GattError;
 import static android.bluetooth.BluetoothDevice.ACTION_BOND_STATE_CHANGED;
 import static android.bluetooth.BluetoothDevice.ERROR;
 import static android.bluetooth.BluetoothDevice.EXTRA_BOND_STATE;
-import static cc.calliope.mini.DfuControlService.UNIDENTIFIED;
-import static cc.calliope.mini.DfuControlService.EXTRA_BOARD_VERSION;
-import static cc.calliope.mini.DfuControlService.EXTRA_ERROR_CODE;
-import static cc.calliope.mini.DfuControlService.EXTRA_ERROR_MESSAGE;
+import static cc.calliope.mini.service.DfuControlService.UNIDENTIFIED;
+import static cc.calliope.mini.service.DfuControlService.EXTRA_BOARD_VERSION;
+import static cc.calliope.mini.service.DfuControlService.EXTRA_ERROR_CODE;
+import static cc.calliope.mini.service.DfuControlService.EXTRA_ERROR_MESSAGE;
 
 public class ProgressCollector extends ContextWrapper implements DefaultLifecycleObserver {
     private static final String TAG = "ProgressCollector";

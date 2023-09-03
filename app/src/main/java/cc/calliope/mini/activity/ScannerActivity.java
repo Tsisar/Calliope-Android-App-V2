@@ -210,7 +210,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
                         patternFab.getY()
                 ));
             } else {
-                final Intent intent = new Intent(this, AlternativeFlashingActivity.class);
+                final Intent intent = new Intent(this, FlashingActivity.class);
                 startActivity(intent);
             }
         }

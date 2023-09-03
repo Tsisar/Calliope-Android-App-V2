@@ -143,7 +143,7 @@ public class OpenHexActivity extends ScannerActivity {
 
     private void startDFUActivity(File file) {
         if (device != null && device.isRelevant()) {
-            final Intent intent = new Intent(this, AlternativeFlashingActivity.class);
+            final Intent intent = new Intent(this, FlashingActivity.class);
             intent.putExtra(StaticExtra.EXTRA_DEVICE, device);
             intent.putExtra(StaticExtra.EXTRA_FILE_PATH, file.getAbsolutePath());
             startActivity(intent);

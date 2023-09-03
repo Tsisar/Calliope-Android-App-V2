@@ -1,7 +1,9 @@
-package cc.calliope.mini;
+package cc.calliope.mini.service;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import cc.calliope.mini.R;
 
 public enum GattStatus {
     GATT_SUCCESS(0x00, R.string.gatt_success),

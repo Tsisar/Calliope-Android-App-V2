@@ -1,18 +1,10 @@
-package cc.calliope.mini;
+package cc.calliope.mini.service;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
-import android.util.Log;
-
-import org.microbit.android.partialflashing.AlternativePartialFlashingBaseService;
 import org.microbit.android.partialflashing.PartialFlashingBaseService;
 
-import androidx.annotation.NonNull;
-import cc.calliope.mini.activity.NotificationActivity;
-import cc.calliope.mini.utils.Version;
-import no.nordicsemi.android.dfu.DfuServiceInitiator;
+import cc.calliope.mini.App;
 
-public class PartialFlashingService extends AlternativePartialFlashingBaseService {
+public class PartialFlashingService extends PartialFlashingBaseService {
     private App app;
 
 //    @Override

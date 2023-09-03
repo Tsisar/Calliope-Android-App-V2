@@ -1,4 +1,4 @@
-package cc.calliope.mini;
+package cc.calliope.mini.service;
 
 import android.Manifest;
 import android.app.Service;
@@ -25,6 +25,7 @@ import java.util.UUID;
 import androidx.annotation.IntDef;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import cc.calliope.mini.App;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.utils.Version;
 

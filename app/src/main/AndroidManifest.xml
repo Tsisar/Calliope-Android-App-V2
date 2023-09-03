@@ -101,9 +101,6 @@
             android:name=".activity.FlashingActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.AlternativeFlashingActivity"
-            android:exported="false" />
-        <activity
             android:name=".activity.NoPermissionActivity"
             android:exported="false" />
         <activity
@@ -114,10 +111,10 @@
             android:name=".service.DfuService"
             android:enabled="true" />
         <service
-            android:name=".PartialFlashingService"
+            android:name=".service.PartialFlashingService"
             android:enabled="true" />
         <service
-            android:name=".DfuControlService"
+            android:name=".service.DfuControlService"
             android:enabled="true" />
 
     </application>

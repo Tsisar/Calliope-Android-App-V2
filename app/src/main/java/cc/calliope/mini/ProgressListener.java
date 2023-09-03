@@ -12,7 +12,7 @@ import static android.bluetooth.BluetoothDevice.BOND_BONDED;
 import static android.bluetooth.BluetoothDevice.BOND_BONDING;
 import static android.bluetooth.BluetoothDevice.BOND_NONE;
 
-import static cc.calliope.mini.DfuControlService.HardwareVersion;
+import static cc.calliope.mini.service.DfuControlService.HardwareVersion;
 
 public interface ProgressListener {
     @IntDef({BOND_BONDING, BOND_BONDED, BOND_NONE})
