@@ -175,6 +175,10 @@ public class ScannerViewModel extends AndroidViewModel {
         mScannerLiveData.setCurrentPattern(pattern);
     }
 
+    public void createBond(){
+        mScannerLiveData.createBond();
+    }
+
     /**
      * Register for required broadcast receivers.
      */

@@ -30,6 +30,8 @@
 
 package cc.calliope.mini.viewmodels;
 
+import android.bluetooth.BluetoothDevice;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -103,6 +105,12 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
     void setCurrentPattern(Float[] pattern) {
         currentPattern = pattern;
         postValue(this);
+    }
+
+    void createBond(){
+        BluetoothDevice device = getCurrentDevice().getDevice();
+
+        device.createBond();
     }
 
     public ExtendedBluetoothDevice getCurrentDevice() {
