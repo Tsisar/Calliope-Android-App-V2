@@ -263,7 +263,7 @@ public class HexUtils {
         data[2] = (byte)(offset & 0xFF);
         data[3] = (byte)(packetNum & 0xFF);
 
-        Log.v(TAG, "Sent: " + data.toString());
+//        Log.v(TAG, "Sent: " + data.toString());
 
         return data;
     }

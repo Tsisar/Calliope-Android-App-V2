@@ -69,7 +69,7 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
     private ExtendedBluetoothDevice device;
     private FrameLayout bottomSheet;
     private int state = BottomSheetBehavior.STATE_COLLAPSED;
-    private String saveFilePath;
+    private String sourceFilePath;
 
     private final BottomSheetBehavior.BottomSheetCallback bottomSheetCallback =
             new BottomSheetBehavior.BottomSheetCallback() {
@@ -147,7 +147,7 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
 
         ArrayList<FileWrapper> filesList = new ArrayList<>();
 
-        if (filesArray != null && filesArray.length > 0) {
+        if (filesArray != null) {
             for (File file : filesArray) {
                 String name = file.getName();
                 if (name.contains(FILE_EXTENSION)) {
@@ -245,15 +245,21 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
     }
 
     public void copyFile(FileWrapper file){
+        //TODO if(...)
+        boolean connected = isMiniConnected();
+        Utils.log(TAG, "Mini connected: " + connected);
+
+        sourceFilePath = file.getAbsolutePath();
+
         if (Version.VERSION_Q_AND_NEWER) {
-            isMiniConnected();
-            saveFilePath = file.getAbsolutePath();
+            openDocumentTreeNewApi();
+        }else {
             openDocumentTree();
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
-    private void openDocumentTree() {
+    private void openDocumentTreeNewApi() {
         StorageManager storageManager = (StorageManager) activity.getSystemService(Context.STORAGE_SERVICE);
         Intent intent = storageManager.getPrimaryStorageVolume().createOpenDocumentTreeIntent();
 
@@ -264,10 +270,15 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
         scheme += "%3A" + targetDirectory;
         uri = Uri.parse(scheme);
         intent.putExtra("android.provider.extra.INITIAL_URI", uri);
-        saveFileResultLauncher.launch(intent);
+        treeUriResultLauncher.launch(intent);
     }
 
-    ActivityResultLauncher<Intent> saveFileResultLauncher = registerForActivityResult(
+    private void openDocumentTree(){
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        treeUriResultLauncher.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> treeUriResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
                 Utils.log(TAG, "getResultCode: " + result.getResultCode());
                 Utils.log(TAG, "getData: " + result.getData());
@@ -297,7 +308,7 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
             DocumentFile directory = DocumentFile.fromTreeUri(activity, uri);
             DocumentFile file = directory.createFile("application/octet-stream", "firmware.hex");
 
-            FileInputStream inputStream = new FileInputStream(saveFilePath);
+            FileInputStream inputStream = new FileInputStream(sourceFilePath);
 
             ParcelFileDescriptor parcelFileDescriptor = activity.getContentResolver().openFileDescriptor(file.getUri(), "w");
             FileOutputStream outputStream = new FileOutputStream(parcelFileDescriptor.getFileDescriptor());
@@ -325,7 +336,8 @@ public class ScriptsFragment extends BottomSheetDialogFragment {
             Utils.log(Log.DEBUG, "USB_Device", "Manufacturer Name: " + device.getManufacturerName());
             Utils.log(Log.DEBUG, "USB_Device", "Device Protocol: " + device.getDeviceProtocol());
 
-            if(device.getProductName().contains("Calliope")) {
+            String productName = device.getProductName();
+            if(productName != null && productName.contains("Calliope")) {
                 Utils.log(Log.ASSERT, TAG, "it`s Calliope");
                 return true;
             }
