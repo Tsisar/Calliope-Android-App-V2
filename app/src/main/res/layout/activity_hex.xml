@@ -27,6 +27,7 @@
         android:background="@drawable/btn_aqua"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_button"
+        android:paddingHorizontal="@dimen/padding"
         android:text="@string/open_hex_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

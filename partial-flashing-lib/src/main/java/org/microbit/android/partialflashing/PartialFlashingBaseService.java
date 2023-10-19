@@ -27,6 +27,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -263,7 +264,7 @@ public abstract class PartialFlashingBaseService extends Service {
                 if (gatt != null && connectionState == STATE_CONNECTED_AND_READY) {
                     log(Log.DEBUG, "Connected and ready");
                     int status = attemptPartialFlashing(gatt);
-                    switch (status){
+                    switch (status) {
                         case ATTEMPT_ENTER_DFU -> {
                             connectionState = STATE_DISCONNECTING;
                             gatt.disconnect();
@@ -340,6 +341,7 @@ public abstract class PartialFlashingBaseService extends Service {
         BluetoothGattService partialFlashingService = gatt.getService(PARTIAL_FLASHING_SERVICE_UUID);
         if (partialFlashingService == null) {
             return false;
+
         }
 
         partialFlashingCharacteristic = partialFlashingService.getCharacteristic(PARTIAL_FLASHING_CHARACTERISTIC_UUID);
@@ -372,6 +374,8 @@ public abstract class PartialFlashingBaseService extends Service {
     }
 
     private boolean sendStatusRequest(BluetoothGatt gatt) {
+        log(Log.INFO, "Send status request...");
+
         boolean res = writeCharacteristic(gatt, (byte) 0xEE);
         try {
             synchronized (lock) {
@@ -385,6 +389,8 @@ public abstract class PartialFlashingBaseService extends Service {
     }
 
     private boolean sendHashRequest(BluetoothGatt gatt) {
+        log(Log.INFO, "Send hash request...");
+
         boolean res = writeCharacteristic(gatt, (byte) 0x00, (byte) 0x01);
         try {
             synchronized (lock) {
@@ -576,16 +582,13 @@ public abstract class PartialFlashingBaseService extends Service {
         return gatt.writeCharacteristic(partialFlashingCharacteristic);
     }
 
-    private static String bytesToHex(byte[] bytes) {
-        final char[] hexArray = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-        char[] hexChars = new char[bytes.length * 2];
-        int v;
-        for (int j = 0; j < bytes.length; j++) {
-            v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder(2 * bytes.length);
+        for (byte b : bytes) {
+            String hex = String.format("%02X", b);
+            hexString.append(hex);
         }
-        return new String(hexChars);
+        return hexString.toString();
     }
 
     private boolean isPermissionGranted(String... permissions) {
