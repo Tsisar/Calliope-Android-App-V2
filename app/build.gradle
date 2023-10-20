@@ -1,10 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'androidx.navigation.safeargs'
+    id 'kotlin-android'
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "cc.calliope.mini"
@@ -24,8 +25,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_16
-        targetCompatibility JavaVersion.VERSION_16
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding true
@@ -34,6 +35,8 @@ android {
 }
 
 dependencies {
+    implementation 'no.nordicsemi.android.kotlin.ble:scanner:1.0.5'
+
     implementation 'javax.validation:validation-api:2.0.1.Final'
 
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -48,7 +51,7 @@ dependencies {
     // Brings the new BluetoothLeScanner API to older platforms
     implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
     // BLE library
-    implementation 'no.nordicsemi.android:ble:2.5.1'
+    implementation 'no.nordicsemi.android:ble:2.7.0'
     // Log Bluetooth LE events in nRF Logger
     implementation 'no.nordicsemi.android:log:2.3.0'
 

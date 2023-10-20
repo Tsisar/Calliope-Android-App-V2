@@ -30,6 +30,9 @@
 
 package cc.calliope.mini.viewmodels;
 
+import static android.bluetooth.BluetoothDevice.BOND_BONDED;
+import static android.bluetooth.BluetoothDevice.BOND_NONE;
+
 import android.bluetooth.BluetoothDevice;
 
 import java.util.ArrayList;
@@ -109,8 +112,10 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
 
     void createBond(){
         BluetoothDevice device = getCurrentDevice().getDevice();
-
-        device.createBond();
+        int state = device.getBondState();
+        if(state == BOND_NONE) {
+            device.createBond();
+        }
     }
 
     public ExtendedBluetoothDevice getCurrentDevice() {

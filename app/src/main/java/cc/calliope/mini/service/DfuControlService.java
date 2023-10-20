@@ -63,6 +63,7 @@ public class DfuControlService extends Service {
     private int bondState;
     private String deviceAddress;
     public static final int UNIDENTIFIED = 0;
+
     /**
      * Version 1.x, 2.0, 2,1
      * https://calliope-mini.github.io/v10/
@@ -70,6 +71,7 @@ public class DfuControlService extends Service {
      * https://calliope-mini.github.io/v21/
      */
     public static final int MINI_V1 = 1;
+
     /**
      * New version
      */

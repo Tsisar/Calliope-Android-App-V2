@@ -13,4 +13,5 @@
     <dimen name="text_size_default">16sp</dimen>
     <dimen name="text_size_title">18sp</dimen>
     <dimen name="text_size_status">40sp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>
