@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -18,12 +20,14 @@ import java.util.List;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+
 import cc.calliope.mini.App;
 import cc.calliope.mini.R;
 import cc.calliope.mini.ExtendedBluetoothDevice;
@@ -121,6 +125,18 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     public void setPatternFab(MovableFloatingActionButton patternFab) {
         this.patternFab = patternFab;
         this.patternFab.setOnClickListener(this::onFabClick);
+//        registerForContextMenu(this.patternFab);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.scripts_popup_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        return super.onContextItemSelected(item);
     }
 
     private void checkPermission() {
@@ -193,6 +209,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     public void onFabClick(View view) {
+//        openContextMenu(view);
         if (patternFab.isFabMenuOpen()) {
             collapseFabMenu();
         } else {
@@ -201,7 +218,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     public void onItemFabMenuClicked(View view) {
-        if (view.getId() == R.id.fabConnect) {
+        if (view.getId() == R.id.itemConnect) {
             if (app.getAppState() == App.APP_STATE_STANDBY) {
                 showPatternDialog(new FobParams(
                         patternFab.getWidth(),

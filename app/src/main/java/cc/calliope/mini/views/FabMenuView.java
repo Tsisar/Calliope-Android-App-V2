@@ -23,8 +23,8 @@ public class FabMenuView extends LinearLayout implements View.OnClickListener {
     }
     FloatingActionButton fullScreenFab;
     private OnItemClickListener onItemClickListener;
-    private LinearLayout scriptsLinerLayout;
-    private LinearLayout fullScreenLinerLayout;
+    private LinearLayout scriptsItem;
+    private LinearLayout fullScreenItem;
 
     public interface OnItemClickListener {
         void onItemClick(View view);
@@ -65,17 +65,15 @@ public class FabMenuView extends LinearLayout implements View.OnClickListener {
     private void initView(@FabMenuType int type) {
         setId(R.id.menuFab);
         View view = inflate(getContext(), type == TYPE_LEFT ? R.layout.menu_fab_left : R.layout.menu_fab_right, null);
-        scriptsLinerLayout = view.findViewById(R.id.itemScripts);
-        fullScreenLinerLayout = view.findViewById(R.id.itemFullScreen);
+        LinearLayout connectItem = view.findViewById(R.id.itemConnect);
+        scriptsItem = view.findViewById(R.id.itemScripts);
+        fullScreenItem = view.findViewById(R.id.itemFullScreen);
 
-        FloatingActionButton connectFab = view.findViewById(R.id.fabConnect);
-        FloatingActionButton scriptsFab = view.findViewById(R.id.fabScripts);
         fullScreenFab = view.findViewById(R.id.fabFullScreen);
 
-        connectFab.setOnClickListener(this);
-        scriptsFab.setOnClickListener(this);
-        fullScreenFab.setOnClickListener(this);
-
+        connectItem.setOnClickListener(this);
+        scriptsItem.setOnClickListener(this);
+        fullScreenItem.setOnClickListener(this);
 
         addView(view);
     }
@@ -96,10 +94,10 @@ public class FabMenuView extends LinearLayout implements View.OnClickListener {
     }
 
     public void setScriptsVisibility(int visibility) {
-        scriptsLinerLayout.setVisibility(visibility);
+        scriptsItem.setVisibility(visibility);
     }
 
     public void setFullScreenVisibility(int visibility) {
-        fullScreenLinerLayout.setVisibility(visibility);
+        fullScreenItem.setVisibility(visibility);
     }
 }

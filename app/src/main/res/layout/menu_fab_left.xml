@@ -10,6 +10,7 @@
     android:padding="4dp">
 
     <LinearLayout
+        android:id="@+id/itemConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -19,6 +20,7 @@
             android:id="@+id/fabConnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="false"
             app:fabSize="mini"
             app:maxImageSize="24dp"
             app:srcCompat="@drawable/ic_connect"
@@ -48,6 +50,7 @@
             android:id="@+id/fabScripts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="false"
             app:fabSize="mini"
             app:maxImageSize="24dp"
             app:srcCompat="@drawable/ic_coding_black_24dp"
@@ -78,6 +81,7 @@
             android:id="@+id/fabFullScreen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="false"
             app:fabSize="mini"
             app:maxImageSize="24dp"
             app:srcCompat="@drawable/ic_enable_full_screen_24dp"
