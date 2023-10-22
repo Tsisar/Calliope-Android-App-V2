@@ -32,6 +32,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import cc.calliope.mini.service.PartialFlashingService;
 import cc.calliope.mini.ProgressCollector;
 import cc.calliope.mini.ExtendedBluetoothDevice;
@@ -650,16 +651,17 @@ public class FlashingActivity extends AppCompatActivity implements ProgressListe
      */
     int charToInt(char in) {
         // 0 - 9
-        if (in - '0' >= 0 && in - '0' < 10) return (in - '0');
-
+        if (in - '0' >= 0 && in - '0' < 10) {
+            return (in - '0');
+        }
         // A - F
         return in - 55;
     }
 
     private void showBluetoothDisabledWarning() {
         Snackbar snackbar = Utils.errorSnackbar(binding.getRoot(), getString(R.string.error_snackbar_bluetooth_disable));
-        snackbar.setDuration(SNACKBAR_DURATION);
-        snackbar.setAction(R.string.button_enable, this::startBluetoothEnableActivity)
+        snackbar.setDuration(SNACKBAR_DURATION)
+                .setAction(R.string.button_enable, this::startBluetoothEnableActivity)
                 .show();
     }
 

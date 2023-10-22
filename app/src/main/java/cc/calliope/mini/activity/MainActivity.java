@@ -105,13 +105,13 @@ public class MainActivity extends ScannerActivity {
     @Override
     public void onItemFabMenuClicked(View view) {
         super.onItemFabMenuClicked(view);
-        if (view.getId() == R.id.fabFullScreen) {
+        if (view.getId() == R.id.itemFullScreen) {
             if (fullScreen) {
                 disableFullScreenMode();
             } else {
                 enableFullScreenMode();
             }
-        } else if (view.getId() == R.id.fabScripts) {
+        } else if (view.getId() == R.id.itemScripts) {
             ScriptsFragment scriptsFragment = new ScriptsFragment();
             scriptsFragment.show(getSupportFragmentManager(), "Bottom Sheet Dialog Fragment");
         }
