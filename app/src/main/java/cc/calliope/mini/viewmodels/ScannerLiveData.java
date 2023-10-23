@@ -120,10 +120,10 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
     void createBond() {
         BluetoothDevice device = getCurrentDevice().getDevice();
         if (device != null) {
-            int bondState = device.getBondState();
-            if (bondState == BOND_BONDED) {
-                deleteBond(device);
-            }
+//            int bondState = device.getBondState();
+//            if (bondState == BOND_BONDED) {
+//                deleteBond(device);
+//            }
             device.createBond();
         }
     }
