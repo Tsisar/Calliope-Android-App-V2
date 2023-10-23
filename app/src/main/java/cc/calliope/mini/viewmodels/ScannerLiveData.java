@@ -30,17 +30,27 @@
 
 package cc.calliope.mini.viewmodels;
 
-import android.bluetooth.BluetoothDevice;
+import static android.bluetooth.BluetoothDevice.BOND_BONDED;
+import static android.content.Context.BLUETOOTH_SERVICE;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.util.Log;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.dialog.pattern.PatternEnum;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
@@ -107,10 +117,25 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
         postValue(this);
     }
 
-    void createBond(){
+    void createBond() {
         BluetoothDevice device = getCurrentDevice().getDevice();
+        if (device != null) {
+            int bondState = device.getBondState();
+            if (bondState == BOND_BONDED) {
+                deleteBond(device);
+            }
+            device.createBond();
+        }
+    }
 
-        device.createBond();
+    private void deleteBond(BluetoothDevice device) {
+        try {
+            Method method = device.getClass().getMethod("removeBond", (Class[]) null);
+            method.invoke(device, (Object[]) null);
+        } catch (NoSuchMethodException | IllegalAccessException
+                 | InvocationTargetException e) {
+            Log.e("ERROR", e.toString());
+        }
     }
 
     public ExtendedBluetoothDevice getCurrentDevice() {
