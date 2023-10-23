@@ -7,11 +7,11 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "cc.calliope.mini"
+        applicationId "cc.calliope.mini.app"
         minSdk 21
         targetSdk 33
-        versionCode 1
-        versionName "Next BETA"
+        versionCode 4
+        versionName "Next"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
