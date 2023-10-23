@@ -4,14 +4,14 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "cc.calliope.mini",
+  "applicationId": "cc.calliope.mini.app",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 4,
+      "versionCode": 6,
       "versionName": "Next",
       "outputFile": "app-release.apk"
     }
