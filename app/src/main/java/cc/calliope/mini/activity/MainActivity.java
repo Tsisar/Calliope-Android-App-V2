@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 
 import java.io.File;
+import java.util.List;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,12 +22,12 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import cc.calliope.mini.popup.PopupItem;
 import cc.calliope.mini.R;
 import cc.calliope.mini.databinding.ActivityMainBinding;
 import cc.calliope.mini.dialog.scripts.ScriptsFragment;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.utils.Version;
-import cc.calliope.mini.views.FabMenuView;
 
 public class MainActivity extends ScannerActivity {
     private static final String TAG = "MainActivity";
@@ -60,14 +62,10 @@ public class MainActivity extends ScannerActivity {
             }
             Utils.log(Log.ASSERT, TAG, "Destination id: " + destination.getId());
             Utils.log(Log.ASSERT, TAG, "Select item id: " + binding.bottomNavigation.getSelectedItemId());
-
-            if (binding.patternFab.isFabMenuOpen()) {
-                collapseFabMenu();
-            }
         });
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
 
-        if(Version.VERSION_TIRAMISU_AND_NEWER) {
+        if (Version.VERSION_TIRAMISU_AND_NEWER) {
             requestPushNotificationPermission();
         }
 
@@ -102,18 +100,32 @@ public class MainActivity extends ScannerActivity {
         }
     }
 
-    @Override
-    public void onItemFabMenuClicked(View view) {
-        super.onItemFabMenuClicked(view);
-        if (view.getId() == R.id.itemFullScreen) {
+//    @Override
+//    public void onItemFabMenuClicked(View view) {
+//        super.onItemFabMenuClicked(view);
+//        if (view.getId() == R.id.itemFullScreen) {
+//            if (fullScreen) {
+//                disableFullScreenMode();
+//            } else {
+//                enableFullScreenMode();
+//            }
+//        } else if (view.getId() == R.id.itemScripts) {
+//            ScriptsFragment scriptsFragment = new ScriptsFragment();
+//            scriptsFragment.show(getSupportFragmentManager(), "Bottom Sheet Dialog Fragment");
+//        }
+//    }
+
+    public void onPopupMenuItemClick(AdapterView<?> parent, View view, int position, long id) {
+        super.onPopupMenuItemClick(parent, view, position, id);
+        if (position == 1) {
+            ScriptsFragment scriptsFragment = new ScriptsFragment();
+            scriptsFragment.show(getSupportFragmentManager(), "Bottom Sheet Dialog Fragment");
+        }else if(position == 2){
             if (fullScreen) {
                 disableFullScreenMode();
             } else {
                 enableFullScreenMode();
             }
-        } else if (view.getId() == R.id.itemScripts) {
-            ScriptsFragment scriptsFragment = new ScriptsFragment();
-            scriptsFragment.show(getSupportFragmentManager(), "Bottom Sheet Dialog Fragment");
         }
     }
 
@@ -130,12 +142,11 @@ public class MainActivity extends ScannerActivity {
     }
 
     @Override
-    public void customizeFabMenu(FabMenuView fabMenuView) {
-        fabMenuView.setScriptsVisibility(View.VISIBLE);
-        fabMenuView.setFullScreenVisibility(View.VISIBLE);
-        fabMenuView.setFullScreenImageResource(fullScreen ?
-                R.drawable.ic_disable_full_screen_24dp :
-                R.drawable.ic_enable_full_screen_24dp);
+    public void addPopupMenuItems(List<PopupItem> popupItems) {
+        super.addPopupMenuItems(popupItems);
+        popupItems.add(new PopupItem(R.string.menu_fab_scripts, R.drawable.ic_coding_black_24dp));
+        popupItems.add(new PopupItem(R.string.menu_fab_full_screen, fullScreen ?
+                R.drawable.ic_disable_full_screen_24dp : R.drawable.ic_enable_full_screen_24dp));
     }
 
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
@@ -151,6 +162,7 @@ public class MainActivity extends ScannerActivity {
             recreate();
         }
     }
+
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void requestPushNotificationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)

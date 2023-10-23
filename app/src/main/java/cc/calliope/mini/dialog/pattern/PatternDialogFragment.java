@@ -144,9 +144,11 @@ public class PatternDialogFragment extends DialogFragment {
 //        }
         if(!connectClicked){
             scannerViewModel.setCurrentPattern(oldPattern);
-        }else {
-            scannerViewModel.createBond();
         }
+//        else {
+//            scannerViewModel.createBond();
+//        }
+
         final Activity activity = getActivity();
         if (activity instanceof DialogInterface.OnDismissListener) {
             ((DialogInterface.OnDismissListener) activity).onDismiss(dialog);

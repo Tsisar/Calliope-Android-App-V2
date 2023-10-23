@@ -45,7 +45,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import cc.calliope.mini.activity.FlashingActivity;
-import cc.calliope.mini.adapter.FileWrapper;
+import cc.calliope.mini.FileWrapper;
 import cc.calliope.mini.R;
 import cc.calliope.mini.dialog.DialogUtils;
 import cc.calliope.mini.utils.StaticExtra;

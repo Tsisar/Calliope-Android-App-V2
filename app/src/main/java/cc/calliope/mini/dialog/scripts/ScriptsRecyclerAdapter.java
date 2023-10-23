@@ -14,7 +14,7 @@ import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import cc.calliope.mini.adapter.FileWrapper;
+import cc.calliope.mini.FileWrapper;
 import cc.calliope.mini.R;
 import cc.calliope.mini.utils.Utils;
 

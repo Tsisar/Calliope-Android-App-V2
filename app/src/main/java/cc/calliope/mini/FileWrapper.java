@@ -1,4 +1,4 @@
-package cc.calliope.mini.adapter;
+package cc.calliope.mini;
 
 import java.io.File;
 
