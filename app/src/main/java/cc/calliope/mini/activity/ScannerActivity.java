@@ -142,7 +142,6 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
             showBluetoothDisabledWarning();
         }
 
-        Utils.log(Log.ASSERT, "SA", "scanResults: " + state.isScanning());
         setDevice(state.getCurrentDevice());
     }
 

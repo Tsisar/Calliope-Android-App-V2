@@ -53,6 +53,7 @@ import androidx.lifecycle.LiveData;
 
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.dialog.pattern.PatternEnum;
+import cc.calliope.mini.utils.Utils;
 import no.nordicsemi.android.support.v18.scanner.ScanResult;
 
 /**
@@ -120,10 +121,18 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
     void createBond() {
         BluetoothDevice device = getCurrentDevice().getDevice();
         if (device != null) {
-//            int bondState = device.getBondState();
-//            if (bondState == BOND_BONDED) {
-//                deleteBond(device);
-//            }
+            Utils.log(Log.ASSERT, "BOUND", "Device: " + device.getName());
+            int bondState = device.getBondState();
+            Utils.log(Log.ASSERT, "BOUND", "bondState: " + bondState);
+            if (bondState == BOND_BONDED) {
+                deleteBond(device);
+            }
+            //TODO Костить
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             device.createBond();
         }
     }
