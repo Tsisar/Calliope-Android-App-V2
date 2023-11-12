@@ -23,11 +23,15 @@ public class FileUtils {
         Log.w(TAG, "DIR: " + dir);
 
         File file = new File(dir.getAbsolutePath() + File.separator + filename + FILE_EXTENSION);
-        int i = 1;
-        while (file.exists()) {
-            String number = String.format("(%s)", ++i);
-            file = new File(dir.getAbsolutePath() + File.separator + filename + number + FILE_EXTENSION);
+
+        if(file.exists()){
+            file.delete();
         }
+//        int i = 1;
+//        while (file.exists()) {
+//            String number = String.format("(%s)", ++i);
+//            file = new File(dir.getAbsolutePath() + File.separator + filename + number + FILE_EXTENSION);
+//        }
 
         try {
             if (file.createNewFile()) {

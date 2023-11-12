@@ -199,6 +199,7 @@ public class FlashingActivity extends AppCompatActivity implements ProgressListe
             }
             currentDevice.createBond();
         }
+        progressBar.setProgress(0);
         binding.retryButton.setVisibility(View.VISIBLE);
         String error = String.format(getString(R.string.flashing_error), code, message);
         Utils.errorSnackbar(binding.getRoot(), error).show();
@@ -561,11 +562,14 @@ public class FlashingActivity extends AppCompatActivity implements ProgressListe
                         int lower_bound = 0;
                         int upper_bound = 0;
                         //MICROBIT_V1 lower_bound = 0x18000; upper_bound = 0x38000;
+                        //Memory range nRF51 (S130 v2.0.x) 0x0001B000 - 0x0003AC00 (127 kB)
+                        //0x00014000 - 0x0003C800
                         if (hardwareVersion == MINI_V1) {
                             lower_bound = 0x18000;
                             upper_bound = 0x3BBFF;
                         }
                         //MICROBIT_V2 lower_bound = 0x27000; upper_bound = 0x71FFF;
+                        //Memory range nRF52833 (S113 v7.0.x) Application area (incl. free space) 0x0001C000 - 0x00078000 (368 kB)
                         if (hardwareVersion == MINI_V2) {
                             lower_bound = 0x1C000;
                             upper_bound = 0x77000;

@@ -119,8 +119,9 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
     }
 
     void createBond() {
-        BluetoothDevice device = getCurrentDevice().getDevice();
-        if (device != null) {
+        ExtendedBluetoothDevice extendedDevice = getCurrentDevice();
+        if (extendedDevice != null) {
+            BluetoothDevice device = extendedDevice.getDevice();
             Utils.log(Log.ASSERT, "BOUND", "Device: " + device.getName());
             int bondState = device.getBondState();
             Utils.log(Log.ASSERT, "BOUND", "bondState: " + bondState);
@@ -177,7 +178,9 @@ public class ScannerLiveData extends LiveData<ScannerLiveData> {
     /* package */ void deviceDiscovered(final ScanResult result) {
         if (result.getScanRecord() != null) {
             String deviceName = result.getScanRecord().getDeviceName();
+            String address = result.getDevice().getAddress();
 
+//            Utils.log(Log.ASSERT, "SCAN", "Device name: " + deviceName + ", address: " + address);
             if (deviceName != null) {
 //                System.out.println("Found Device: " + deviceName);
 
