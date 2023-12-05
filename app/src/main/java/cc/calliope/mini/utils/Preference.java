@@ -7,6 +7,7 @@ import androidx.preference.PreferenceManager;
 
 public class Preference {
     public static final String PREF_KEY_ENABLE_AUTO_FLASHING = "pref_key_enable_auto_flashing";
+    public static final String PREF_KEY_RENAME_FILES = "pref_key_rename_files";
     public static final String PREF_KEY_ENABLE_PARTIAL_FLASHING = "pref_key_enable_partial_flashing";
     public static final String PREF_KEY_CUSTOM_LINK = "pref_key_custom_link";
 

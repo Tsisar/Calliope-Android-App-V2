@@ -112,6 +112,7 @@
     <string name="error_snackbar_save_file_error">Fehler beim Speichern der Datei</string>
     <string name="summary_custom">Link zum benutzerdefinierten Editor</string>
     <string name="summary_partial_flashing">aktivieren oder deaktivieren</string>
+    <string name="title_rename_files">Dateien umbenennen</string>
     <string name="title_settings">Einstellungen</string>
     <string name="bonding_started">Bindung begonnen</string>
     <string name="bonding_succeeded">Bindung gelungen</string>
@@ -122,4 +123,5 @@
     <string name="title_partial_flashing">Partielles Flashen</string>
     <string name="title_auto_flashing">Automatisches Flashen</string>
     <string name="button_ok">Ja</string>
+    <string name="summary_rename_files">angehängtes (n), wenn Datei vorhanden ist</string>
 </resources>

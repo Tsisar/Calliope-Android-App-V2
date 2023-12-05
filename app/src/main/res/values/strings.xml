@@ -134,9 +134,11 @@
     <string name="menu_fab_full_screen">Full screen</string>
     <string name="summary_custom">Link to the custom editor</string>
     <string name="summary_auto_flashing">after downloading the .hex file</string>
+    <string name="summary_rename_files">appended (n) if file exists</string>
     <string name="summary_partial_flashing">enable or disable</string>
     <string name="title_partial_flashing">Partial flashing</string>
     <string name="title_auto_flashing">Automatic flashing</string>
+    <string name="title_rename_files">Rename files</string>
     <string name="title_settings">Settings</string>
     <string name="bonding_started">Bonding started</string>
     <string name="bonding_succeeded">Bonding succeeded</string>

@@ -24,14 +24,15 @@ public class FileUtils {
 
         File file = new File(dir.getAbsolutePath() + File.separator + filename + FILE_EXTENSION);
 
-        if(file.exists()){
+        if (!Preference.getBoolean(context, Preference.PREF_KEY_RENAME_FILES, false) && file.exists()) {
             file.delete();
+        } else {
+            int i = 1;
+            while (file.exists()) {
+                String number = String.format("(%s)", ++i);
+                file = new File(dir.getAbsolutePath() + File.separator + filename + number + FILE_EXTENSION);
+            }
         }
-//        int i = 1;
-//        while (file.exists()) {
-//            String number = String.format("(%s)", ++i);
-//            file = new File(dir.getAbsolutePath() + File.separator + filename + number + FILE_EXTENSION);
-//        }
 
         try {
             if (file.createNewFile()) {

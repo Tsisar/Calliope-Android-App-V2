@@ -113,6 +113,7 @@
     <string name="menu_fab_scripts">Скрипти</string>
     <string name="menu_fab_full_screen">На весь екран</string>
     <string name="error_snackbar_save_file_error">Помилка збереження файлу</string>
+    <string name="title_rename_files">Перейменування файлів</string>
     <string name="title_settings">Налаштування</string>
     <string name="bonding_started">Створення пари</string>
     <string name="bonding_succeeded">Пару створено</string>
@@ -123,4 +124,5 @@
     <string name="title_partial_flashing">Часткове прошивання</string>
     <string name="title_auto_flashing">Автоматичне прошивання</string>
     <string name="button_ok">Так</string>
+    <string name="summary_rename_files">додається (n), якщо файл існує</string>
 </resources>
