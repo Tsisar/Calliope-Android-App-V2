@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
+
 import cc.calliope.mini.ProgressCollector;
 import cc.calliope.mini.ProgressListener;
 import cc.calliope.mini.R;
@@ -27,6 +29,8 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     private float dX, dY;
     private Paint paint;
     private RectF rectF;
+
+    private int actionBarSize;
     private int progress = 0;
     private Context context;
     private ProgressCollector progressCollector;
@@ -54,6 +58,12 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         setOnTouchListener(this);
         paint = new Paint();
         rectF = new RectF();
+
+        TypedValue typedValue = new TypedValue();
+        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+            actionBarSize = TypedValue.complexToDimensionPixelSize(typedValue.data, getResources().getDisplayMetrics());
+        }
+
         setOnSystemUiVisibilityChangeListener(this::onFullscreenStateChanged);
     }
 
@@ -133,30 +143,37 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     public void onDeviceConnecting() {
         setProgress(0);
     }
+
     @Override
     public void onProcessStarting() {
         setProgress(0);
     }
+
     @Override
     public void onEnablingDfuMode() {
         setProgress(0);
     }
+
     @Override
     public void onFirmwareValidating() {
         setProgress(0);
     }
+
     @Override
     public void onDeviceDisconnecting() {
         setProgress(0);
     }
+
     @Override
     public void onCompleted() {
         setProgress(0);
     }
+
     @Override
     public void onAborted() {
         setProgress(0);
     }
+
     @Override
     public void onProgressChanged(int percent) {
         setProgress(percent);
@@ -165,12 +182,14 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
     @Override
     public void onBonding(@NonNull BluetoothDevice device, int bondState, int previousBondState) {
     }
+
     @Override
-    public void onAttemptDfuMode(){
+    public void onAttemptDfuMode() {
     }
 
     @Override
-    public void onStartDfuService(int hardwareVersion){}
+    public void onStartDfuService(int hardwareVersion) {
+    }
 
     @Override
     public void onError(int code, String message) {
@@ -214,6 +233,30 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
         super.onDraw(canvas);
     }
 
+    public void moveUp() {
+        int x = Math.round(getX());
+        int y = Math.round(getY());
+        if (y > actionBarSize && y < actionBarSize * 2) {
+            animate()
+                    .x(x)
+                    .y(y - actionBarSize)
+                    .setDuration(0)
+                    .start();
+        }
+    }
+
+    public void moveDown() {
+        int x = Math.round(getX());
+        int y = Math.round(getY());
+        if (y < actionBarSize) {
+            animate()
+                    .x(x)
+                    .y(y + actionBarSize)
+                    .setDuration(0)
+                    .start();
+        }
+    }
+
     private void onFullscreenStateChanged(int visibility) {
         boolean fullScreen = (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0;
         if (!fullScreen) {
@@ -221,22 +264,20 @@ public class MovableFloatingActionButton extends FloatingActionButton implements
             View viewParent = (View) getParent();
             int parentWidth = viewParent.getWidth();
             int parentHeight = viewParent.getHeight();
-            int weight = getWidth();
-            int height = getHeight();
             int x = Math.round(getX());
             int y = Math.round(getY());
 
-            if (x + weight > parentWidth) {
+            if (x + actionBarSize > parentWidth) {
                 animate()
-                        .x(parentWidth - weight - layoutParams.rightMargin)
+                        .x(parentWidth - actionBarSize - layoutParams.rightMargin)
                         .y(y)
                         .setDuration(0)
                         .start();
             }
-            if (y + height > parentHeight) {
+            if (y + actionBarSize > parentHeight) {
                 animate()
                         .x(x)
-                        .y(parentHeight - height - layoutParams.bottomMargin)
+                        .y(parentHeight - actionBarSize - layoutParams.bottomMargin)
                         .setDuration(0)
                         .start();
             }

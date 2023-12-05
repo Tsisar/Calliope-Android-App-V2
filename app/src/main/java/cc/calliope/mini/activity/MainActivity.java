@@ -33,7 +33,8 @@ public class MainActivity extends ScannerActivity {
     private static final String TAG = "MainActivity";
     private ActivityMainBinding binding;
     private boolean fullScreen = false;
-    private boolean currentWeb = false;
+    private int currentFragment;
+    private int previousFragment;
     private final ActivityResultLauncher<String> pushNotificationPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -54,12 +55,23 @@ public class MainActivity extends ScannerActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.navigation_host_fragment);
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            currentWeb = destination.getId() == R.id.navigation_web;
-            if (currentWeb) {
+            previousFragment = currentFragment;
+            currentFragment = destination.getId();
+
+            if (currentFragment == R.id.navigation_web) {
                 binding.bottomNavigation.setVisibility(View.GONE);
-            } else {
+                binding.patternFab.moveDown();
+            } else if (previousFragment == R.id.navigation_web){
                 binding.bottomNavigation.setVisibility(View.VISIBLE);
+                binding.patternFab.moveUp();
             }
+
+            if (currentFragment == R.id.navigation_help) {
+                binding.patternFab.setVisibility(View.GONE);
+            } else if (previousFragment == R.id.navigation_help){
+                binding.patternFab.setVisibility(View.VISIBLE);
+            }
+
             Utils.log(Log.ASSERT, TAG, "Destination id: " + destination.getId());
             Utils.log(Log.ASSERT, TAG, "Select item id: " + binding.bottomNavigation.getSelectedItemId());
         });
@@ -158,7 +170,7 @@ public class MainActivity extends ScannerActivity {
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             Utils.log(Log.WARN, TAG, "ORIENTATION_PORTRAIT");
         }
-        if (!currentWeb) {
+        if (currentFragment != R.id.navigation_web) {
             recreate();
         }
     }
