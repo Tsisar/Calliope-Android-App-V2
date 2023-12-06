@@ -1,9 +1,11 @@
 package cc.calliope.mini;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.lifecycle.Observer;
@@ -15,8 +17,11 @@ import androidx.navigation.ui.NavigationUI;
 
 import java.util.List;
 
+import cc.calliope.mini.activity.SettingsActivity;
 import cc.calliope.mini.databinding.ActivityMain2Binding;
+import cc.calliope.mini.utils.Version;
 import no.nordicsemi.android.kotlin.ble.core.ServerDevice;
+import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResultData;
 import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResults;
 
 public class Main2Activity extends AppCompatActivity {
@@ -25,6 +30,7 @@ public class Main2Activity extends AppCompatActivity {
     private ActivityMain2Binding binding;
     private ScanViewModelKt viewModel;
     private boolean clicked = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,31 +46,38 @@ public class Main2Activity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         viewModel = new ViewModelProvider(this).get(ScanViewModelKt.class);
-        viewModel.getDevices().observe(this, new Observer<List<ServerDeviceWrapper>>() {
+        viewModel.getDevices().observe(this, new Observer<List<BleScanResults>>() {
             @Override
-            public void onChanged(List<ServerDeviceWrapper> deviceList) {
-                Log.w(TAG, "_________________________________________________");
-                for (ServerDeviceWrapper device : deviceList){
-                    int level = Log.DEBUG;
-                    boolean isFound = device.getServerDevice().getName().contains("vipep");
-                    if(isFound){
-                        level = Log.ASSERT;
+            public void onChanged(List<BleScanResults> scanResults) {
+//                Log.w(TAG, "_________________________________________________");
+                for (BleScanResults results : scanResults) {
+                    MyDeviceKt device = new MyDeviceKt(results);
+
+                    if (device.getName().contains("tupov")) {
+                        int level = device.isActual() ? Log.DEBUG : Log.ASSERT;
+
+                        Log.println(level, TAG, "Name: " + device.getName() + ", " +
+                                "address: " + device.getAddress() + ", " +
+                                "actual: " + device.isActual());
                     }
-                    Log.println(level, TAG, "Name: " + device.getServerDevice().getName() + ", address: " + device.getServerDevice().getAddress() + ", isRelevant: " + device.isRelevant());
                 }
             }
         });
 
         binding.fab.setOnClickListener(view -> {
-            clicked = !clicked;
-            if(clicked) {
-                Log.w(TAG, "startScan");
-                viewModel.startScan();
-            }else {
-                Log.w(TAG, "stopScan");
-                viewModel.stopScan();
-            }
+            final Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+//            clicked = !clicked;
+//            if (clicked) {
+//                Log.w(TAG, "startScan");
+//                viewModel.startScan();
+//            } else {
+//                Log.w(TAG, "stopScan");
+//                viewModel.stopScan();
+//            }
         });
+
+        viewModel.startScan();
     }
 
     @Override

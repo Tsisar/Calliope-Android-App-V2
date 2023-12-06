@@ -85,7 +85,6 @@
         <activity
             android:name=".Main2Activity"
             android:exported="true">
-
         </activity>
 
         <activity

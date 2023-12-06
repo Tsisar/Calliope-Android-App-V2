@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import cc.calliope.mini.App;
+import cc.calliope.mini.Main2Activity;
 import cc.calliope.mini.R;
 import cc.calliope.mini.ExtendedBluetoothDevice;
 import cc.calliope.mini.dialog.pattern.PatternDialogFragment;
@@ -193,11 +194,13 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     public void onFabClick(View view) {
-        if (patternFab.isFabMenuOpen()) {
-            collapseFabMenu();
-        } else {
-            expandFabMenu();
-        }
+        final Intent intent = new Intent(this, Main2Activity.class);
+        startActivity(intent);
+//        if (patternFab.isFabMenuOpen()) {
+//            collapseFabMenu();
+//        } else {
+//            expandFabMenu();
+//        }
     }
 
     public void onItemFabMenuClicked(View view) {
