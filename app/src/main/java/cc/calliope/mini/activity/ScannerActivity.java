@@ -16,9 +16,11 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RatingBar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -28,9 +30,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import cc.calliope.mini.App;
+import cc.calliope.mini.MyDeviceKt;
+import cc.calliope.mini.ScanViewModelKt;
+import cc.calliope.mini.dialog.pattern.PatternEnum;
 import cc.calliope.mini.popup.PopupAdapter;
 import cc.calliope.mini.popup.PopupItem;
 import cc.calliope.mini.R;
@@ -43,11 +49,13 @@ import cc.calliope.mini.viewmodels.ScannerLiveData;
 import cc.calliope.mini.viewmodels.ScannerViewModel;
 import cc.calliope.mini.views.FobParams;
 import cc.calliope.mini.views.MovableFloatingActionButton;
+import no.nordicsemi.android.kotlin.ble.core.scanner.BleScanResults;
 
 public abstract class ScannerActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
     private static final int SNACKBAR_DURATION = 10000; // how long to display the snackbar message.
     private static boolean requestWasSent = false;
-    private ScannerViewModel scannerViewModel;
+//    private ScannerViewModel scannerViewModel;
+    private ScanViewModelKt viewModel;
     private MovableFloatingActionButton patternFab;
     private ConstraintLayout rootView;
     private int screenWidth;
@@ -68,8 +76,38 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
 
         app = (App) getApplication();
 
-        scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
-        scannerViewModel.getScannerState().observe(this, this::scanResults);
+//        scannerViewModel = new ViewModelProvider(this).get(ScannerViewModel.class);
+//        scannerViewModel.getScannerState().observe(this, this::scanResults);
+
+        viewModel = new ViewModelProvider(this).get(ScanViewModelKt.class);
+        viewModel.getDevices().observe(this, new Observer<List<BleScanResults>>() {
+            @Override
+            public void onChanged(List<BleScanResults> scanResults) {
+//                Log.w(TAG, "_________________________________________________");
+                for (BleScanResults results : scanResults) {
+                    MyDeviceKt device = new MyDeviceKt(results);
+
+                    if (!device.getPattern().isEmpty() && matchesPattern("51422", device.getPattern())) {
+                        int level = device.isActual() ? Log.DEBUG : Log.ASSERT;
+
+                        Log.println(level, "scannerViewModel",
+                                "address: " + device.getAddress() + ", " +
+                                "pattern: " + device.getPattern() + ", " +
+                                "numPattern: " + device.getNumPattern() + ", " +
+                                "bonded: " + device.isBonded() + ", " +
+                                "actual: " + device.isActual());
+                    }
+                }
+            }
+        });
+    }
+
+    public void onPatternChange(int column, float value){
+        Utils.log(Log.ASSERT, "BAR", "Column " + column + ": " + value);
+    }
+
+    private static boolean matchesPattern(String numberPattern, String letterPattern) {
+        return false;
     }
 
     @Override
@@ -88,7 +126,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     @Override
     public void onPause() {
         super.onPause();
-        scannerViewModel.stopScan();
+//        scannerViewModel.stopScan();
     }
 
     @Override
@@ -127,7 +165,8 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
             } else if (!Version.VERSION_S_AND_NEWER && !Utils.isLocationEnabled(this)) {
                 showLocationDisabledWarning();
             }
-            scannerViewModel.startScan();
+//            scannerViewModel.startScan();
+            viewModel.startScan();
         } else {
             startNoPermissionActivity();
         }
@@ -154,7 +193,7 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
     }
 
     private void showPatternDialog(FobParams params) {
-        scannerViewModel.startScan(); // On older devices, "auto-start" scanning does not work after bluetooth is turned on.
+//        scannerViewModel.startScan(); // On older devices, "auto-start" scanning does not work after bluetooth is turned on.
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         PatternDialogFragment dialogFragment = PatternDialogFragment.newInstance(params);

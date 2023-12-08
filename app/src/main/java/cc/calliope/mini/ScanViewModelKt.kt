@@ -37,7 +37,7 @@ class ScanViewModelKt(application: Application) : AndroidViewModel(application) 
         val aggregator = Aggregator()
 
         BleScanner(context).scan(settings)
-            .map { aggregator.aggregateResults(it) }// Add new device and return an aggregated list
+            .map { aggregator.aggregate(it) }// Add new device and return an aggregated list
             .onEach { _devices.value = it } // Propagated state to UI
             .launchIn(viewModelScope) // Scanning will stop after we leave the screen
     }

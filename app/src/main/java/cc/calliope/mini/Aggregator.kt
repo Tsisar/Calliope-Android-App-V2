@@ -11,7 +11,7 @@ class Aggregator {
     private val results
         get() = devices.map { BleScanResults(it.key, it.value) }
 
-    fun aggregateResults(scanItem: BleScanResult): List<BleScanResults> {
+    fun aggregate(scanItem: BleScanResult): List<BleScanResults> {
         val data = scanItem.data
         devices.getOrPut(scanItem.device) { mutableListOf() }.let {
             if (data != null) it.add(data)

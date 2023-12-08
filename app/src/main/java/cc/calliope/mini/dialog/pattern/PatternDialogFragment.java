@@ -14,13 +14,16 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RatingBar;
 
 import java.util.Arrays;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+
 import cc.calliope.mini.views.FobParams;
 import cc.calliope.mini.R;
 import cc.calliope.mini.ExtendedBluetoothDevice;
@@ -28,6 +31,7 @@ import cc.calliope.mini.databinding.DialogPatternBinding;
 import cc.calliope.mini.utils.Utils;
 import cc.calliope.mini.viewmodels.ScannerLiveData;
 import cc.calliope.mini.viewmodels.ScannerViewModel;
+import cc.calliope.mini.views.SvgPatternBar;
 
 public class PatternDialogFragment extends DialogFragment {
     private final static int DIALOG_WIDTH = 220; //dp
@@ -63,6 +67,7 @@ public class PatternDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         binding = DialogPatternBinding.inflate(inflater, container, false);
 
+
         // Create view model containing utility methods for scanning
         scannerViewModel = new ViewModelProvider(requireActivity()).get(ScannerViewModel.class);
         scannerViewModel.getScannerState().observe(getViewLifecycleOwner(), this::scanResults);
@@ -79,17 +84,29 @@ public class PatternDialogFragment extends DialogFragment {
         oldPattern = scannerViewModel.getScannerState().getCurrentPattern();
         currentPattern = Arrays.copyOf(oldPattern, oldPattern.length);
 
-        binding.patternMatrix.columnA.setValue(currentPattern[0]);
-        binding.patternMatrix.columnB.setValue(currentPattern[1]);
-        binding.patternMatrix.columnC.setValue(currentPattern[2]);
-        binding.patternMatrix.columnD.setValue(currentPattern[3]);
-        binding.patternMatrix.columnE.setValue(currentPattern[4]);
+//        List<SvgPatternBar> pattern = List.of(
+//                binding.patternMatrix.columnA,
+//                binding.patternMatrix.columnB,
+//                binding.patternMatrix.columnC,
+//                binding.patternMatrix.columnD,
+//                binding.patternMatrix.columnE
+//        );
+//
+//        for (int i = 0; i < 5; i++) {
+//            pattern.get(i).setValue(currentPattern[i]);
+//        }
 
-        binding.patternMatrix.columnA.setOnChangeListener((bar, v, b) -> onPatternChange(0, v));
-        binding.patternMatrix.columnB.setOnChangeListener((bar, v, b) -> onPatternChange(1, v));
-        binding.patternMatrix.columnC.setOnChangeListener((bar, v, b) -> onPatternChange(2, v));
-        binding.patternMatrix.columnD.setOnChangeListener((bar, v, b) -> onPatternChange(3, v));
-        binding.patternMatrix.columnE.setOnChangeListener((bar, v, b) -> onPatternChange(4, v));
+//        binding.patternMatrix.columnA.setValue(currentPattern[0]);
+//        binding.patternMatrix.columnB.setValue(currentPattern[1]);
+//        binding.patternMatrix.columnC.setValue(currentPattern[2]);
+//        binding.patternMatrix.columnD.setValue(currentPattern[3]);
+//        binding.patternMatrix.columnE.setValue(currentPattern[4]);
+//
+//        binding.patternMatrix.columnA.setOnChangeListener((bar, v, b) -> onPatternChange(0, v));
+//        binding.patternMatrix.columnB.setOnChangeListener((bar, v, b) -> onPatternChange(1, v));
+//        binding.patternMatrix.columnC.setOnChangeListener((bar, v, b) -> onPatternChange(2, v));
+//        binding.patternMatrix.columnD.setOnChangeListener((bar, v, b) -> onPatternChange(3, v));
+//        binding.patternMatrix.columnE.setOnChangeListener((bar, v, b) -> onPatternChange(4, v));
 
         binding.buttonAction.setOnClickListener(view1 -> onConnectClick());
     }
@@ -142,10 +159,9 @@ public class PatternDialogFragment extends DialogFragment {
 //        if (scannerViewModel.getScannerState().getCurrentDevice() != null) {
 //            pairDevice(scannerViewModel.getScannerState().getCurrentDevice().getDevice());
 //        }
-        if(!connectClicked){
+        if (!connectClicked) {
             scannerViewModel.setCurrentPattern(oldPattern);
-        }
-        else {
+        } else {
             scannerViewModel.createBond();
         }
 

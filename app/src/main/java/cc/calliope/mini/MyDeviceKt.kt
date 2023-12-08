@@ -18,8 +18,21 @@ class MyDeviceKt(bleScanResults: BleScanResults) {
         return serverDevice.address
     }
 
-    fun getName(): String? {
+    fun getName(): String {
         return serverDevice.name
+    }
+
+    fun isBonded(): Boolean {
+        return serverDevice.isBonded
+    }
+
+    fun getPattern(): String {
+        val pattern = "[a-zA-Z :]+\\[([A-Z]{5})]".toRegex()
+        return pattern.find(serverDevice.name.uppercase())?.groupValues?.get(1) ?: ""
+    }
+
+    fun getNumPattern(): String {
+        return getPattern().map { LetterMapping.getNumber(it) }.joinToString("")
     }
 
     fun isActual(): Boolean {
