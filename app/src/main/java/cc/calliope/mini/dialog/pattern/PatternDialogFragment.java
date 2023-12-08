@@ -33,6 +33,7 @@ import cc.calliope.mini.viewmodels.ScannerLiveData;
 import cc.calliope.mini.viewmodels.ScannerViewModel;
 import cc.calliope.mini.views.SvgPatternBar;
 
+//TODO -> Activity + viewModel
 public class PatternDialogFragment extends DialogFragment {
     private final static int DIALOG_WIDTH = 220; //dp
     private final static int DIALOG_HEIGHT = 240; //dp

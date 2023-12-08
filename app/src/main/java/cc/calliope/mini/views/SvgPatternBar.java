@@ -203,6 +203,7 @@ public class SvgPatternBar extends AppCompatRatingBar {
         this.column = column;
     }
 
+    //TODO Load current device and decode column = num of letter
     public float loadValue() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         float value = sharedPreferences.getFloat("pattern_column_" + column, 1f);
