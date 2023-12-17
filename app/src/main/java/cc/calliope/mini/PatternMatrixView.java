@@ -83,10 +83,11 @@ public class PatternMatrixView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            int column = (int) (event.getX() / cellSize);
-            int number = (int) (event.getY() / cellSize);
+        int action = event.getAction();
+        int column = (int) (event.getX() / cellSize);
+        int number = (int) (event.getY() / cellSize);
 
+        if (action == MotionEvent.ACTION_DOWN) {
             Log.i("MAIN", "column: " + column + "; Y: " + number);
             if (column < SIZE && number < SIZE) {
                 if (cell[column][number] && number < SIZE - 1 && (number == 0 || !cell[column][number - 1])) {
@@ -97,11 +98,21 @@ public class PatternMatrixView extends View {
                 if (onPatternChangeListener != null) {
                     onPatternChangeListener.onPatternChanged(getPattern());
                 }
-
                 return true;
+            }
+        }else if(action == MotionEvent.ACTION_UP){
+            if (column < SIZE && number < SIZE) {
+                return true;
+            }else {
+                return performClick();
             }
         }
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
     }
 
     private void setColumn(int column, int number) {
