@@ -80,13 +80,19 @@ public class SvgPatternBar extends AppCompatRatingBar {
         }
 
         @Override
-        public void onRatingChanged(RatingBar ratingBar, float value, boolean b) {
+        public void onRatingChanged(RatingBar ratingBar, float value, boolean fromUser) {
             Activity activity = getActivity();
+            if (value < 1.0f) {
+                value = 1.0f;
+                ratingBar.setRating(value);
+            }
+
             if (activity == null) {
                 return;
             }
 
             try {
+                Utils.log(Log.ASSERT, "TEST", "Context: " + getContext());
                 Method method = activity.getClass().getMethod(methodName, int.class, float.class);
                 method.invoke(activity, column, value);
                 saveValue(value);

@@ -84,26 +84,26 @@ public abstract class ScannerActivity extends AppCompatActivity implements Dialo
             @Override
             public void onChanged(List<BleScanResults> scanResults) {
 //                Log.w(TAG, "_________________________________________________");
-                for (BleScanResults results : scanResults) {
-                    MyDeviceKt device = new MyDeviceKt(results);
-
-                    if (!device.getPattern().isEmpty() && matchesPattern("51422", device.getPattern())) {
-                        int level = device.isActual() ? Log.DEBUG : Log.ASSERT;
-
-                        Log.println(level, "scannerViewModel",
-                                "address: " + device.getAddress() + ", " +
-                                "pattern: " + device.getPattern() + ", " +
-                                "numPattern: " + device.getNumPattern() + ", " +
-                                "bonded: " + device.isBonded() + ", " +
-                                "actual: " + device.isActual());
-                    }
-                }
+//                for (BleScanResults results : scanResults) {
+//                    MyDeviceKt device = new MyDeviceKt(results);
+//
+//                    if (!device.getPattern().isEmpty() && matchesPattern("51422", device.getPattern())) {
+//                        int level = device.isActual() ? Log.DEBUG : Log.ASSERT;
+//
+//                        Log.println(level, "scannerViewModel",
+//                                "address: " + device.getAddress() + ", " +
+//                                "pattern: " + device.getPattern() + ", " +
+//                                "numPattern: " + device.getNumPattern() + ", " +
+//                                "bonded: " + device.isBonded() + ", " +
+//                                "actual: " + device.isActual());
+//                    }
+//                }
             }
         });
     }
 
     public void onPatternChange(int column, float value){
-        Utils.log(Log.ASSERT, "BAR", "Column " + column + ": " + value);
+        Utils.log(Log.ASSERT, "BAR_MAIN", "Column " + column + ": " + value);
     }
 
     private static boolean matchesPattern(String numberPattern, String letterPattern) {

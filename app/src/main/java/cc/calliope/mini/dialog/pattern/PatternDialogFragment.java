@@ -172,9 +172,10 @@ public class PatternDialogFragment extends DialogFragment {
         }
     }
 
-    private void onPatternChange(int index, float newPatten) {
-        currentPattern[index] = newPatten;
-        scannerViewModel.setCurrentPattern(currentPattern);
+    public void onPatternChange(int column, float value){
+        Utils.log(Log.ASSERT, "BAR_MAIN", "Column " + column + ": " + value);
+        currentPattern[column] = value;
+//        scannerViewModel.setCurrentPattern(currentPattern);
     }
 
     private void setButtonBackground(ExtendedBluetoothDevice device) {
